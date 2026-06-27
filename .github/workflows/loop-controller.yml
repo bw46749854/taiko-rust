@@ -39,7 +39,7 @@ jobs:
       actions: read
       checks: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
           # loop-controller is the only privileged workflow. It checks out the trusted default branch for
