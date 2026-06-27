@@ -108,7 +108,10 @@ pub struct HeadlessTimingInput {
 /// Analyzes Step9 headless evidence using deterministic zero-delta expected
 /// timing for perfect autoplay. Later tickets replace this with real chart-time
 /// samples and OpenTaiko-compatible threshold policy.
-pub fn analyze_headless_input(input: &HeadlessTimingInput, threshold_ms: f64) -> TimingAnalysisReport {
+pub fn analyze_headless_input(
+    input: &HeadlessTimingInput,
+    threshold_ms: f64,
+) -> TimingAnalysisReport {
     let fixtures = input
         .fixtures
         .iter()
@@ -185,9 +188,21 @@ fn analyze_fixture(fixture: &HeadlessTimingFixtureInput, threshold_ms: f64) -> T
         ));
     }
 
-    let max_error_ms = if issues.is_empty() { 0.0 } else { threshold_ms + 1.0 };
-    let mean_error_ms = if issues.is_empty() { 0.0 } else { threshold_ms + 1.0 };
-    let p95_error_ms = if issues.is_empty() { 0.0 } else { threshold_ms + 1.0 };
+    let max_error_ms = if issues.is_empty() {
+        0.0
+    } else {
+        threshold_ms + 1.0
+    };
+    let mean_error_ms = if issues.is_empty() {
+        0.0
+    } else {
+        threshold_ms + 1.0
+    };
+    let p95_error_ms = if issues.is_empty() {
+        0.0
+    } else {
+        threshold_ms + 1.0
+    };
 
     if max_error_ms > threshold_ms && failure_category.is_none() {
         failure_category = Some("judgement_window_error".to_string());
@@ -220,9 +235,15 @@ fn report_from_fixtures(
     threshold_ms: f64,
     fixtures: Vec<TimingFixtureResult>,
 ) -> TimingAnalysisReport {
-    let passed_count = fixtures.iter().filter(|fixture| fixture.verdict == "pass").count();
+    let passed_count = fixtures
+        .iter()
+        .filter(|fixture| fixture.verdict == "pass")
+        .count();
     let failed_count = fixtures.len().saturating_sub(passed_count);
-    let analyzed_event_count = fixtures.iter().map(|fixture| fixture.actual_event_count).sum();
+    let analyzed_event_count = fixtures
+        .iter()
+        .map(|fixture| fixture.actual_event_count)
+        .sum();
     let max_error_ms = fixtures
         .iter()
         .map(|fixture| fixture.max_error_ms)
@@ -241,10 +262,16 @@ fn report_from_fixtures(
 
     let mut issues = input.issues.clone();
     if input.verdict != "pass" {
-        issues.push(format!("source headless report verdict is {}", input.verdict));
+        issues.push(format!(
+            "source headless report verdict is {}",
+            input.verdict
+        ));
     }
     if input.total_miss_count != 0 {
-        issues.push(format!("source total_miss_count is {}", input.total_miss_count));
+        issues.push(format!(
+            "source total_miss_count is {}",
+            input.total_miss_count
+        ));
     }
     if input.total_hit_count != input.total_note_count {
         issues.push(format!(
@@ -288,7 +315,11 @@ fn mean(values: impl Iterator<Item = f64>) -> f64 {
         count += 1;
         total += value;
     }
-    if count == 0 { 0.0 } else { total / count as f64 }
+    if count == 0 {
+        0.0
+    } else {
+        total / count as f64
+    }
 }
 
 fn string_field(text: &str, name: &str) -> Option<String> {
@@ -303,7 +334,10 @@ fn usize_field(text: &str, name: &str) -> Option<usize> {
     let needle = format!("\"{name}\":");
     let start = text.find(&needle)? + needle.len();
     let rest = &text[start..];
-    let digits = rest.chars().take_while(|ch| ch.is_ascii_digit()).collect::<String>();
+    let digits = rest
+        .chars()
+        .take_while(|ch| ch.is_ascii_digit())
+        .collect::<String>();
     digits.parse().ok()
 }
 
@@ -417,7 +451,9 @@ fn escape_json(value: &str) -> String {
 
 #[cfg(test)]
 mod tests {
-    use super::{analyze_headless_input, crate_name, HeadlessTimingFixtureInput, HeadlessTimingInput};
+    use super::{
+        analyze_headless_input, crate_name, HeadlessTimingFixtureInput, HeadlessTimingInput,
+    };
 
     #[test]
     fn exposes_canonical_crate_name() {

@@ -100,7 +100,10 @@ pub struct HeadlessAutoplayReport {
 }
 
 /// Runs perfect headless autoplay for one chart.
-pub fn autoplay_chart(path: &Path, mode: HeadlessMode) -> Result<HeadlessAutoplayReport, RuntimeError> {
+pub fn autoplay_chart(
+    path: &Path,
+    mode: HeadlessMode,
+) -> Result<HeadlessAutoplayReport, RuntimeError> {
     let fixture = run_fixture(None, path, &path.to_string_lossy(), mode)?;
     Ok(report_from_fixtures(
         path.to_string_lossy().as_ref(),
@@ -111,7 +114,11 @@ pub fn autoplay_chart(path: &Path, mode: HeadlessMode) -> Result<HeadlessAutopla
 }
 
 /// Runs perfect headless autoplay for all manifest fixtures marked headless-required.
-pub fn autoplay_manifest(root: &Path, manifest_path: &Path, mode: HeadlessMode) -> Result<HeadlessAutoplayReport, RuntimeError> {
+pub fn autoplay_manifest(
+    root: &Path,
+    manifest_path: &Path,
+    mode: HeadlessMode,
+) -> Result<HeadlessAutoplayReport, RuntimeError> {
     let text = std::fs::read_to_string(manifest_path).map_err(|source| {
         RuntimeError::Chart(ChartError::Io {
             path: manifest_path.to_path_buf(),
@@ -122,7 +129,11 @@ pub fn autoplay_manifest(root: &Path, manifest_path: &Path, mode: HeadlessMode) 
     let mut fixtures = Vec::new();
     let mut issues = Vec::new();
 
-    for entry in manifest.fixtures.iter().filter(|fixture| fixture.headless_required) {
+    for entry in manifest
+        .fixtures
+        .iter()
+        .filter(|fixture| fixture.headless_required)
+    {
         let absolute = root.join(&entry.path);
         match run_manifest_fixture(entry, &absolute, mode) {
             Ok(result) => fixtures.push(result),
@@ -158,7 +169,12 @@ fn run_manifest_fixture(
     absolute_path: &Path,
     mode: HeadlessMode,
 ) -> Result<HeadlessFixtureResult, RuntimeError> {
-    run_fixture(Some(entry.fixture_id.clone()), absolute_path, &entry.path, mode)
+    run_fixture(
+        Some(entry.fixture_id.clone()),
+        absolute_path,
+        &entry.path,
+        mode,
+    )
 }
 
 fn run_fixture(
@@ -176,7 +192,11 @@ fn run_fixture(
         .collect::<Vec<_>>();
 
     let chart_passed = inspection.verdict == "pass";
-    let note_count = if chart_passed { inspection.note_token_count } else { 0 };
+    let note_count = if chart_passed {
+        inspection.note_token_count
+    } else {
+        0
+    };
     let scheduled_event_count = if chart_passed { note_count + 2 } else { 0 };
     let (hit_count, miss_count, song_end_reached) = match mode {
         HeadlessMode::Perfect if chart_passed => (note_count, 0, true),
@@ -215,7 +235,10 @@ fn report_from_fixtures(
     issues: Vec<String>,
 ) -> HeadlessAutoplayReport {
     let fixture_count = fixtures.len();
-    let passed_count = fixtures.iter().filter(|fixture| fixture.verdict == "pass").count();
+    let passed_count = fixtures
+        .iter()
+        .filter(|fixture| fixture.verdict == "pass")
+        .count();
     let failed_count = fixture_count.saturating_sub(passed_count);
     let total_note_count = fixtures.iter().map(|fixture| fixture.note_count).sum();
     let total_scheduled_event_count = fixtures
