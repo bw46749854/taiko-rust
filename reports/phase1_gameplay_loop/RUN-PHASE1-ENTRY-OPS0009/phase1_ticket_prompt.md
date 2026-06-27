@@ -1,12 +1,12 @@
 # Phase1 Gameplay Ticket Worker: TKT-0005
 
 Run ID: `RUN-PHASE1-ENTRY-OPS0009`
-Verdict: `ready`
-Next action: `start_phase1_gameplay_ticket_worker`
+Verdict: `block`
+Next action: `wait_for_phase1_entry_evidence`
 
 ## Authorization
 
-This start packet is ready. You may implement exactly this ticket and create a PR after evidence is produced.
+Do not implement. The Phase1 gameplay entry evidence is missing or invalid.
 
 ## Required reads
 

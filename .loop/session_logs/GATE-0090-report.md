@@ -1,20 +1,24 @@
 # GATE-0090 Report: Phase1 Feature Loop Ready
 
-Status: pass
+Status: block
 Run ID: RUN-PHASE1-FEATURE-GATE
 
 ## Verdict
 
-`pass`
+`block`
 
-## Evidence
+## State note
 
-- `TKT-0060` is `Done`.
-- `operations/phase1_feature_ticket_manifest.toml` exists and declares `TKT-0005` as the first feature ticket.
-- Every listed gameplay ticket requires QA run, QA verdict, and failure-route evidence.
-- `scripts/check_phase1_feature_loop_static.py` is part of the static Gate set.
-- Phase1 gameplay entry is still constrained by session metadata, QA / Regression Session verdicts, auto-merge checks, and ticket-transition evidence.
+The repository is after OPS migration but before Phase1 gameplay start. `TKT-0005` must not be selected until the Step11, Step12, and Step13 evidence chain is complete.
+
+## Missing evidence
+
+- `TKT-0040` is not `Done`, so `GATE-0070` cannot pass.
+- `TKT-0050` is not `Done`, so `GATE-0080` cannot pass.
+- `reports/failure_feedback/FF-0001.ingest.json`, `reports/failure_feedback/FF-0001.proposed_ticket.json`, and `reports/failure_feedback/TKT-0040.validate.json` are absent.
+- `reports/qa/phase1_loop.qa.json` and `reports/qa/phase1_loop.verdict.json` are absent.
+- `reports/phase1_feature_loop/phase1_feature_validate.json` and `reports/phase1_feature_loop/phase1_feature_plan.json` are absent.
 
 ## Next-ticket transition
 
-`TKT-0005` is eligible as the first Phase1 gameplay ticket after `GATE-OPS-0000` also passes.
+Keep `TKT-0005` blocked. It may become `Ready` only when `TKT-0040 Done`, `GATE-0070 passed`, `TKT-0050 Done`, `GATE-0080 passed`, `TKT-0060 Done`, and `GATE-0090 passed` are all true.

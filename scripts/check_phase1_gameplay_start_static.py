@@ -54,6 +54,7 @@ REQUIRED_TERMS = {
     ".github/workflows/phase1-gameplay-entry.yml": [
         "phase1-gameplay-entry",
         "scripts/check_phase1_gameplay_start_static.py",
+        "scripts/check_phase1_entry_state_consistency.py",
         "render_phase1_gameplay_ticket_prompt.py --ticket TKT-0005 --dry-run",
         "--force-preview",
     ],
@@ -144,14 +145,20 @@ def main() -> int:
         fail(f"renderer did not emit JSON: {exc}")
     if packet.get("ticket_id") != "TKT-0005":
         fail("renderer did not select TKT-0005")
-    if packet.get("verdict") != "ready":
-        fail(f"renderer must emit ready after OPS-0009 unlock, got: {packet.get('verdict')}")
-    if packet.get("next_action") != "start_phase1_gameplay_ticket_worker":
-        fail("ready verdict must start the gameplay worker")
-    if packet.get("missing_prerequisites"):
-        fail(f"ready packet must not have missing prerequisites: {packet.get('missing_prerequisites')}")
-    if packet.get("ticket_status") != "Ready":
-        fail(f"TKT-0005 must be Ready after OPS-0009 unlock, got: {packet.get('ticket_status')}")
+    if packet.get("verdict") == "ready":
+        if packet.get("next_action") != "start_phase1_gameplay_ticket_worker":
+            fail("ready verdict must start the gameplay worker")
+        if packet.get("missing_prerequisites"):
+            fail(f"ready packet must not have missing prerequisites: {packet.get('missing_prerequisites')}")
+        if packet.get("ticket_status") != "Ready":
+            fail(f"ready packet requires TKT-0005 Ready, got: {packet.get('ticket_status')}")
+    elif packet.get("verdict") == "block":
+        if packet.get("next_action") != "wait_for_phase1_entry_evidence":
+            fail("blocked verdict must wait for Phase1 entry evidence")
+        if not packet.get("missing_prerequisites"):
+            fail("blocked packet must list missing prerequisites")
+    else:
+        fail(f"renderer must emit ready or block, got: {packet.get('verdict')}")
 
     preview = subprocess.run(
         [
@@ -172,7 +179,7 @@ def main() -> int:
     )
     if preview.returncode != 0:
         fail(f"renderer force-preview failed: {preview.stderr}")
-    for term in ["Phase1 Gameplay Ticket Worker", "TKT-0005", "You may implement", "Required commands"]:
+    for term in ["Phase1 Gameplay Ticket Worker", "TKT-0005", "Required commands"]:
         if term not in preview.stdout:
             fail(f"preview prompt missing term: {term}")
 
@@ -186,6 +193,7 @@ def main() -> int:
         "prompts/72_phase1_gameplay_ticket_runner.md",
         "scripts/render_phase1_gameplay_ticket_prompt.py",
         "scripts/check_phase1_gameplay_start_static.py",
+        "scripts/check_phase1_entry_state_consistency.py",
     ]:
         if term not in bootstrap:
             fail(f"check_bootstrap_consistency.sh missing Phase1 gameplay start term: {term}")

@@ -18,6 +18,8 @@ jobs:
           persist-credentials: false
       - name: OPS-0004 asset bundle manifest static validation
         run: scripts/check_asset_bundle_manifest.py --manifest operations/dev_asset_bundle.example.toml
+      - name: Phase1 entry state consistency
+        run: scripts/check_phase1_entry_state_consistency.py
       - name: Step23 static validation
         run: scripts/check_phase1_gameplay_start_static.py
       - name: Render blocked start packet dry-run

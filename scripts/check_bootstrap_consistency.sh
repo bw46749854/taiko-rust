@@ -231,20 +231,23 @@ for path in "${required_files[@]}"; do
   test -f "$path" || { echo "missing: $path" >&2; exit 1; }
 done
 
-ready_count=$(grep -R "^Status: Ready" .loop/tickets | wc -l | tr -d ' ')
-ready_ticket=$(grep -R "^Status: Ready" .loop/tickets || true)
+ready_count=$(rg "^Status: Ready" .loop/tickets || true)
+ready_count=$(printf "%s\n" "$ready_count" | sed '/^$/d' | wc -l | tr -d ' ')
+ready_ticket=$(rg "^Status: Ready" .loop/tickets || true)
 
-if [ "$ready_count" != "1" ]; then
-  echo "expected exactly one Ready ticket; found $ready_count" >&2
+if [ "$ready_count" != "0" ] && [ "$ready_count" != "1" ]; then
+  echo "expected zero Ready tickets before Phase1 entry evidence, or exactly TKT-0005 when all entry prerequisites pass; found $ready_count" >&2
   echo "$ready_ticket" >&2
   exit 1
 fi
 
-echo "$ready_ticket" | grep -q "TKT-0005.md" || {
-  echo "expected TKT-0005 to be the only Ready ticket after operations migration" >&2
-  echo "$ready_ticket" >&2
-  exit 1
-}
+if [ "$ready_count" = "1" ]; then
+  echo "$ready_ticket" | rg -q "TKT-0005.md" || {
+    echo "expected TKT-0005 to be the only Ready ticket after entry prerequisites pass" >&2
+    echo "$ready_ticket" >&2
+    exit 1
+  }
+fi
 
 # Deprecated crate names may appear only in explicit deprecation statements.
 suspicious_taiko_core=$(grep -R "taiko_core" docs prompts .loop AGENTS.md operations README.md 2>/dev/null \
@@ -279,6 +282,7 @@ scripts/check_headless_autoplay_static.py
 scripts/check_timing_analyzer_static.py
 scripts/check_failure_feedback_static.py
 scripts/check_qa_regression_static.py
+scripts/check_phase1_entry_state_consistency.py
 scripts/check_phase1_feature_loop_static.py
 scripts/validate_fixture_manifest.py
 scripts/validate_synthetic_fixture_structure.py
