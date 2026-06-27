@@ -19,7 +19,7 @@ jobs:
     steps:
       - name: Resolve PR head
         id: pr
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         env:
           PR_NUMBER: ${{ inputs.pr_number }}
         with:
@@ -55,7 +55,7 @@ jobs:
           The detached review must post pass/reject/block feedback and must not approve or merge the PR.
           EOF
       - name: Post review request comment
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         env:
           PR_NUMBER: ${{ inputs.pr_number }}
         with:
