@@ -11,7 +11,10 @@ use std::time::{SystemTime, UNIX_EPOCH};
 use taiko_chart::{inspect_tja_file, validate_fixture_manifest};
 use taiko_runtime::{autoplay_chart, autoplay_manifest, HeadlessAutoplayReport, HeadlessMode};
 use taiko_test_support::{list_markdown_files, read_utf8};
-use taiko_timing::{analyze_headless_input, parse_headless_autoplay_json, HeadlessTimingFixtureInput, HeadlessTimingInput, TimingAnalysisReport};
+use taiko_timing::{
+    analyze_headless_input, parse_headless_autoplay_json, HeadlessTimingFixtureInput,
+    HeadlessTimingInput, TimingAnalysisReport,
+};
 
 /// CLI result type.
 pub type CliResult<T> = Result<T, CliError>;
@@ -126,7 +129,6 @@ pub struct LoopStatus {
     pub open_failures: Vec<String>,
 }
 
-
 /// Step17 loop-controller run-once plan.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct LoopRunOncePlan {
@@ -150,7 +152,6 @@ pub struct LoopRunOncePlan {
     pub open_failures: Vec<String>,
     pub artifacts_written: Vec<String>,
 }
-
 
 pub const SUPPORTED_COMMAND_SURFACE: &[&str] = &[
     "loop inspect tickets",
@@ -198,20 +199,29 @@ pub fn run_cli(args: &[String]) -> CliResult<String> {
     }
 
     match options.words.as_slice() {
-        [loop_word, inspect_word, subject] if loop_word == "loop" && inspect_word == "inspect" && subject == "tickets" => {
+        [loop_word, inspect_word, subject]
+            if loop_word == "loop" && inspect_word == "inspect" && subject == "tickets" =>
+        {
             let tickets = load_tickets(&root)?;
             Ok(render_tickets(&tickets, options.format))
         }
-        [loop_word, inspect_word, subject] if loop_word == "loop" && inspect_word == "inspect" && subject == "gates" => {
+        [loop_word, inspect_word, subject]
+            if loop_word == "loop" && inspect_word == "inspect" && subject == "gates" =>
+        {
             let gates = load_gates(&root)?;
             Ok(render_gates(&gates, options.format))
         }
         [loop_word, next_word] if loop_word == "loop" && next_word == "next" => {
             let tickets = load_tickets(&root)?;
             let gates = load_gates(&root)?;
-            Ok(render_next(&select_next_ticket(&tickets, &gates, &root), options.format))
+            Ok(render_next(
+                &select_next_ticket(&tickets, &gates, &root),
+                options.format,
+            ))
         }
-        [loop_word, gate_word, gate_id] if loop_word == "loop" && gate_word == "gate" && options.dry_run => {
+        [loop_word, gate_word, gate_id]
+            if loop_word == "loop" && gate_word == "gate" && options.dry_run =>
+        {
             let gates = load_gates(&root)?;
             let gate = gates
                 .iter()
@@ -230,13 +240,17 @@ pub fn run_cli(args: &[String]) -> CliResult<String> {
             };
             Ok(render_loop_run_once_plan(&plan, options.format))
         }
-        [loop_word, report_word, status_word] if loop_word == "loop" && report_word == "report" && status_word == "status" => {
+        [loop_word, report_word, status_word]
+            if loop_word == "loop" && report_word == "report" && status_word == "status" =>
+        {
             let tickets = load_tickets(&root)?;
             let gates = load_gates(&root)?;
             let status = build_status(&root, &tickets, &gates);
             Ok(render_status(&status, options.format))
         }
-        [fixture_word, validate_word] if fixture_word == "fixture" && validate_word == "validate" => {
+        [fixture_word, validate_word]
+            if fixture_word == "fixture" && validate_word == "validate" =>
+        {
             let manifest = options
                 .manifest
                 .clone()
@@ -245,22 +259,25 @@ pub fn run_cli(args: &[String]) -> CliResult<String> {
             let report = validate_fixture_manifest(&root, &manifest_path)?;
             Ok(render_fixture_validation(&report, options.format))
         }
-        [fixture_word, inspect_word, fixture_path] if fixture_word == "fixture" && inspect_word == "inspect" => {
+        [fixture_word, inspect_word, fixture_path]
+            if fixture_word == "fixture" && inspect_word == "inspect" =>
+        {
             let path = resolve_project_path(&root, fixture_path);
             let report = inspect_tja_file(&path)?;
             Ok(render_chart_inspection(&report, options.format))
         }
-        [headless_word, autoplay_word] if headless_word == "headless" && autoplay_word == "autoplay" => {
+        [headless_word, autoplay_word]
+            if headless_word == "headless" && autoplay_word == "autoplay" =>
+        {
             let mode = HeadlessMode::parse(options.mode.as_deref().unwrap_or("perfect"))?;
             if let Some(chart) = options.chart.as_deref() {
                 let chart_path = resolve_project_path(&root, chart);
                 let report = autoplay_chart(&chart_path, mode)?;
                 Ok(render_headless_autoplay(&report, options.format))
             } else {
-                let manifest = options
-                    .manifest
-                    .clone()
-                    .unwrap_or_else(|| "fixtures/synthetic/phase1_synthetic_manifest.toml".to_string());
+                let manifest = options.manifest.clone().unwrap_or_else(|| {
+                    "fixtures/synthetic/phase1_synthetic_manifest.toml".to_string()
+                });
                 let manifest_path = resolve_project_path(&root, &manifest);
                 let report = autoplay_manifest(&root, &manifest_path, mode)?;
                 Ok(render_headless_autoplay(&report, options.format))
@@ -275,13 +292,13 @@ pub fn run_cli(args: &[String]) -> CliResult<String> {
                 let report = analyze_headless_input(&timing_input, threshold_ms);
                 Ok(render_timing_analysis(&report, options.format))
             } else {
-                let manifest = options
-                    .manifest
-                    .clone()
-                    .unwrap_or_else(|| "fixtures/synthetic/phase1_synthetic_manifest.toml".to_string());
+                let manifest = options.manifest.clone().unwrap_or_else(|| {
+                    "fixtures/synthetic/phase1_synthetic_manifest.toml".to_string()
+                });
                 let manifest_path = resolve_project_path(&root, &manifest);
                 let headless = autoplay_manifest(&root, &manifest_path, HeadlessMode::Perfect)?;
-                let timing_input = timing_input_from_headless(&headless, "headless_autoplay_manifest");
+                let timing_input =
+                    timing_input_from_headless(&headless, "headless_autoplay_manifest");
                 let report = analyze_headless_input(&timing_input, threshold_ms);
                 Ok(render_timing_analysis(&report, options.format))
             }
@@ -296,18 +313,25 @@ pub fn run_cli(args: &[String]) -> CliResult<String> {
             if loop_word == "loop" && failure_word == "failure" && classify_word == "classify" =>
         {
             let Some(input) = options.input.as_deref().or(options.from_failure.as_deref()) else {
-                return Err(CliError::Usage("loop failure classify requires --input PATH".to_string()));
+                return Err(CliError::Usage(
+                    "loop failure classify requires --input PATH".to_string(),
+                ));
             };
             let report_path = resolve_project_path(&root, input);
             let report = parse_failure_report_file(&root, &report_path)?;
             let classification = classify_failure_report(&report);
-            Ok(render_failure_classification(&classification, options.format))
+            Ok(render_failure_classification(
+                &classification,
+                options.format,
+            ))
         }
         [loop_word, ticket_word, propose_word]
             if loop_word == "loop" && ticket_word == "ticket" && propose_word == "propose" =>
         {
             let Some(from_failure) = options.from_failure.as_deref() else {
-                return Err(CliError::Usage("loop ticket propose requires --from-failure PATH".to_string()));
+                return Err(CliError::Usage(
+                    "loop ticket propose requires --from-failure PATH".to_string(),
+                ));
             };
             let report_path = resolve_project_path(&root, from_failure);
             let report = parse_failure_report_file(&root, &report_path)?;
@@ -315,10 +339,14 @@ pub fn run_cli(args: &[String]) -> CliResult<String> {
             Ok(render_proposed_ticket(&proposed, options.format))
         }
         [loop_word, ticket_word, materialize_word]
-            if loop_word == "loop" && ticket_word == "ticket" && materialize_word == "materialize" =>
+            if loop_word == "loop"
+                && ticket_word == "ticket"
+                && materialize_word == "materialize" =>
         {
             let Some(from_failure) = options.from_failure.as_deref() else {
-                return Err(CliError::Usage("loop ticket materialize requires --from-failure PATH".to_string()));
+                return Err(CliError::Usage(
+                    "loop ticket materialize requires --from-failure PATH".to_string(),
+                ));
             };
             let report_path = resolve_project_path(&root, from_failure);
             let report = parse_failure_report_file(&root, &report_path)?;
@@ -336,7 +364,9 @@ pub fn run_cli(args: &[String]) -> CliResult<String> {
             if loop_word == "loop" && retry_word == "retry-budget" && check_word == "check" =>
         {
             let Some(ticket_id) = options.ticket.as_deref() else {
-                return Err(CliError::Usage("loop retry-budget check requires --ticket TKT-xxxx".to_string()));
+                return Err(CliError::Usage(
+                    "loop retry-budget check requires --ticket TKT-xxxx".to_string(),
+                ));
             };
             let report = check_retry_budget(&root, ticket_id)?;
             Ok(render_retry_budget_report(&report, options.format))
@@ -351,7 +381,9 @@ pub fn run_cli(args: &[String]) -> CliResult<String> {
         }
         [qa_word, verdict_word] if qa_word == "qa" && verdict_word == "verdict" => {
             let Some(input) = options.input.as_deref() else {
-                return Err(CliError::Usage("qa verdict requires --input PATH".to_string()));
+                return Err(CliError::Usage(
+                    "qa verdict requires --input PATH".to_string(),
+                ));
             };
             let input_path = resolve_project_path(&root, input);
             let report = normalize_qa_verdict(&root, &input_path)?;
@@ -359,7 +391,9 @@ pub fn run_cli(args: &[String]) -> CliResult<String> {
         }
 
         [phase1_word, feature_word, validate_word]
-            if phase1_word == "phase1" && feature_word == "feature" && validate_word == "validate" =>
+            if phase1_word == "phase1"
+                && feature_word == "feature"
+                && validate_word == "validate" =>
         {
             let report = validate_phase1_feature_manifest(&root, &options)?;
             Ok(render_phase1_feature_plan(&report, options.format))
@@ -420,7 +454,11 @@ fn parse_options(args: &[String]) -> CliResult<CliOptions> {
                 format = match value.as_str() {
                     "json" => OutputFormat::Json,
                     "markdown" | "md" => OutputFormat::Markdown,
-                    other => return Err(CliError::Usage(format!("unsupported output format: {other}"))),
+                    other => {
+                        return Err(CliError::Usage(format!(
+                            "unsupported output format: {other}"
+                        )))
+                    }
                 };
                 index += 2;
             }
@@ -458,7 +496,9 @@ fn parse_options(args: &[String]) -> CliResult<CliOptions> {
             }
             "--threshold-ms" => {
                 let Some(value) = args.get(index + 1) else {
-                    return Err(CliError::Usage("--threshold-ms requires a value".to_string()));
+                    return Err(CliError::Usage(
+                        "--threshold-ms requires a value".to_string(),
+                    ));
                 };
                 threshold_ms = Some(value.parse::<f64>().map_err(|_| {
                     CliError::Usage(format!("invalid --threshold-ms value: {value}"))
@@ -467,7 +507,9 @@ fn parse_options(args: &[String]) -> CliResult<CliOptions> {
             }
             "--from-failure" => {
                 let Some(value) = args.get(index + 1) else {
-                    return Err(CliError::Usage("--from-failure requires a value".to_string()));
+                    return Err(CliError::Usage(
+                        "--from-failure requires a value".to_string(),
+                    ));
                 };
                 from_failure = Some(value.to_string());
                 index += 2;
@@ -533,7 +575,9 @@ fn locate_project_root(start: PathBuf) -> CliResult<PathBuf> {
             return Ok(current);
         }
         if !current.pop() {
-            return Err(CliError::MissingProjectRoot(env::current_dir().unwrap_or_else(|_| PathBuf::from("."))));
+            return Err(CliError::MissingProjectRoot(
+                env::current_dir().unwrap_or_else(|_| PathBuf::from(".")),
+            ));
         }
     }
 }
@@ -585,7 +629,10 @@ fn read_file(path: &Path) -> CliResult<String> {
 }
 
 fn parse_ticket(root: &Path, file: &Path, text: &str) -> Ticket {
-    let heading = text.lines().find(|line| line.starts_with("# ")).unwrap_or("# UNKNOWN: Untitled");
+    let heading = text
+        .lines()
+        .find(|line| line.starts_with("# "))
+        .unwrap_or("# UNKNOWN: Untitled");
     let id = extract_code(heading, "TKT-").unwrap_or_else(|| file_stem_id(file));
     let title = heading
         .split_once(':')
@@ -606,7 +653,10 @@ fn parse_ticket(root: &Path, file: &Path, text: &str) -> Ticket {
 }
 
 fn parse_gate(root: &Path, file: &Path, text: &str) -> Gate {
-    let heading = text.lines().find(|line| line.starts_with("# ")).unwrap_or("# UNKNOWN: Untitled");
+    let heading = text
+        .lines()
+        .find(|line| line.starts_with("# "))
+        .unwrap_or("# UNKNOWN: Untitled");
     let id = extract_code(heading, "GATE-").unwrap_or_else(|| file_stem_id(file));
     let title = heading
         .split_once(':')
@@ -635,8 +685,10 @@ fn parse_gate(root: &Path, file: &Path, text: &str) -> Gate {
 
 fn field_value(text: &str, name: &str) -> Option<String> {
     let prefix = format!("{name}:");
-    text.lines()
-        .find_map(|line| line.strip_prefix(&prefix).map(|value| value.trim().to_string()))
+    text.lines().find_map(|line| {
+        line.strip_prefix(&prefix)
+            .map(|value| value.trim().to_string())
+    })
 }
 
 fn section<'a>(text: &'a str, name: &str) -> &'a str {
@@ -651,15 +703,27 @@ fn section<'a>(text: &'a str, name: &str) -> &'a str {
         let normalized = heading_line
             .trim_start_matches(|ch: char| ch.is_ascii_digit() || ch == '.')
             .trim();
-        if heading_line == name || normalized == name || normalized.starts_with(name) || heading_line.contains(name) {
-            let body_start = if heading_end < text.len() { heading_end + 1 } else { heading_end };
+        if heading_line == name
+            || normalized == name
+            || normalized.starts_with(name)
+            || heading_line.contains(name)
+        {
+            let body_start = if heading_end < text.len() {
+                heading_end + 1
+            } else {
+                heading_end
+            };
             let end = text[body_start..]
                 .find("\n## ")
                 .map(|offset| body_start + offset)
                 .unwrap_or(text.len());
             return &text[body_start..end];
         }
-        search_start = if heading_end < text.len() { heading_end + 1 } else { heading_end };
+        search_start = if heading_end < text.len() {
+            heading_end + 1
+        } else {
+            heading_end
+        };
     }
     ""
 }
@@ -682,7 +746,10 @@ fn pass_criteria(text: &str) -> Vec<String> {
     let mut values = Vec::new();
     for line in text.lines() {
         let line = line.trim();
-        if line.starts_with('|') && !line.contains("---") && !line.contains("Check | Required result") {
+        if line.starts_with('|')
+            && !line.contains("---")
+            && !line.contains("Check | Required result")
+        {
             let columns: Vec<&str> = line.trim_matches('|').split('|').collect();
             if let Some(first) = columns.first() {
                 let cleaned = trim_code(first.trim());
@@ -710,7 +777,8 @@ fn bullets_or_code(text: &str) -> Vec<String> {
 }
 
 fn trim_code(value: &str) -> String {
-    value.trim()
+    value
+        .trim()
         .trim_matches('`')
         .trim_matches('.')
         .trim()
@@ -748,7 +816,9 @@ fn unique_codes(text: &str, prefixes: &[&str]) -> Vec<String> {
 }
 
 fn extract_code(text: &str, prefix: &str) -> Option<String> {
-    text.find(prefix).map(|index| read_code_at(text, index)).filter(|value| !value.is_empty())
+    text.find(prefix)
+        .map(|index| read_code_at(text, index))
+        .filter(|value| !value.is_empty())
 }
 
 fn read_code_at(text: &str, start: usize) -> String {
@@ -794,7 +864,12 @@ fn select_next_ticket(tickets: &[Ticket], gates: &[Gate], root: &Path) -> NextSe
     }
 }
 
-fn missing_ticket_dependencies(ticket: &Ticket, tickets: &[Ticket], gates: &[Gate], root: &Path) -> Vec<String> {
+fn missing_ticket_dependencies(
+    ticket: &Ticket,
+    tickets: &[Ticket],
+    gates: &[Gate],
+    root: &Path,
+) -> Vec<String> {
     let ticket_status: BTreeMap<&str, &str> = tickets
         .iter()
         .map(|candidate| (candidate.id.as_str(), candidate.status.as_str()))
@@ -820,7 +895,8 @@ fn missing_ticket_dependencies(ticket: &Ticket, tickets: &[Ticket], gates: &[Gat
 }
 
 fn gate_report_exists(root: &Path, gate_id: &str) -> bool {
-    root.join(format!(".loop/session_logs/{gate_id}-report.md")).is_file()
+    root.join(format!(".loop/session_logs/{gate_id}-report.md"))
+        .is_file()
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -829,10 +905,11 @@ enum NextSelection {
     Block { reason: String },
 }
 
-
 fn build_loop_run_once_plan(root: &Path, mode: &str) -> CliResult<LoopRunOncePlan> {
     if mode != "plan" && mode != "apply" {
-        return Err(CliError::Usage(format!("loop run-once --mode must be plan or apply, got: {mode}")));
+        return Err(CliError::Usage(format!(
+            "loop run-once --mode must be plan or apply, got: {mode}"
+        )));
     }
     let tickets = load_tickets(root)?;
     let gates = load_gates(root)?;
@@ -844,7 +921,8 @@ fn build_loop_run_once_plan(root: &Path, mode: &str) -> CliResult<LoopRunOncePla
         NextSelection::Block { reason } => (None, reason),
     };
 
-    let run_id = env::var("OPENTAIKO_LOOP_RUN_ID").unwrap_or_else(|_| default_run_id(selected_ticket.as_deref(), mode));
+    let run_id = env::var("OPENTAIKO_LOOP_RUN_ID")
+        .unwrap_or_else(|_| default_run_id(selected_ticket.as_deref(), mode));
     let report_dir = format!("reports/loop/{run_id}");
     let controller_report_json = format!("{report_dir}/controller_plan.json");
     let controller_report_markdown = format!("{report_dir}/controller_plan.md");
@@ -854,10 +932,18 @@ fn build_loop_run_once_plan(root: &Path, mode: &str) -> CliResult<LoopRunOncePla
         .as_deref()
         .and_then(|ticket_id| tickets.iter().find(|ticket| ticket.id == ticket_id))
         .map(branch_name_for_ticket);
-    let implementation_worktree = selected_ticket.as_deref().map(|ticket_id| format!("worktrees/impl/{ticket_id}"));
-    let review_worktree = selected_ticket.as_deref().map(|ticket_id| format!("worktrees/review/{ticket_id}"));
-    let qa_worktree = selected_ticket.as_deref().map(|ticket_id| format!("worktrees/qa/{ticket_id}"));
-    let session_metadata_path = selected_ticket.as_deref().map(|ticket_id| format!("reports/session_metadata/{ticket_id}.toml"));
+    let implementation_worktree = selected_ticket
+        .as_deref()
+        .map(|ticket_id| format!("worktrees/impl/{ticket_id}"));
+    let review_worktree = selected_ticket
+        .as_deref()
+        .map(|ticket_id| format!("worktrees/review/{ticket_id}"));
+    let qa_worktree = selected_ticket
+        .as_deref()
+        .map(|ticket_id| format!("worktrees/qa/{ticket_id}"));
+    let session_metadata_path = selected_ticket
+        .as_deref()
+        .map(|ticket_id| format!("reports/session_metadata/{ticket_id}.toml"));
     let required_commands = selected_ticket
         .as_deref()
         .and_then(|ticket_id| tickets.iter().find(|ticket| ticket.id == ticket_id))
@@ -865,11 +951,23 @@ fn build_loop_run_once_plan(root: &Path, mode: &str) -> CliResult<LoopRunOncePla
         .unwrap_or_default();
 
     let (state, verdict, next_action) = if selected_ticket.is_some() {
-        ("ready_ticket".to_string(), "plan".to_string(), "start_worker".to_string())
+        (
+            "ready_ticket".to_string(),
+            "plan".to_string(),
+            "start_worker".to_string(),
+        )
     } else if !status.open_failures.is_empty() {
-        ("open_failures".to_string(), "block".to_string(), "classify_failure".to_string())
+        (
+            "open_failures".to_string(),
+            "block".to_string(),
+            "classify_failure".to_string(),
+        )
     } else {
-        ("no_ready_ticket".to_string(), "block".to_string(), "wait_for_ready_ticket".to_string())
+        (
+            "no_ready_ticket".to_string(),
+            "block".to_string(),
+            "wait_for_ready_ticket".to_string(),
+        )
     };
 
     Ok(LoopRunOncePlan {
@@ -906,13 +1004,24 @@ fn apply_loop_run_once_plan(root: &Path, mut plan: LoopRunOncePlan) -> CliResult
     let md_path = root.join(&plan.controller_report_markdown);
     let prompt_path = root.join(&plan.next_codex_prompt);
     let prompt = render_next_codex_prompt(&plan);
-    let metadata_path = plan.session_metadata_path.as_ref().map(|relative| root.join(relative));
+    let metadata_path = plan
+        .session_metadata_path
+        .as_ref()
+        .map(|relative| root.join(relative));
 
-    fs::write(&json_path, render_loop_run_once_plan(&plan, OutputFormat::Json)).map_err(|source| CliError::Io {
+    fs::write(
+        &json_path,
+        render_loop_run_once_plan(&plan, OutputFormat::Json),
+    )
+    .map_err(|source| CliError::Io {
         path: json_path.clone(),
         source,
     })?;
-    fs::write(&md_path, render_loop_run_once_plan(&plan, OutputFormat::Markdown)).map_err(|source| CliError::Io {
+    fs::write(
+        &md_path,
+        render_loop_run_once_plan(&plan, OutputFormat::Markdown),
+    )
+    .map_err(|source| CliError::Io {
         path: md_path.clone(),
         source,
     })?;
@@ -928,9 +1037,11 @@ fn apply_loop_run_once_plan(root: &Path, mut plan: LoopRunOncePlan) -> CliResult
                 source,
             })?;
         }
-        fs::write(&metadata_path, render_session_metadata(&plan)).map_err(|source| CliError::Io {
-            path: metadata_path.clone(),
-            source,
+        fs::write(&metadata_path, render_session_metadata(&plan)).map_err(|source| {
+            CliError::Io {
+                path: metadata_path.clone(),
+                source,
+            }
         })?;
     }
 
@@ -996,7 +1107,11 @@ fn slugify(value: &str) -> String {
         }
     }
     let trimmed = slug.trim_matches('-').to_string();
-    if trimmed.is_empty() { "ticket".to_string() } else { trimmed }
+    if trimmed.is_empty() {
+        "ticket".to_string()
+    } else {
+        trimmed
+    }
 }
 
 fn render_next_codex_prompt(plan: &LoopRunOncePlan) -> String {
@@ -1005,7 +1120,10 @@ fn render_next_codex_prompt(plan: &LoopRunOncePlan) -> String {
     let impl_worktree = plan.implementation_worktree.as_deref().unwrap_or("none");
     let review_worktree = plan.review_worktree.as_deref().unwrap_or("none");
     let qa_worktree = plan.qa_worktree.as_deref().unwrap_or("none");
-    let metadata_path = plan.session_metadata_path.as_deref().unwrap_or("reports/session_metadata/<ticket-id>.toml");
+    let metadata_path = plan
+        .session_metadata_path
+        .as_deref()
+        .unwrap_or("reports/session_metadata/<ticket-id>.toml");
     format!(
         "# Next Codex Prompt for {ticket}\n\nRun ID: `{}`\nNext action: `{}`\nReason: {}\n\n## Required setup\n\n- Read `AGENTS.md` first.\n- Use branch `{branch}`.\n- Use implementation worktree `{impl_worktree}`.\n- Prepare review worktree `{review_worktree}` and QA worktree `{qa_worktree}` for later separated sessions.\n- Create or update session metadata at `{metadata_path}`.\n- Do not start Phase1 gameplay work unless the selected ticket is Ready.\n- Do not write QA verdict files from an Implementation Session.\n\n## Required commands\n\n{}\n\n## Controller artifacts\n\n- `{}`\n- `{}`\n- `{}`\n",
         plan.run_id,
@@ -1043,9 +1161,14 @@ fn render_session_metadata(plan: &LoopRunOncePlan) -> String {
 
 fn markdown_bullets(values: &[String]) -> String {
     if values.is_empty() {
-        "- No ticket-specific commands recorded. Read the ticket file and gate contract.".to_string()
+        "- No ticket-specific commands recorded. Read the ticket file and gate contract."
+            .to_string()
     } else {
-        values.iter().map(|value| format!("- `{value}`")).collect::<Vec<_>>().join("\n")
+        values
+            .iter()
+            .map(|value| format!("- `{value}`"))
+            .collect::<Vec<_>>()
+            .join("\n")
     }
 }
 
@@ -1073,7 +1196,12 @@ fn dry_run_gate(root: &Path, gate: &Gate) -> GateVerdict {
         }
     }
 
-    let verdict = if missing_inputs.is_empty() { "pass" } else { "block" }.to_string();
+    let verdict = if missing_inputs.is_empty() {
+        "pass"
+    } else {
+        "block"
+    }
+    .to_string();
     GateVerdict {
         gate_id: gate.id.clone(),
         verdict,
@@ -1084,7 +1212,11 @@ fn dry_run_gate(root: &Path, gate: &Gate) -> GateVerdict {
 }
 
 fn looks_like_path(value: &str) -> bool {
-    value.contains('/') || value.ends_with(".md") || value.ends_with(".toml") || value == "AGENTS.md" || value == "Cargo.toml"
+    value.contains('/')
+        || value.ends_with(".md")
+        || value.ends_with(".toml")
+        || value == "AGENTS.md"
+        || value == "Cargo.toml"
 }
 
 fn build_status(root: &Path, tickets: &[Ticket], gates: &[Gate]) -> LoopStatus {
@@ -1158,49 +1290,76 @@ fn estimate_autonomy_score(root: &Path) -> u32 {
     if root.join("Cargo.toml").is_file() && root.join("crates/taiko_cli").is_dir() {
         score += 10;
     }
-    if root.join("fixtures/synthetic/phase1_synthetic_manifest.toml").is_file()
+    if root
+        .join("fixtures/synthetic/phase1_synthetic_manifest.toml")
+        .is_file()
         && root.join("crates/taiko_chart/src/lib.rs").is_file()
         && root.join("crates/taiko_runtime/src/lib.rs").is_file()
     {
         score += 12;
     }
-    if root.join("docs/47_timing_log_analyzer_contract.md").is_file()
+    if root
+        .join("docs/47_timing_log_analyzer_contract.md")
+        .is_file()
         && root.join("crates/taiko_timing/src/lib.rs").is_file()
-        && root.join("crates/taiko_cli/src/bin/timing_log_analyzer.rs").is_file()
+        && root
+            .join("crates/taiko_cli/src/bin/timing_log_analyzer.rs")
+            .is_file()
     {
         score += 12;
-    } else if root.join("docs/43_timing_log_schema.md").is_file() && root.join("docs/44_timing_log_analyzer_spec.md").is_file() {
+    } else if root.join("docs/43_timing_log_schema.md").is_file()
+        && root.join("docs/44_timing_log_analyzer_spec.md").is_file()
+    {
         score += 4;
     }
-    if root.join("scripts/check_bootstrap_consistency.sh").is_file()
-        && root.join("scripts/check_timing_analyzer_static.py").is_file()
+    if root
+        .join("scripts/check_bootstrap_consistency.sh")
+        .is_file()
+        && root
+            .join("scripts/check_timing_analyzer_static.py")
+            .is_file()
     {
         score += 5;
     }
-    if root.join("docs/07_failure_feedback_protocol.md").is_file() && root.join("templates/failure_report_template.md").is_file() {
+    if root.join("docs/07_failure_feedback_protocol.md").is_file()
+        && root.join("templates/failure_report_template.md").is_file()
+    {
         score += 5;
     }
-    if root.join("docs/48_failure_feedback_loop_contract.md").is_file()
-        && root.join(".loop/gates/GATE-0070-failure-feedback-ready.md").is_file()
+    if root
+        .join("docs/48_failure_feedback_loop_contract.md")
+        .is_file()
+        && root
+            .join(".loop/gates/GATE-0070-failure-feedback-ready.md")
+            .is_file()
         && root.join(".loop/tickets/TKT-0040.md").is_file()
     {
         score += 3;
     }
-    if root.join("docs/49_qa_regression_gate_contract.md").is_file()
-        && root.join(".loop/gates/GATE-0080-qa-regression-ready.md").is_file()
+    if root
+        .join("docs/49_qa_regression_gate_contract.md")
+        .is_file()
+        && root
+            .join(".loop/gates/GATE-0080-qa-regression-ready.md")
+            .is_file()
         && root.join(".github/workflows/phase1-loop.yml").is_file()
     {
         score += 8;
     }
-    if root.join("docs/74_phase1_feature_loop_entry_contract.md").is_file()
-        && root.join(".loop/gates/GATE-0090-phase1-feature-loop-ready.md").is_file()
-        && root.join("operations/phase1_feature_ticket_manifest.toml").is_file()
+    if root
+        .join("docs/74_phase1_feature_loop_entry_contract.md")
+        .is_file()
+        && root
+            .join(".loop/gates/GATE-0090-phase1-feature-loop-ready.md")
+            .is_file()
+        && root
+            .join("operations/phase1_feature_ticket_manifest.toml")
+            .is_file()
     {
         score += 7;
     }
     score
 }
-
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct FailureReport {
@@ -1316,9 +1475,17 @@ fn ingest_failures(root: &Path, patterns: &[String]) -> CliResult<FailureIngestR
         .into_iter()
         .filter_map(|(key, count)| if count > 1 { Some(key) } else { None })
         .collect::<Vec<_>>();
-    let invalid_count = reports.iter().filter(|report| !report.missing_fields.is_empty()).count();
+    let invalid_count = reports
+        .iter()
+        .filter(|report| !report.missing_fields.is_empty())
+        .count();
     let valid_count = reports.len().saturating_sub(invalid_count);
-    let verdict = if invalid_count == 0 && duplicate_keys.is_empty() { "pass" } else { "reject" }.to_string();
+    let verdict = if invalid_count == 0 && duplicate_keys.is_empty() {
+        "pass"
+    } else {
+        "reject"
+    }
+    .to_string();
 
     Ok(FailureIngestReport {
         verdict,
@@ -1345,7 +1512,10 @@ fn expand_report_pattern(root: &Path, pattern: &str) -> Vec<PathBuf> {
             for entry in entries.flatten() {
                 let path = entry.path();
                 if path.is_file() {
-                    let name = path.file_name().and_then(|value| value.to_str()).unwrap_or("");
+                    let name = path
+                        .file_name()
+                        .and_then(|value| value.to_str())
+                        .unwrap_or("");
                     if name.ends_with(suffix) {
                         paths.push(path);
                     }
@@ -1355,7 +1525,11 @@ fn expand_report_pattern(root: &Path, pattern: &str) -> Vec<PathBuf> {
         paths
     } else {
         let path = resolve_project_path(root, pattern);
-        if path.is_file() { vec![path] } else { Vec::new() }
+        if path.is_file() {
+            vec![path]
+        } else {
+            Vec::new()
+        }
     }
 }
 
@@ -1382,12 +1556,19 @@ fn parse_failure_report_file(root: &Path, path: &Path) -> CliResult<FailureRepor
     let reproduction_command = first_code_block(section(&text, "Failing command"))
         .or_else(|| table_value(&text, "Reproduction command"))
         .unwrap_or_default();
-    let regression_command = first_code_block(section(&text, "Regression command required after repair"))
-        .or_else(|| table_value(&text, "Regression command"))
-        .unwrap_or_default();
+    let regression_command =
+        first_code_block(section(&text, "Regression command required after repair"))
+            .or_else(|| table_value(&text, "Regression command"))
+            .unwrap_or_default();
     let (expected_class, actual_class) = expected_actual_classes(&text);
-    let proposed_ticket_id = table_value(&text, "Proposed new repair ticket ID").unwrap_or_default();
-    let duplicate_key = duplicate_key(&category, &reproduction_command, &expected_class, &actual_class);
+    let proposed_ticket_id =
+        table_value(&text, "Proposed new repair ticket ID").unwrap_or_default();
+    let duplicate_key = duplicate_key(
+        &category,
+        &reproduction_command,
+        &expected_class,
+        &actual_class,
+    );
 
     let mut missing_fields = Vec::new();
     for (name, value) in [
@@ -1457,7 +1638,11 @@ fn first_code_block(text: &str) -> Option<String> {
         }
     }
     let value = lines.join("\n").trim().to_string();
-    if value.is_empty() { None } else { Some(value) }
+    if value.is_empty() {
+        None
+    } else {
+        Some(value)
+    }
 }
 
 fn expected_actual_classes(text: &str) -> (String, String) {
@@ -1465,7 +1650,10 @@ fn expected_actual_classes(text: &str) -> (String, String) {
     let mut actual_values = Vec::new();
     for line in section(text, "Expected vs actual").lines() {
         let trimmed = line.trim();
-        if !trimmed.starts_with('|') || trimmed.contains("---") || trimmed.contains("Area | Expected | Actual") {
+        if !trimmed.starts_with('|')
+            || trimmed.contains("---")
+            || trimmed.contains("Area | Expected | Actual")
+        {
             continue;
         }
         let columns = trimmed
@@ -1485,15 +1673,40 @@ fn expected_actual_classes(text: &str) -> (String, String) {
     (expected_values.join("; "), actual_values.join("; "))
 }
 
-fn duplicate_key(category: &str, reproduction_command: &str, expected_class: &str, actual_class: &str) -> String {
-    format!("{}|{}|{}|{}", category.trim(), reproduction_command.trim(), expected_class.trim(), actual_class.trim())
+fn duplicate_key(
+    category: &str,
+    reproduction_command: &str,
+    expected_class: &str,
+    actual_class: &str,
+) -> String {
+    format!(
+        "{}|{}|{}|{}",
+        category.trim(),
+        reproduction_command.trim(),
+        expected_class.trim(),
+        actual_class.trim()
+    )
 }
 
 fn classify_failure_report(report: &FailureReport) -> FailureClassificationReport {
-    let (route, repair_kind, reason) = failure_route_for_category(&report.category, &report.reproduction_command, &report.missing_fields);
+    let (route, repair_kind, reason) = failure_route_for_category(
+        &report.category,
+        &report.reproduction_command,
+        &report.missing_fields,
+    );
     let ticket_id = materialized_ticket_id_for_failure(report, repair_kind);
-    let original_ticket_should_remain = if route == "block" { "Blocked" } else { "Rejected" }.to_string();
-    let verdict = if report.missing_fields.is_empty() { "pass" } else { "reject" }.to_string();
+    let original_ticket_should_remain = if route == "block" {
+        "Blocked"
+    } else {
+        "Rejected"
+    }
+    .to_string();
+    let verdict = if report.missing_fields.is_empty() {
+        "pass"
+    } else {
+        "reject"
+    }
+    .to_string();
     FailureClassificationReport {
         verdict,
         route: route.to_string(),
@@ -1508,24 +1721,57 @@ fn classify_failure_report(report: &FailureReport) -> FailureClassificationRepor
     }
 }
 
-fn failure_route_for_category<'a>(category: &str, reproduction_command: &str, missing_fields: &[String]) -> (&'a str, &'a str, &'a str) {
+fn failure_route_for_category<'a>(
+    category: &str,
+    reproduction_command: &str,
+    missing_fields: &[String],
+) -> (&'a str, &'a str, &'a str) {
     if !missing_fields.is_empty() {
-        return ("block", "TOOL", "failure report is incomplete and cannot be routed safely");
+        return (
+            "block",
+            "TOOL",
+            "failure report is incomplete and cannot be routed safely",
+        );
     }
     let lower_category = category.to_ascii_lowercase();
     let lower_command = reproduction_command.to_ascii_lowercase();
     if matches!(lower_category.as_str(), "spec_ambiguity") {
-        ("block", "SPEC", "specification evidence must be repaired before implementation resumes")
-    } else if matches!(lower_category.as_str(), "opentaiko_evidence_gap" | "coverage_gap" | "fixture_manifest_error" | "fixture_file_missing") {
+        (
+            "block",
+            "SPEC",
+            "specification evidence must be repaired before implementation resumes",
+        )
+    } else if matches!(
+        lower_category.as_str(),
+        "opentaiko_evidence_gap"
+            | "coverage_gap"
+            | "fixture_manifest_error"
+            | "fixture_file_missing"
+    ) {
         ("block", "TOOL", "coverage, fixture, or evidence route must be repaired before feature implementation resumes")
-    } else if matches!(lower_category.as_str(), "ci_tooling_error" | "fixture_cli_contract_error" | "headless_cli_contract_error" | "timing_cli_contract_error")
-        && (lower_command.contains("command not found") || lower_command.contains("rustc") || lower_command.contains("cargo is required"))
+    } else if matches!(
+        lower_category.as_str(),
+        "ci_tooling_error"
+            | "fixture_cli_contract_error"
+            | "headless_cli_contract_error"
+            | "timing_cli_contract_error"
+    ) && (lower_command.contains("command not found")
+        || lower_command.contains("rustc")
+        || lower_command.contains("cargo is required"))
     {
         ("block", "ENV", "environment or tool availability failed before implementation evidence could be judged")
     } else if matches!(lower_category.as_str(), "ci_tooling_error") {
-        ("block", "TOOL", "CI or loop tooling failed before gameplay implementation could be judged")
+        (
+            "block",
+            "TOOL",
+            "CI or loop tooling failed before gameplay implementation could be judged",
+        )
     } else {
-        ("reject", "REPAIR", "implementation or contract behavior has concrete failing evidence")
+        (
+            "reject",
+            "REPAIR",
+            "implementation or contract behavior has concrete failing evidence",
+        )
     }
 }
 
@@ -1543,7 +1789,10 @@ fn materialized_ticket_id_for_failure(report: &FailureReport, repair_kind: &str)
     }
 }
 
-fn materialize_ticket_from_failure(root: &Path, report: &FailureReport) -> CliResult<MaterializedTicketReport> {
+fn materialize_ticket_from_failure(
+    root: &Path,
+    report: &FailureReport,
+) -> CliResult<MaterializedTicketReport> {
     let classification = classify_failure_report(report);
     if classification.verdict != "pass" {
         return Err(CliError::Failure(format!(
@@ -1558,9 +1807,15 @@ fn materialize_ticket_from_failure(root: &Path, report: &FailureReport) -> CliRe
     if !already_exists {
         let body = render_materialized_ticket_body(report, &classification);
         if let Some(parent) = ticket_path.parent() {
-            fs::create_dir_all(parent).map_err(|source| CliError::Io { path: parent.to_path_buf(), source })?;
+            fs::create_dir_all(parent).map_err(|source| CliError::Io {
+                path: parent.to_path_buf(),
+                source,
+            })?;
         }
-        fs::write(&ticket_path, body).map_err(|source| CliError::Io { path: ticket_path.clone(), source })?;
+        fs::write(&ticket_path, body).map_err(|source| CliError::Io {
+            path: ticket_path.clone(),
+            source,
+        })?;
     }
     Ok(MaterializedTicketReport {
         verdict: "pass".to_string(),
@@ -1574,7 +1829,10 @@ fn materialize_ticket_from_failure(root: &Path, report: &FailureReport) -> CliRe
     })
 }
 
-fn render_materialized_ticket_body(report: &FailureReport, classification: &FailureClassificationReport) -> String {
+fn render_materialized_ticket_body(
+    report: &FailureReport,
+    classification: &FailureClassificationReport,
+) -> String {
     let ticket_id = &classification.materialized_ticket_id;
     let title = materialized_ticket_title(report, classification);
     let owner_session = materialized_owner_session(&classification.repair_kind);
@@ -1605,7 +1863,10 @@ fn render_materialized_ticket_body(report: &FailureReport, classification: &Fail
     )
 }
 
-fn materialized_ticket_title(report: &FailureReport, classification: &FailureClassificationReport) -> String {
+fn materialized_ticket_title(
+    report: &FailureReport,
+    classification: &FailureClassificationReport,
+) -> String {
     match classification.repair_kind.as_str() {
         "ENV" => format!("Environment blocker from {}", report.failure_id),
         "SPEC" => format!("Specification blocker from {}", report.failure_id),
@@ -1643,11 +1904,20 @@ fn check_retry_budget(root: &Path, ticket_id: &str) -> CliResult<RetryBudgetRepo
     for path in materialized_tickets {
         let text = read_file(&path)?;
         let lower_text = text.to_ascii_lowercase();
-        if lower_text.contains(&ticket_id_lower) || file_stem_id(&path).eq_ignore_ascii_case(ticket_id) {
-            if lower_text.contains("route: `reject`") || lower_text.contains("tkt-repair") || lower_text.contains("worktrees/repair") {
+        if lower_text.contains(&ticket_id_lower)
+            || file_stem_id(&path).eq_ignore_ascii_case(ticket_id)
+        {
+            if lower_text.contains("route: `reject`")
+                || lower_text.contains("tkt-repair")
+                || lower_text.contains("worktrees/repair")
+            {
                 repair_attempts += 1;
             }
-            if lower_text.contains("route: `block`") || lower_text.contains("tkt-env") || lower_text.contains("tkt-spec") || lower_text.contains("tkt-tool") {
+            if lower_text.contains("route: `block`")
+                || lower_text.contains("tkt-env")
+                || lower_text.contains("tkt-spec")
+                || lower_text.contains("tkt-tool")
+            {
                 block_attempts += 1;
             }
         }
@@ -1656,7 +1926,9 @@ fn check_retry_budget(root: &Path, ticket_id: &str) -> CliResult<RetryBudgetRepo
     let mut duplicate_counts: BTreeMap<String, usize> = BTreeMap::new();
     for path in failures {
         let report = parse_failure_report_file(root, &path)?;
-        if report.source_ticket_or_gate.eq_ignore_ascii_case(ticket_id) || report.proposed_ticket_id.eq_ignore_ascii_case(ticket_id) {
+        if report.source_ticket_or_gate.eq_ignore_ascii_case(ticket_id)
+            || report.proposed_ticket_id.eq_ignore_ascii_case(ticket_id)
+        {
             *duplicate_counts.entry(report.duplicate_key).or_insert(0) += 1;
         }
     }
@@ -1666,16 +1938,30 @@ fn check_retry_budget(root: &Path, ticket_id: &str) -> CliResult<RetryBudgetRepo
 
     let mut issues = Vec::new();
     if repair_attempts > limits.max_repair_attempts_per_ticket {
-        issues.push(format!("repair attempts {} exceed max {}", repair_attempts, limits.max_repair_attempts_per_ticket));
+        issues.push(format!(
+            "repair attempts {} exceed max {}",
+            repair_attempts, limits.max_repair_attempts_per_ticket
+        ));
     }
     if block_attempts > limits.max_block_attempts_per_gate {
-        issues.push(format!("block attempts {} exceed max {}", block_attempts, limits.max_block_attempts_per_gate));
+        issues.push(format!(
+            "block attempts {} exceed max {}",
+            block_attempts, limits.max_block_attempts_per_gate
+        ));
     }
     if same_failure_signature_count > limits.max_same_failure_signature {
-        issues.push(format!("same failure signature count {} exceeds max {}", same_failure_signature_count, limits.max_same_failure_signature));
+        issues.push(format!(
+            "same failure signature count {} exceeds max {}",
+            same_failure_signature_count, limits.max_same_failure_signature
+        ));
     }
     let verdict = if issues.is_empty() { "pass" } else { "block" }.to_string();
-    let next_action = if issues.is_empty() { "continue" } else { "stop_and_route_to_control" }.to_string();
+    let next_action = if issues.is_empty() {
+        "continue"
+    } else {
+        "stop_and_route_to_control"
+    }
+    .to_string();
     Ok(RetryBudgetReport {
         verdict,
         ticket_id: ticket_id.to_string(),
@@ -1699,7 +1985,8 @@ struct RetryBudgetLimits {
 fn load_retry_budget_limits(root: &Path) -> RetryBudgetLimits {
     let text = fs::read_to_string(root.join("operations/retry_budget.toml")).unwrap_or_default();
     RetryBudgetLimits {
-        max_repair_attempts_per_ticket: toml_usize(&text, "max_repair_attempts_per_ticket").unwrap_or(3),
+        max_repair_attempts_per_ticket: toml_usize(&text, "max_repair_attempts_per_ticket")
+            .unwrap_or(3),
         max_block_attempts_per_gate: toml_usize(&text, "max_block_attempts_per_gate").unwrap_or(2),
         max_same_failure_signature: toml_usize(&text, "max_same_failure_signature").unwrap_or(2),
     }
@@ -1708,7 +1995,11 @@ fn load_retry_budget_limits(root: &Path) -> RetryBudgetLimits {
 fn toml_usize(text: &str, key: &str) -> Option<usize> {
     let prefix = format!("{key} =");
     text.lines()
-        .find_map(|line| line.trim().strip_prefix(&prefix).map(|value| value.trim().trim_matches('"').to_string()))
+        .find_map(|line| {
+            line.trim()
+                .strip_prefix(&prefix)
+                .map(|value| value.trim().trim_matches('"').to_string())
+        })
         .and_then(|value| value.parse::<usize>().ok())
 }
 
@@ -1767,7 +2058,12 @@ fn validate_repair_ticket(root: &Path, path: &Path) -> CliResult<TicketValidatio
     let text = read_file(path)?;
     let ticket = parse_ticket(root, path, &text);
     let mut missing_fields = Vec::new();
-    for term in ["Source failure", "Required reproduction command", "Required regression command", "Acceptance criteria"] {
+    for term in [
+        "Source failure",
+        "Required reproduction command",
+        "Required regression command",
+        "Acceptance criteria",
+    ] {
         if !text.contains(term) {
             missing_fields.push(term.to_string());
         }
@@ -1778,10 +2074,19 @@ fn validate_repair_ticket(root: &Path, path: &Path) -> CliResult<TicketValidatio
     if ticket.status.is_empty() {
         missing_fields.push("Status".to_string());
     }
-    let verdict = if missing_fields.is_empty() { "pass" } else { "reject" }.to_string();
-    Ok(TicketValidationReport { verdict, ticket_id: ticket.id, missing_fields, path: relative(root, path) })
+    let verdict = if missing_fields.is_empty() {
+        "pass"
+    } else {
+        "reject"
+    }
+    .to_string();
+    Ok(TicketValidationReport {
+        verdict,
+        ticket_id: ticket.id,
+        missing_fields,
+        path: relative(root, path),
+    })
 }
-
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct QaRunReport {
@@ -1879,9 +2184,12 @@ fn run_qa(root: &Path, options: &CliOptions) -> CliResult<QaRunReport> {
 }
 
 fn failure_route_ready(root: &Path) -> bool {
-    root.join("docs/48_failure_feedback_loop_contract.md").is_file()
+    root.join("docs/48_failure_feedback_loop_contract.md")
+        .is_file()
         && root.join("templates/failure_report_template.md").is_file()
-        && root.join(".loop/gates/GATE-0070-failure-feedback-ready.md").is_file()
+        && root
+            .join(".loop/gates/GATE-0070-failure-feedback-ready.md")
+            .is_file()
         && root.join(".loop/tickets/TKT-0040.md").is_file()
 }
 
@@ -1894,8 +2202,14 @@ fn qa_required_reports() -> Vec<String> {
 }
 
 fn compare_qa_reports(root: &Path, options: &CliOptions) -> CliResult<QaCompareReport> {
-    let baseline = options.baseline.clone().unwrap_or_else(|| "reports/baseline".to_string());
-    let current = options.current.clone().unwrap_or_else(|| "reports/current".to_string());
+    let baseline = options
+        .baseline
+        .clone()
+        .unwrap_or_else(|| "reports/baseline".to_string());
+    let current = options
+        .current
+        .clone()
+        .unwrap_or_else(|| "reports/current".to_string());
     let baseline_path = resolve_project_path(root, &baseline);
     let current_path = resolve_project_path(root, &current);
 
@@ -1945,7 +2259,10 @@ fn compare_qa_reports(root: &Path, options: &CliOptions) -> CliResult<QaCompareR
         }
     }
 
-    let verdict = if missing_current.is_empty() && missing_baseline.is_empty() && differing_files.is_empty() {
+    let verdict = if missing_current.is_empty()
+        && missing_baseline.is_empty()
+        && differing_files.is_empty()
+    {
         "pass"
     } else {
         "reject"
@@ -1973,10 +2290,15 @@ fn normalize_qa_verdict(root: &Path, input_path: &Path) -> CliResult<QaVerdictRe
         });
     }
     let text = read_file(input_path)?;
-    let source_verdict = json_string_field(&text, "verdict").unwrap_or_else(|| "unknown".to_string());
+    let source_verdict =
+        json_string_field(&text, "verdict").unwrap_or_else(|| "unknown".to_string());
     let (verdict, next_action, failure_report_required) = match source_verdict.as_str() {
         "pass" => ("pass", "advance to next eligible ticket", false),
-        "reject" => ("reject", "create or update failure report and proposed repair ticket", true),
+        "reject" => (
+            "reject",
+            "create or update failure report and proposed repair ticket",
+            true,
+        ),
         "block" => ("block", "produce missing machine-readable evidence", false),
         _ => ("block", "repair QA report or CLI contract", false),
     };
@@ -2103,10 +2425,22 @@ fn render_qa_verdict(report: &QaVerdictReport, format: OutputFormat) -> String {
 fn render_failure_ingest(report: &FailureIngestReport, format: OutputFormat) -> String {
     match format {
         OutputFormat::Json => {
-            let items = report.reports.iter().map(failure_report_json).collect::<Vec<_>>().join(",");
+            let items = report
+                .reports
+                .iter()
+                .map(failure_report_json)
+                .collect::<Vec<_>>()
+                .join(",");
             format!("{{\"verdict\":\"{}\",\"report_count\":{},\"valid_count\":{},\"invalid_count\":{},\"duplicate_keys\":{},\"reports\":[{}]}}", escape_json(&report.verdict), report.report_count, report.valid_count, report.invalid_count, string_array_json(&report.duplicate_keys), items)
         }
-        OutputFormat::Markdown => format!("verdict: {}\nreports: {}\nvalid: {}\ninvalid: {}\nduplicates: {}", report.verdict, report.report_count, report.valid_count, report.invalid_count, report.duplicate_keys.join(", ")),
+        OutputFormat::Markdown => format!(
+            "verdict: {}\nreports: {}\nvalid: {}\ninvalid: {}\nduplicates: {}",
+            report.verdict,
+            report.report_count,
+            report.valid_count,
+            report.invalid_count,
+            report.duplicate_keys.join(", ")
+        ),
     }
 }
 
@@ -2117,7 +2451,10 @@ fn render_proposed_ticket(ticket: &ProposedTicket, format: OutputFormat) -> Stri
     }
 }
 
-fn render_failure_classification(report: &FailureClassificationReport, format: OutputFormat) -> String {
+fn render_failure_classification(
+    report: &FailureClassificationReport,
+    format: OutputFormat,
+) -> String {
     match format {
         OutputFormat::Json => format!(
             "{{\"verdict\":\"{}\",\"route\":\"{}\",\"repair_kind\":\"{}\",\"source_failure_id\":\"{}\",\"source_ticket_or_gate\":\"{}\",\"category\":\"{}\",\"materialized_ticket_id\":\"{}\",\"original_ticket_should_remain\":\"{}\",\"reason\":\"{}\",\"missing_fields\":{}}}",
@@ -2208,15 +2545,26 @@ fn render_retry_budget_report(report: &RetryBudgetReport, format: OutputFormat) 
 
 fn render_ticket_validation(report: &TicketValidationReport, format: OutputFormat) -> String {
     match format {
-        OutputFormat::Json => format!("{{\"verdict\":\"{}\",\"ticket_id\":\"{}\",\"missing_fields\":{},\"path\":\"{}\"}}", escape_json(&report.verdict), escape_json(&report.ticket_id), string_array_json(&report.missing_fields), escape_json(&report.path)),
-        OutputFormat::Markdown => format!("ticket: {}\nverdict: {}\nmissing fields: {}\npath: {}", report.ticket_id, report.verdict, report.missing_fields.join(", "), report.path),
+        OutputFormat::Json => format!(
+            "{{\"verdict\":\"{}\",\"ticket_id\":\"{}\",\"missing_fields\":{},\"path\":\"{}\"}}",
+            escape_json(&report.verdict),
+            escape_json(&report.ticket_id),
+            string_array_json(&report.missing_fields),
+            escape_json(&report.path)
+        ),
+        OutputFormat::Markdown => format!(
+            "ticket: {}\nverdict: {}\nmissing fields: {}\npath: {}",
+            report.ticket_id,
+            report.verdict,
+            report.missing_fields.join(", "),
+            report.path
+        ),
     }
 }
 
 fn failure_report_json(report: &FailureReport) -> String {
     format!("{{\"failure_id\":\"{}\",\"source_ticket_or_gate\":\"{}\",\"category\":\"{}\",\"reproduction_command\":\"{}\",\"expected_class\":\"{}\",\"actual_class\":\"{}\",\"proposed_ticket_id\":\"{}\",\"regression_command\":\"{}\",\"duplicate_key\":\"{}\",\"missing_fields\":{},\"path\":\"{}\"}}", escape_json(&report.failure_id), escape_json(&report.source_ticket_or_gate), escape_json(&report.category), escape_json(&report.reproduction_command), escape_json(&report.expected_class), escape_json(&report.actual_class), escape_json(&report.proposed_ticket_id), escape_json(&report.regression_command), escape_json(&report.duplicate_key), string_array_json(&report.missing_fields), escape_json(&report.path))
 }
-
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Phase1FeatureTicket {
@@ -2244,17 +2592,26 @@ pub struct Phase1FeaturePlanReport {
     pub issues: Vec<String>,
 }
 
-fn validate_phase1_feature_manifest(root: &Path, options: &CliOptions) -> CliResult<Phase1FeaturePlanReport> {
+fn validate_phase1_feature_manifest(
+    root: &Path,
+    options: &CliOptions,
+) -> CliResult<Phase1FeaturePlanReport> {
     let (manifest_display, tickets, issues) = load_phase1_feature_manifest(root, options)?;
-    Ok(phase1_feature_report(root, manifest_display, tickets, issues, false)?)
+    phase1_feature_report(root, manifest_display, tickets, issues, false)
 }
 
-fn build_phase1_feature_plan(root: &Path, options: &CliOptions) -> CliResult<Phase1FeaturePlanReport> {
+fn build_phase1_feature_plan(
+    root: &Path,
+    options: &CliOptions,
+) -> CliResult<Phase1FeaturePlanReport> {
     let (manifest_display, tickets, issues) = load_phase1_feature_manifest(root, options)?;
-    Ok(phase1_feature_report(root, manifest_display, tickets, issues, true)?)
+    phase1_feature_report(root, manifest_display, tickets, issues, true)
 }
 
-fn load_phase1_feature_manifest(root: &Path, options: &CliOptions) -> CliResult<(String, Vec<Phase1FeatureTicket>, Vec<String>)> {
+fn load_phase1_feature_manifest(
+    root: &Path,
+    options: &CliOptions,
+) -> CliResult<(String, Vec<Phase1FeatureTicket>, Vec<String>)> {
     let manifest = options
         .manifest
         .clone()
@@ -2323,7 +2680,10 @@ fn phase1_feature_report(
         .iter()
         .map(|ticket| (ticket.id.as_str(), ticket.status.as_str()))
         .collect();
-    let gate_ids = loaded_gates.iter().map(|gate| gate.id.as_str()).collect::<Vec<_>>();
+    let gate_ids = loaded_gates
+        .iter()
+        .map(|gate| gate.id.as_str())
+        .collect::<Vec<_>>();
 
     let mut next_ticket = None;
     let mut blocked_count = 0usize;
@@ -2331,7 +2691,10 @@ fn phase1_feature_report(
     let mut failure_route_required_count = 0usize;
 
     for ticket in &tickets {
-        if !root.join(format!(".loop/tickets/{}.md", ticket.ticket_id)).is_file() {
+        if !root
+            .join(format!(".loop/tickets/{}.md", ticket.ticket_id))
+            .is_file()
+        {
             issues.push(format!("{} ticket file is missing", ticket.ticket_id));
         }
         if ticket.qa_required {
@@ -2342,26 +2705,38 @@ fn phase1_feature_report(
         if ticket.failure_route_required {
             failure_route_required_count += 1;
         } else {
-            issues.push(format!("{} failure_route_required is false", ticket.ticket_id));
+            issues.push(format!(
+                "{} failure_route_required is false",
+                ticket.ticket_id
+            ));
         }
         let command_text = ticket.required_commands.join("\n");
-        if !command_text.contains("taiko_cli qa run") || !command_text.contains("taiko_cli qa verdict") {
+        if !command_text.contains("taiko_cli qa run")
+            || !command_text.contains("taiko_cli qa verdict")
+        {
             issues.push(format!("{} lacks QA command evidence", ticket.ticket_id));
         }
         for doc in &ticket.acceptance_docs {
             if !root.join(doc).exists() {
-                issues.push(format!("{} acceptance doc missing: {}", ticket.ticket_id, doc));
+                issues.push(format!(
+                    "{} acceptance doc missing: {}",
+                    ticket.ticket_id, doc
+                ));
             }
         }
-        let missing_deps = ticket.depends_on.iter().filter(|dep| {
-            if dep.starts_with("TKT-") {
-                ticket_status.get(dep.as_str()) != Some(&"Done")
-            } else if dep.starts_with("GATE-") {
-                !gate_ids.contains(&dep.as_str()) || !gate_report_exists(root, dep)
-            } else {
-                true
-            }
-        }).count();
+        let missing_deps = ticket
+            .depends_on
+            .iter()
+            .filter(|dep| {
+                if dep.starts_with("TKT-") {
+                    ticket_status.get(dep.as_str()) != Some(&"Done")
+                } else if dep.starts_with("GATE-") {
+                    !gate_ids.contains(&dep.as_str()) || !gate_report_exists(root, dep)
+                } else {
+                    true
+                }
+            })
+            .count();
         if missing_deps == 0 && next_ticket.is_none() && include_plan {
             next_ticket = Some(ticket.ticket_id.clone());
         } else if missing_deps > 0 {
@@ -2394,7 +2769,9 @@ fn toml_string(value: Option<&String>) -> Option<String> {
 }
 
 fn toml_bool(value: Option<&String>) -> bool {
-    value.map(|value| value.trim().eq_ignore_ascii_case("true")).unwrap_or(false)
+    value
+        .map(|value| value.trim().eq_ignore_ascii_case("true"))
+        .unwrap_or(false)
 }
 
 fn toml_array(value: Option<&String>) -> Vec<String> {
@@ -2441,20 +2818,25 @@ fn render_phase1_feature_plan(report: &Phase1FeaturePlanReport, format: OutputFo
     }
 }
 
-fn render_fixture_validation(report: &taiko_chart::FixtureValidationReport, format: OutputFormat) -> String {
+fn render_fixture_validation(
+    report: &taiko_chart::FixtureValidationReport,
+    format: OutputFormat,
+) -> String {
     match format {
         OutputFormat::Json => report.to_json(),
         OutputFormat::Markdown => report.to_markdown(),
     }
 }
 
-fn render_chart_inspection(report: &taiko_chart::ChartInspectionReport, format: OutputFormat) -> String {
+fn render_chart_inspection(
+    report: &taiko_chart::ChartInspectionReport,
+    format: OutputFormat,
+) -> String {
     match format {
         OutputFormat::Json => report.to_json(),
         OutputFormat::Markdown => report.to_markdown(),
     }
 }
-
 
 fn render_timing_analysis(report: &TimingAnalysisReport, format: OutputFormat) -> String {
     match format {
@@ -2463,7 +2845,10 @@ fn render_timing_analysis(report: &TimingAnalysisReport, format: OutputFormat) -
     }
 }
 
-fn timing_input_from_headless(report: &HeadlessAutoplayReport, source: &str) -> HeadlessTimingInput {
+fn timing_input_from_headless(
+    report: &HeadlessAutoplayReport,
+    source: &str,
+) -> HeadlessTimingInput {
     let fixtures = report
         .fixtures
         .iter()
@@ -2494,7 +2879,10 @@ fn timing_input_from_headless(report: &HeadlessAutoplayReport, source: &str) -> 
     }
 }
 
-fn render_headless_autoplay(report: &taiko_runtime::HeadlessAutoplayReport, format: OutputFormat) -> String {
+fn render_headless_autoplay(
+    report: &taiko_runtime::HeadlessAutoplayReport,
+    format: OutputFormat,
+) -> String {
     match format {
         OutputFormat::Json => report.to_json(),
         OutputFormat::Markdown => report.to_markdown(),
@@ -2504,7 +2892,11 @@ fn render_headless_autoplay(report: &taiko_runtime::HeadlessAutoplayReport, form
 fn render_tickets(tickets: &[Ticket], format: OutputFormat) -> String {
     match format {
         OutputFormat::Json => {
-            let items = tickets.iter().map(ticket_json).collect::<Vec<_>>().join(",");
+            let items = tickets
+                .iter()
+                .map(ticket_json)
+                .collect::<Vec<_>>()
+                .join(",");
             format!("{{\"tickets\":[{items}],\"count\":{}}}", tickets.len())
         }
         OutputFormat::Markdown => tickets
@@ -2529,6 +2921,25 @@ fn render_gates(gates: &[Gate], format: OutputFormat) -> String {
     }
 }
 
+fn render_next(selection: &NextSelection, format: OutputFormat) -> String {
+    match (selection, format) {
+        (NextSelection::Selected { ticket_id, reason }, OutputFormat::Json) => format!(
+            "{{\"verdict\":\"ready\",\"ticket_id\":\"{}\",\"reason\":\"{}\"}}",
+            escape_json(ticket_id),
+            escape_json(reason)
+        ),
+        (NextSelection::Block { reason }, OutputFormat::Json) => format!(
+            "{{\"verdict\":\"block\",\"ticket_id\":null,\"reason\":\"{}\"}}",
+            escape_json(reason)
+        ),
+        (NextSelection::Selected { ticket_id, reason }, OutputFormat::Markdown) => {
+            format!("- verdict: `ready`\n- ticket_id: `{ticket_id}`\n- reason: {reason}")
+        }
+        (NextSelection::Block { reason }, OutputFormat::Markdown) => {
+            format!("- verdict: `block`\n- ticket_id: `null`\n- reason: {reason}")
+        }
+    }
+}
 
 fn render_loop_run_once_plan(plan: &LoopRunOncePlan, format: OutputFormat) -> String {
     match format {
@@ -2714,6 +3125,9 @@ mod tests {
         let text = "# TKT-0050: QA regression gate MVP\n\nStatus: Blocked\nOwner session: Test Infrastructure Session\nReview session: Design Review Session\n";
         let ticket = parse_ticket(Path::new("."), Path::new(".loop/tickets/TKT-0050.md"), text);
         assert_eq!(slugify("QA regression gate MVP"), "qa-regression-gate-mvp");
-        assert_eq!(branch_name_for_ticket(&ticket), "test/TKT-0050-qa-regression-gate-mvp");
+        assert_eq!(
+            branch_name_for_ticket(&ticket),
+            "test/TKT-0050-qa-regression-gate-mvp"
+        );
     }
 }

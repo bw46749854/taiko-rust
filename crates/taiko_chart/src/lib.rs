@@ -201,10 +201,14 @@ impl ManifestFixtureBuilder {
     fn finish(self, line_no: usize) -> Result<ManifestFixture, ChartError> {
         Ok(ManifestFixture {
             fixture_id: self.fixture_id.ok_or_else(|| {
-                ChartError::Manifest(format!("fixture entry ending near line {line_no} lacks fixture_id"))
+                ChartError::Manifest(format!(
+                    "fixture entry ending near line {line_no} lacks fixture_id"
+                ))
             })?,
             path: self.path.ok_or_else(|| {
-                ChartError::Manifest(format!("fixture entry ending near line {line_no} lacks path"))
+                ChartError::Manifest(format!(
+                    "fixture entry ending near line {line_no} lacks path"
+                ))
             })?,
             primary_target: self.primary_target.unwrap_or_default(),
             headless_required: self.headless_required.unwrap_or(false),
@@ -213,7 +217,10 @@ impl ManifestFixtureBuilder {
 }
 
 /// Validates all fixtures declared by a synthetic manifest.
-pub fn validate_fixture_manifest(root: &Path, manifest_path: &Path) -> Result<FixtureValidationReport, ChartError> {
+pub fn validate_fixture_manifest(
+    root: &Path,
+    manifest_path: &Path,
+) -> Result<FixtureValidationReport, ChartError> {
     let manifest_text = read_text(manifest_path)?;
     let manifest = parse_fixture_manifest(&manifest_text)?;
     let mut issues = Vec::new();
@@ -307,7 +314,10 @@ pub fn inspect_tja_file(path: &Path) -> Result<ChartInspectionReport, ChartError
     inspect_tja_file_with_display(path, &path.to_string_lossy())
 }
 
-fn inspect_tja_file_with_display(path: &Path, display_path: &str) -> Result<ChartInspectionReport, ChartError> {
+fn inspect_tja_file_with_display(
+    path: &Path,
+    display_path: &str,
+) -> Result<ChartInspectionReport, ChartError> {
     let text = read_text(path)?;
     Ok(inspect_tja_text(display_path, &text))
 }
@@ -412,7 +422,11 @@ pub fn inspect_tja_text(path: &str, text: &str) -> ChartInspectionReport {
         }
     }
     if start_count == 0 {
-        issues.push(ValidationIssue::error("missing_start", "missing #START", None));
+        issues.push(ValidationIssue::error(
+            "missing_start",
+            "missing #START",
+            None,
+        ));
     }
     if end_count == 0 {
         issues.push(ValidationIssue::error("missing_end", "missing #END", None));
@@ -464,7 +478,8 @@ fn read_text(path: &Path) -> Result<String, ChartError> {
 }
 
 fn parse_key_value(line: &str) -> Option<(&str, &str)> {
-    line.split_once('=').map(|(key, value)| (key.trim(), value.trim()))
+    line.split_once('=')
+        .map(|(key, value)| (key.trim(), value.trim()))
 }
 
 fn parse_string(value: &str) -> Option<String> {
@@ -493,7 +508,12 @@ fn strip_tja_comment(line: &str) -> &str {
 }
 
 fn command_name(line: &str) -> &str {
-    line.split_whitespace().next().unwrap_or(line).split(':').next().unwrap_or(line)
+    line.split_whitespace()
+        .next()
+        .unwrap_or(line)
+        .split(':')
+        .next()
+        .unwrap_or(line)
 }
 
 fn is_known_tja_command(command: &str) -> bool {
@@ -646,7 +666,9 @@ fn issues_json(issues: &[ValidationIssue]) -> String {
                 escape_json(&issue.severity),
                 escape_json(&issue.code),
                 escape_json(&issue.message),
-                issue.line.map_or_else(|| "null".to_string(), |line| line.to_string())
+                issue
+                    .line
+                    .map_or_else(|| "null".to_string(), |line| line.to_string())
             )
         })
         .collect::<Vec<_>>()
@@ -714,7 +736,8 @@ headless_required = true
 
     #[test]
     fn inspects_minimal_tja() {
-        let text = "TITLE:Unit\nBPM:120\nWAVE:__dummy__.ogg\nCOURSE:Oni\nLEVEL:1\n#START\n1111,\n#END\n";
+        let text =
+            "TITLE:Unit\nBPM:120\nWAVE:__dummy__.ogg\nCOURSE:Oni\nLEVEL:1\n#START\n1111,\n#END\n";
         let report = inspect_tja_text("unit.tja", text);
         assert_eq!(report.verdict, "pass");
         assert_eq!(report.note_token_count, 4);
