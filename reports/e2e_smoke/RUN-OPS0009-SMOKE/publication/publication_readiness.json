@@ -1,0 +1,29 @@
+{
+  "schema": "schemas/ops_migration_readiness_schema.md",
+  "verdict": "pass",
+  "run_id": "RUN-OPS-0009-STATIC-CHECK",
+  "generated_at_utc": "2026-06-27T05:30:15.844653+00:00",
+  "api_key_required": false,
+  "ai_worker_in_github_actions": false,
+  "only_ready_ticket": "TKT-0005",
+  "ops_tickets_done": [
+    "OPS-0001",
+    "OPS-0002",
+    "OPS-0003",
+    "OPS-0004",
+    "OPS-0005",
+    "OPS-0006",
+    "OPS-0007",
+    "OPS-0008",
+    "OPS-0009"
+  ],
+  "public_repository_static_check": "pass",
+  "asset_bundle_static_check": "pass",
+  "github_actions_gate_static_check": "pass",
+  "auto_merge_static_check": "pass",
+  "ticket_transition_static_check": "pass",
+  "worker_handoff_static_check": "pass",
+  "e2e_smoke_static_check": "pass",
+  "phase1_gameplay_start_static_check": "pass",
+  "phase1_start_packet": "reports/phase1_gameplay_loop/RUN-PHASE1-ENTRY-OPS0009/phase1_gameplay_start.json"
+}

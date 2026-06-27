@@ -1,0 +1,131 @@
+status = "canonical"
+policy_name = "opentaiko_phase1_loop_controller_policy"
+controller_command = "taiko_cli loop run-once --mode plan --format json"
+controller_apply_command = "taiko_cli loop run-once --mode apply --format json"
+shell_wrapper = "scripts/loop_run_once.sh"
+api_key_required = false
+openai_api_key_required = false
+codex_api_key_required = false
+plus_plan_primary_surface = "Codex Cloud / Codex App Automations"
+
+auto_merge_target = true
+auto_merge_enabled_in_current_package = true
+
+[limits]
+max_ready_ticket_selection = 1
+max_worker_parallelism = 1
+max_repair_attempts_per_ticket = 3
+max_controller_runs_per_hour = 2
+
+[controller_actions]
+ready_ticket = "start_worker"
+open_failures = "classify_failure"
+no_ready_ticket = "wait_for_ready_ticket"
+
+[artifacts]
+controller_plan_json = "reports/loop/<run_id>/controller_plan.json"
+controller_plan_markdown = "reports/loop/<run_id>/controller_plan.md"
+next_codex_prompt = "reports/loop/<run_id>/next_codex_prompt.md"
+
+
+[migration]
+active = false
+rail = "OPS"
+current_ready_ticket = "TKT-0005"
+first_gate = "GATE-OPS-0000"
+freeze_original_bootstrap_ticket = true
+freeze_gameplay_tickets = false
+phase1_gameplay_unlock_ticket = "OPS-0009"
+phase1_gameplay_unlock_gate = "GATE-OPS-0000"
+ops_migration_readiness_policy = "operations/ops_migration_readiness_policy.toml"
+publication_readiness_report = "reports/loop/publication_readiness_report.md"
+github_actions_role = "verify_gate_merge_advance_handoff"
+github_actions_ai_worker_allowed = false
+openai_api_key_required_for_github_actions = false
+
+[public_repository]
+hardening_ticket = "OPS-0003"
+policy = "operations/public_repository_policy.toml"
+static_check = "scripts/check_public_repository_static.py"
+visibility_target = "public_after_ops_migration"
+openai_api_key_required = false
+github_actions_ai_worker_allowed = false
+
+
+[asset_bundle]
+contract_ticket = "OPS-0004"
+policy_doc = "docs/98_content_root_and_asset_bundle_contract.md"
+example_manifest = "operations/dev_asset_bundle.example.toml"
+static_check = "scripts/check_asset_bundle_manifest.py"
+fetch_script = "scripts/fetch_dev_asset_bundle.py"
+mode = "zip"
+provider = "google_drive"
+content_root_env = "OPENTAIKO_CONTENT_ROOT"
+content_root_arg = "--content-root"
+extract_to = ".external_assets/opentaiko"
+sha256_required = true
+folder_share_default_allowed = false
+api_key_required = false
+
+[github_actions_gate]
+normalization_ticket = "OPS-0005"
+policy = "operations/auto_merge_policy.toml"
+static_check = "scripts/check_github_actions_gate_static.py"
+controller_workflow = ".github/workflows/loop-controller.yml"
+controller_concurrency_group = "loop-controller-main"
+workflow_run_success_guard_required = true
+privileged_workflow_may_checkout_pr_head = false
+api_key_required = false
+
+
+[auto_merge_candidate_discovery]
+ticket = "OPS-0006"
+selector = "scripts/select_auto_merge_candidate.py"
+schema = "schemas/auto_merge_candidate_schema.md"
+fixtures = [
+  "fixtures/loop_controller/pass_candidate.json",
+  "fixtures/loop_controller/reject_candidate.json",
+  "fixtures/loop_controller/block_candidate.json",
+]
+candidate_plan = "reports/loop/candidates/candidate_plan.json"
+max_merge_candidates_per_run = 1
+required_label = "loop:automerge"
+api_key_required = false
+checkout_pr_head_in_controller = false
+
+
+[ticket_advance_engine]
+ticket = "OPS-0007"
+engine = "scripts/loop_advance_ticket.py"
+static_check = "scripts/check_ticket_transition_static.py"
+policy = "operations/ticket_transition_policy.toml"
+schema = "schemas/ticket_transition_schema.md"
+transition_report_dir = "reports/loop/ticket_transitions"
+merge_history_dir = "reports/loop/merge_history"
+max_ready_tickets = 1
+api_key_required = false
+github_actions_ai_worker_allowed = false
+forbid_tkt_ready_until_ops_complete = true
+
+[worker_handoff]
+ticket = "OPS-0008"
+emitter = "scripts/loop_emit_worker_handoff.py"
+static_check = "scripts/check_worker_handoff_static.py"
+policy = "operations/worker_handoff_policy.toml"
+schema = "schemas/worker_handoff_schema.md"
+report_dir = "reports/loop/worker_handoff"
+latest_json = "reports/loop/worker_handoff/latest.json"
+latest_markdown = "reports/loop/worker_handoff/latest.md"
+api_key_required = false
+github_actions_ai_worker_allowed = false
+
+[ops_migration_readiness]
+ticket = "OPS-0009"
+static_check = "scripts/check_ops_migration_readiness.py"
+policy = "operations/ops_migration_readiness_policy.toml"
+schema = "schemas/ops_migration_readiness_schema.md"
+report_json = "reports/loop/publication_readiness_report.json"
+report_markdown = "reports/loop/publication_readiness_report.md"
+only_ready_ticket = "TKT-0005"
+api_key_required = false
+github_actions_ai_worker_allowed = false

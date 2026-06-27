@@ -1,0 +1,5 @@
+# research/opentaiko
+
+Step2でOpenTaiko実装調査成果物を保存する。
+
+Step1ではCompatibility Contractのみを整備したため、このディレクトリにはplaceholderだけを置く。

@@ -1,0 +1,12 @@
+{
+  "verdict": "block",
+  "ticket_id": "TKT-SMOKE-RETRY",
+  "max_repair_attempts_per_ticket": 3,
+  "max_block_attempts_per_gate": 2,
+  "max_same_failure_signature": 2,
+  "repair_attempts": 3,
+  "block_attempts": 0,
+  "same_failure_signature_count": 2,
+  "next_action": "stop_and_mark_blocked",
+  "issues": ["repair attempt budget exhausted", "same failure signature repeated"]
+}

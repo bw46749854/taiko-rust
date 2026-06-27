@@ -1,0 +1,13 @@
+{
+  "run_id": "RUN-OPS0009-SMOKE-pass",
+  "ticket_id": "TKT-SMOKE-PASS",
+  "pr_number": 9999,
+  "merge_method": "squash",
+  "base_branch": "main",
+  "head_sha": "SMOKEHEAD",
+  "metadata_path": "reports/e2e_smoke/RUN-OPS0009-SMOKE/pass/session_metadata.toml",
+  "qa_verdict_path": "reports/e2e_smoke/RUN-OPS0009-SMOKE/pass/qa.verdict.json",
+  "controller_workflow": "loop-controller",
+  "dry_run": true,
+  "merged_at_utc": null
+}

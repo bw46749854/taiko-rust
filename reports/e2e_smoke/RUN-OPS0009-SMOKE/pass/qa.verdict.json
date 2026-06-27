@@ -1,0 +1,8 @@
+{
+  "verdict": "pass",
+  "source_verdict": "pass",
+  "session_id": "qa-TKT-SMOKE-PASS-001",
+  "source_worktree": "worktrees/qa/TKT-SMOKE-PASS",
+  "next_action": "merge",
+  "failure_report_required": false
+}

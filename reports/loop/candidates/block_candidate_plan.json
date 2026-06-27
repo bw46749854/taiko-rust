@@ -1,0 +1,42 @@
+{
+  "schema": "schemas/auto_merge_candidate_schema.md",
+  "verdict": "block",
+  "selected_pr": null,
+  "required_label": "loop:automerge",
+  "base_branch": "main",
+  "required_checks": [
+    "loop-pr-gate / loop-pr-gate",
+    "rust-preflight / rust-preflight",
+    "phase1-loop / phase1-loop",
+    "phase1-gameplay-entry / phase1-gameplay-entry"
+  ],
+  "max_merge_candidates_per_run": 1,
+  "reasons": [
+    "one or more labeled candidates are waiting for evidence or required checks"
+  ],
+  "candidates": [
+    {
+      "number": 301,
+      "title": "OPS-0006 blocked candidate",
+      "baseRefName": "main",
+      "headRefName": "ops/OPS-0006-blocked",
+      "headRefOid": "4444444444444444444444444444444444444444",
+      "labels": [
+        "loop:automerge"
+      ],
+      "ticket_id": "OPS-0006",
+      "metadata_path": "reports/session_metadata/OPS-0006.toml",
+      "qa_verdict_path": "reports/qa/OPS-0006.json",
+      "verdict": "block",
+      "reasons": [
+        "required check pending: rust-preflight / rust-preflight=PENDING"
+      ],
+      "required_checks": {
+        "loop-pr-gate / loop-pr-gate": "SUCCESS",
+        "rust-preflight / rust-preflight": "PENDING",
+        "phase1-loop / phase1-loop": "SUCCESS",
+        "phase1-gameplay-entry / phase1-gameplay-entry": "SUCCESS"
+      }
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+TITLE:FX-CORE-005 mine/adlib/special note parse/report
+BPM:120
+WAVE:__dummy__.ogg
+COURSE:Oni
+LEVEL:1
+SCOREMODE:2
+SCOREINIT:300,1000
+SCOREDIFF:120
+#START
+C0F0G0,
+#END

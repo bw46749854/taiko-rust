@@ -1,0 +1,60 @@
+# Step22 E2E smoke loop policy.
+status = "canonical"
+api_key_required = false
+ai_workers_in_github_actions = false
+openai_codex_action_allowed = false
+phase1_gameplay_allowed = true
+live_github_mutation_default = false
+default_mode = "dry-run"
+default_scenario = "all"
+default_out_dir = "reports/e2e_smoke/<run_id>"
+
+[scenarios.pass]
+required = true
+description = "metadata + QA pass + auto-merge dry-run evidence"
+
+[scenarios.reject]
+required = true
+description = "QA reject creates repair-ticket preview evidence"
+
+[scenarios.block]
+required = true
+description = "QA block creates blocker-ticket preview evidence"
+
+[scenarios.retry]
+required = true
+description = "retry budget stop evidence"
+
+[scenarios.revert]
+required = true
+description = "regression and revert dry-run evidence"
+
+[scenarios.advance]
+required = true
+description = "ticket advance dry-run evidence for final OPS to TKT-0005 unlock"
+
+[scenarios.handoff]
+required = true
+description = "worker handoff generation evidence for the single Ready ticket"
+
+[scenarios.publication]
+required = true
+description = "public-readiness and Phase1 entry evidence"
+
+[limits]
+max_smoke_pr_number = 9999
+max_repair_attempts_per_ticket = 3
+max_block_attempts_per_gate = 2
+max_same_failure_signature = 2
+
+[asset_bundle]
+contract = "docs/98_content_root_and_asset_bundle_contract.md"
+example_manifest = "operations/dev_asset_bundle.example.toml"
+static_check = "scripts/check_asset_bundle_manifest.py"
+fetch_script = "scripts/fetch_dev_asset_bundle.py"
+content_root_env = "OPENTAIKO_CONTENT_ROOT"
+content_root_arg = "--content-root"
+extract_to = ".external_assets/opentaiko"
+missing_bundle_verdict = "block"
+sha256_mismatch_verdict = "block"
+folder_share_default_allowed = false

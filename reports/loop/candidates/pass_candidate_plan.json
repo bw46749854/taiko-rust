@@ -1,0 +1,76 @@
+{
+  "schema": "schemas/auto_merge_candidate_schema.md",
+  "verdict": "pass",
+  "selected_pr": {
+    "number": 101,
+    "title": "OPS-0006 auto-merge candidate discovery",
+    "baseRefName": "main",
+    "headRefName": "ops/OPS-0006-auto-merge-candidate-discovery",
+    "headRefOid": "1111111111111111111111111111111111111111",
+    "labels": [
+      "loop:automerge"
+    ],
+    "ticket_id": "OPS-0006",
+    "metadata_path": "reports/session_metadata/OPS-0006.toml",
+    "qa_verdict_path": "reports/qa/OPS-0006.json",
+    "verdict": "pass",
+    "reasons": [],
+    "required_checks": {
+      "loop-pr-gate / loop-pr-gate": "SUCCESS",
+      "rust-preflight / rust-preflight": "SUCCESS",
+      "phase1-loop / phase1-loop": "SUCCESS",
+      "phase1-gameplay-entry / phase1-gameplay-entry": "SUCCESS"
+    }
+  },
+  "required_label": "loop:automerge",
+  "base_branch": "main",
+  "required_checks": [
+    "loop-pr-gate / loop-pr-gate",
+    "rust-preflight / rust-preflight",
+    "phase1-loop / phase1-loop",
+    "phase1-gameplay-entry / phase1-gameplay-entry"
+  ],
+  "max_merge_candidates_per_run": 1,
+  "reasons": [
+    "exactly one passing auto-merge candidate found"
+  ],
+  "candidates": [
+    {
+      "number": 101,
+      "title": "OPS-0006 auto-merge candidate discovery",
+      "baseRefName": "main",
+      "headRefName": "ops/OPS-0006-auto-merge-candidate-discovery",
+      "headRefOid": "1111111111111111111111111111111111111111",
+      "labels": [
+        "loop:automerge"
+      ],
+      "ticket_id": "OPS-0006",
+      "metadata_path": "reports/session_metadata/OPS-0006.toml",
+      "qa_verdict_path": "reports/qa/OPS-0006.json",
+      "verdict": "pass",
+      "reasons": [],
+      "required_checks": {
+        "loop-pr-gate / loop-pr-gate": "SUCCESS",
+        "rust-preflight / rust-preflight": "SUCCESS",
+        "phase1-loop / phase1-loop": "SUCCESS",
+        "phase1-gameplay-entry / phase1-gameplay-entry": "SUCCESS"
+      }
+    },
+    {
+      "number": 102,
+      "title": "docs typo",
+      "baseRefName": "main",
+      "headRefName": "docs/typo",
+      "headRefOid": "2222222222222222222222222222222222222222",
+      "labels": [],
+      "ticket_id": "OPS-0006",
+      "metadata_path": null,
+      "qa_verdict_path": null,
+      "verdict": "ignored",
+      "reasons": [
+        "missing required label loop:automerge"
+      ],
+      "required_checks": {}
+    }
+  ]
+}

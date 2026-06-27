@@ -1,0 +1,26 @@
+name: phase1-gameplay-entry
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+  workflow_dispatch:
+
+jobs:
+  phase1-gameplay-entry:
+    name: phase1-gameplay-entry
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: OPS-0004 asset bundle manifest static validation
+        run: scripts/check_asset_bundle_manifest.py --manifest operations/dev_asset_bundle.example.toml
+      - name: Step23 static validation
+        run: scripts/check_phase1_gameplay_start_static.py
+      - name: Render blocked start packet dry-run
+        run: scripts/render_phase1_gameplay_ticket_prompt.py --ticket TKT-0005 --dry-run
+      - name: Render preview prompt dry-run
+        run: scripts/render_phase1_gameplay_ticket_prompt.py --ticket TKT-0005 --force-preview --dry-run --format prompt

@@ -1,0 +1,84 @@
+# Auto-merge and GitHub Actions gate policy.
+status = "canonical"
+auto_merge_enabled = true
+ai_workers_in_github_actions = false
+api_key_required = false
+openai_codex_action_allowed = false
+required_label = "loop:automerge"
+merge_method = "squash"
+base_branch = "main"
+max_controller_runs_per_hour = 4
+max_merge_candidates_per_run = 1
+candidate_plan_path = "reports/loop/candidates/candidate_plan.json"
+open_prs_snapshot_path = "reports/loop/candidates/open_prs.json"
+workflow_run_success_guard_required = true
+privileged_workflow_may_checkout_pr_head = false
+privileged_workflow = ".github/workflows/loop-controller.yml"
+controller_concurrency_group = "loop-controller-main"
+
+# Branch protection must require these GitHub status check contexts for PRs that can advance tickets.
+required_checks = [
+  "loop-pr-gate / loop-pr-gate",
+  "rust-preflight / rust-preflight",
+  "phase1-loop / phase1-loop",
+  "phase1-gameplay-entry / phase1-gameplay-entry",
+]
+
+# Smoke is a controller-substrate check and is run by workflow_dispatch/workflow_run; it is not a PR head required check.
+controller_smoke_checks = [
+  "e2e-smoke-loop / e2e-smoke-loop",
+]
+
+required_static_checks = [
+  "check_github_actions_gate_static.py",
+  "check_auto_merge_conditions.py",
+  "check_session_separation.py",
+  "check_role_path_policy.py",
+  "check_repair_materialization_static.py",
+  "check_codex_automation_static.py",
+]
+
+forbidden_workflow_terms = [
+  "pull_request_target",
+  "openai/codex-action@v1",
+  "secrets.OPENAI_API_KEY",
+  "secrets.CODEX_API_KEY",
+  "OPENAI_API_KEY:",
+  "CODEX_API_KEY:",
+]
+
+merge_history_dir = "reports/loop/merge_history"
+regression_dir = "reports/regression"
+ticket_transition_policy = "operations/ticket_transition_policy.toml"
+ticket_transition_engine = "scripts/loop_advance_ticket.py"
+ticket_transition_report_dir = "reports/loop/ticket_transitions"
+
+# Candidate discovery reads only GitHub PR metadata; it does not checkout PR head code.
+required_pr_json_fields = [
+  "number",
+  "title",
+  "body",
+  "baseRefName",
+  "headRefName",
+  "headRefOid",
+  "isDraft",
+  "labels",
+  "statusCheckRollup",
+]
+
+required_candidate_body_paths = [
+  "reports/session_metadata/",
+  "reports/qa/",
+]
+
+candidate_fixture_expectations = [
+  "fixtures/loop_controller/pass_candidate.json:pass",
+  "fixtures/loop_controller/reject_candidate.json:reject",
+  "fixtures/loop_controller/block_candidate.json:block",
+]
+
+# OPS-0008 worker handoff after merge/ticket advance.
+worker_handoff_policy = "operations/worker_handoff_policy.toml"
+worker_handoff_emitter = "scripts/loop_emit_worker_handoff.py"
+worker_handoff_static_check = "scripts/check_worker_handoff_static.py"
+worker_handoff_report_dir = "reports/loop/worker_handoff"

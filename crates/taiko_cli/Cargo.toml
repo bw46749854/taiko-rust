@@ -1,0 +1,31 @@
+[package]
+name = "taiko_cli"
+version = "0.1.0"
+edition.workspace = true
+publish.workspace = true
+license.workspace = true
+
+[dependencies]
+taiko_chart = { path = "../taiko_chart" }
+taiko_runtime = { path = "../taiko_runtime" }
+taiko_test_support = { path = "../taiko_test_support" }
+taiko_timing = { path = "../taiko_timing" }
+
+[lints]
+workspace = true
+
+[[bin]]
+name = "taiko_cli"
+path = "src/bin/taiko_cli.rs"
+
+[[bin]]
+name = "taiko_play"
+path = "src/bin/taiko_play.rs"
+
+[[bin]]
+name = "headless_autoplay"
+path = "src/bin/headless_autoplay.rs"
+
+[[bin]]
+name = "timing_log_analyzer"
+path = "src/bin/timing_log_analyzer.rs"

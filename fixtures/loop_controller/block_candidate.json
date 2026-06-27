@@ -1,0 +1,18 @@
+[
+  {
+    "number": 301,
+    "title": "OPS-0006 blocked candidate",
+    "body": "Ticket ID: OPS-0006\nSession metadata: reports/session_metadata/OPS-0006.toml\nQA verdict JSON: reports/qa/OPS-0006.json\n",
+    "baseRefName": "main",
+    "headRefName": "ops/OPS-0006-blocked",
+    "headRefOid": "4444444444444444444444444444444444444444",
+    "isDraft": false,
+    "labels": [{"name": "loop:automerge"}],
+    "statusCheckRollup": [
+      {"context": "loop-pr-gate / loop-pr-gate", "state": "SUCCESS"},
+      {"context": "rust-preflight / rust-preflight", "state": "PENDING"},
+      {"context": "phase1-loop / phase1-loop", "state": "SUCCESS"},
+      {"context": "phase1-gameplay-entry / phase1-gameplay-entry", "state": "SUCCESS"}
+    ]
+  }
+]

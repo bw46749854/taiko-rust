@@ -1,0 +1,62 @@
+# Ticket transition policy for the loop-controller ticket advance engine.
+status = "canonical"
+policy_name = "opentaiko_ticket_transition_policy"
+api_key_required = false
+ai_workers_in_github_actions = false
+transition_engine = "scripts/loop_advance_ticket.py"
+static_check = "scripts/check_ticket_transition_static.py"
+schema = "schemas/ticket_transition_schema.md"
+transition_report_dir = "reports/loop/ticket_transitions"
+merge_history_dir = "reports/loop/merge_history"
+max_ready_tickets = 1
+allow_gameplay_ready_during_ops_migration = true
+idempotent_reapply_allowed = true
+
+[statuses]
+draft = "Draft"
+blocked = "Blocked"
+ready = "Ready"
+in_progress = "In Progress"
+plan_review = "Plan Review"
+in_review = "In Review"
+qa = "QA"
+done = "Done"
+rejected = "Rejected"
+blocked_by_evidence = "BlockedByEvidence"
+retry_exhausted = "RetryExhausted"
+
+[ops_migration]
+active = false
+rail = "OPS"
+completion_gate = "GATE-OPS-0000"
+current_ready_ticket = "TKT-0005"
+freeze_gameplay_tickets = true
+unlock_ticket = "OPS-0009"
+unlock_first_gameplay_ticket = "TKT-0005"
+sequence = [
+  "OPS-0001",
+  "OPS-0002",
+  "OPS-0003",
+  "OPS-0004",
+  "OPS-0005",
+  "OPS-0006",
+  "OPS-0007",
+  "OPS-0008",
+  "OPS-0009",
+]
+
+[guards]
+require_merge_history = true
+require_ticket_id_match = true
+require_non_dry_run_history_for_apply = true
+require_single_ready_ticket_after_apply = true
+require_next_ticket_dependency_done = true
+forbid_tkt_ready_until_ops_complete = false
+
+[ops_completion]
+completion_ticket = "OPS-0009"
+completion_gate = "GATE-OPS-0000"
+completion_gate_report = ".loop/session_logs/GATE-OPS-0000-report.md"
+phase1_gate_report = ".loop/session_logs/GATE-0090-report.md"
+unlock_first_gameplay_ticket = "TKT-0005"
+require_ops_tickets_done = true

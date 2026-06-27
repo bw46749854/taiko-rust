@@ -1,0 +1,36 @@
+# Step23 Phase1 gameplay loop start policy.
+status = "canonical"
+policy_name = "opentaiko_phase1_gameplay_loop_start_policy"
+first_gameplay_ticket = "TKT-0005"
+required_manifest = "operations/phase1_feature_ticket_manifest.toml"
+required_entry_ticket = "TKT-0060"
+required_entry_gate = "GATE-0090"
+required_entry_gate_report = ".loop/session_logs/GATE-0090-report.md"
+phase1_gameplay_allowed_in_bootstrap = true
+force_preview_allows_implementation = false
+api_key_required = false
+github_actions_may_call_ai = false
+openai_codex_action_allowed = false
+max_parallel_gameplay_tickets = 1
+required_worker_prompt = "prompts/72_phase1_gameplay_ticket_runner.md"
+renderer = "scripts/render_phase1_gameplay_ticket_prompt.py"
+static_check = "scripts/check_phase1_gameplay_start_static.py"
+reports_dir = "reports/phase1_gameplay_loop"
+
+[asset_bundle]
+required_before_real_user_song_validation = true
+contract = "docs/98_content_root_and_asset_bundle_contract.md"
+example_manifest = "operations/dev_asset_bundle.example.toml"
+static_check = "scripts/check_asset_bundle_manifest.py"
+fetch_script = "scripts/fetch_dev_asset_bundle.py"
+content_root_env = "OPENTAIKO_CONTENT_ROOT"
+content_root_arg = "--content-root"
+extract_to = ".external_assets/opentaiko"
+missing_bundle_verdict = "block"
+sha256_mismatch_verdict = "block"
+
+[ops_migration]
+required_gate = "GATE-OPS-0000"
+required_gate_report = ".loop/session_logs/GATE-OPS-0000-report.md"
+readiness_policy = "operations/ops_migration_readiness_policy.toml"
+publication_readiness_report = "reports/loop/publication_readiness_report.md"

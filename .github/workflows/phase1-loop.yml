@@ -1,0 +1,46 @@
+name: phase1-loop
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+  push:
+    branches:
+      - main
+
+jobs:
+  phase1-loop:
+    name: phase1-loop
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Codex / CI environment setup
+        run: scripts/codex_cloud_setup.sh --skip-static
+      - name: Step16 environment static validation
+        run: scripts/check_codex_cloud_env_static.py
+      - name: Rust formatting
+        run: cargo fmt --all --check
+      - name: Rust clippy
+        run: cargo clippy --workspace --all-targets -- -D warnings
+      - name: Rust tests
+        run: cargo test --workspace
+      - name: Bootstrap consistency
+        run: scripts/check_bootstrap_consistency.sh
+      - name: Fixture validation
+        run: cargo run -p taiko_cli --bin taiko_cli -- fixture validate --manifest fixtures/synthetic/phase1_synthetic_manifest.toml --format json
+      - name: Headless autoplay
+        run: cargo run -p taiko_cli --bin taiko_cli -- headless autoplay --manifest fixtures/synthetic/phase1_synthetic_manifest.toml --mode perfect --format json
+      - name: Timing analyzer
+        run: cargo run -p taiko_cli --bin taiko_cli -- timing analyze --manifest fixtures/synthetic/phase1_synthetic_manifest.toml --threshold-ms 1.0 --format json
+      - name: QA regression
+        run: cargo run -p taiko_cli --bin taiko_cli -- qa run --manifest fixtures/synthetic/phase1_synthetic_manifest.toml --threshold-ms 1.0 --format json
+      - name: Phase1 feature loop static validation
+        run: scripts/check_phase1_feature_loop_static.py
+      - name: Phase1 feature manifest validation
+        run: cargo run -p taiko_cli --bin taiko_cli -- phase1 feature validate --manifest operations/phase1_feature_ticket_manifest.toml --format json
+      - name: Phase1 feature plan
+        run: cargo run -p taiko_cli --bin taiko_cli -- phase1 feature plan --manifest operations/phase1_feature_ticket_manifest.toml --format json

@@ -1,0 +1,12 @@
+[package]
+name = "taiko_runtime"
+version = "0.1.0"
+edition.workspace = true
+publish.workspace = true
+license.workspace = true
+
+[dependencies]
+taiko_chart = { path = "../taiko_chart" }
+
+[lints]
+workspace = true

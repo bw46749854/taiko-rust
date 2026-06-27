@@ -1,0 +1,13 @@
+{
+  "run_id": "RUN-OPS-0007-MERGED-FIXTURE",
+  "ticket_id": "OPS-0007",
+  "pr_number": 107,
+  "merge_method": "squash",
+  "base_branch": "main",
+  "head_sha": "bbbbbb1234567890abcdef1234567890abcdef12",
+  "metadata_path": "reports/session_metadata/OPS-0007.json",
+  "qa_verdict_path": "reports/qa/OPS-0007.json",
+  "controller_workflow": "loop-controller",
+  "dry_run": true,
+  "merged_at_utc": null
+}

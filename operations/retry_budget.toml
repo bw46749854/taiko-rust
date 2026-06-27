@@ -1,0 +1,10 @@
+# Step19 retry budget.
+# These limits prevent infinite repair loops while preserving full auto-merge.
+
+schema_version = 1
+max_repair_attempts_per_ticket = 3
+max_block_attempts_per_gate = 2
+max_same_failure_signature = 2
+max_controller_runs_per_hour = 4
+same_failure_signature_action = "stop_and_route_to_control"
+retry_exhausted_status = "Blocked"

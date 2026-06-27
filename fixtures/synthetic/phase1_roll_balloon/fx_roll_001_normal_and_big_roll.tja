@@ -1,0 +1,14 @@
+TITLE:FX-ROLL-001 normal roll, big roll, roll end
+BPM:120
+WAVE:__dummy__.ogg
+COURSE:Oni
+LEVEL:1
+SCOREMODE:2
+SCOREINIT:300,1000
+SCOREDIFF:120
+#START
+5000,
+0008,
+6000,
+0008,
+#END

@@ -1,0 +1,23 @@
+[workspace]
+members = [
+    "crates/taiko_domain",
+    "crates/taiko_chart",
+    "crates/taiko_timing",
+    "crates/taiko_runtime",
+    "crates/taiko_audio",
+    "crates/taiko_render",
+    "crates/taiko_test_support",
+    "crates/taiko_cli",
+]
+resolver = "2"
+
+[workspace.package]
+edition = "2021"
+license = "MIT OR Apache-2.0"
+publish = false
+
+[workspace.lints.rust]
+unsafe_code = "forbid"
+
+[workspace.lints.clippy]
+all = "warn"

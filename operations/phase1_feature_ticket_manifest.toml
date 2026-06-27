@@ -1,0 +1,169 @@
+# Phase1 gameplay feature ticket manifest.
+# This manifest is the Control Session input for entering gameplay implementation.
+# It is intentionally separate from historical docs so `taiko_cli phase1 feature plan`
+# can produce a deterministic next-ticket plan.
+
+schema_version = "1"
+manifest_id = "phase1_feature_loop_entry"
+feature_ticket_count = 13
+first_feature_ticket = "TKT-0005"
+required_entry_gate = "GATE-0090"
+required_qa_gate = "GATE-0080"
+failure_route_required = true
+qa_verdict_required = true
+
+[[tickets]]
+ticket_id = "TKT-0005"
+title = "BPM MEASURE DELAY OFFSET timeline"
+stage = "timeline"
+category = "timing_model"
+depends_on = ["TKT-0060", "GATE-0090"]
+primary_crates = ["taiko_chart", "taiko_timing", "taiko_runtime", "taiko_cli"]
+required_commands = ["cargo test --workspace", "taiko_cli headless autoplay --manifest fixtures/synthetic/phase1_synthetic_manifest.toml --mode perfect --format json", "taiko_cli timing analyze --manifest fixtures/synthetic/phase1_synthetic_manifest.toml --threshold-ms 1.0 --format json", "taiko_cli qa run --manifest fixtures/synthetic/phase1_synthetic_manifest.toml --threshold-ms 1.0 --format json", "taiko_cli qa verdict --input reports/qa/phase1_loop.qa.json --format json"]
+acceptance_docs = ["docs/24_phase1_normal_play_compatibility_contract.md", "docs/coverage/phase1_acceptance_gate_matrix.md"]
+qa_required = true
+failure_route_required = true
+
+[[tickets]]
+ticket_id = "TKT-0006"
+title = "Roll big-roll balloon and BalloonEx"
+stage = "runtime_objects"
+category = "note_state"
+depends_on = ["TKT-0005"]
+primary_crates = ["taiko_chart", "taiko_runtime", "taiko_cli"]
+required_commands = ["cargo test --workspace", "taiko_cli qa run --manifest fixtures/synthetic/phase1_synthetic_manifest.toml --threshold-ms 1.0 --format json", "taiko_cli qa verdict --input reports/qa/phase1_loop.qa.json --format json"]
+acceptance_docs = ["docs/24_phase1_normal_play_compatibility_contract.md", "docs/coverage/phase1_fixture_to_feature_traceability.md"]
+qa_required = true
+failure_route_required = true
+
+[[tickets]]
+ticket_id = "TKT-0007"
+title = "GOGO and BARLINE display-state events"
+stage = "display_state"
+category = "chart_events"
+depends_on = ["TKT-0005"]
+primary_crates = ["taiko_chart", "taiko_runtime", "taiko_render", "taiko_cli"]
+required_commands = ["cargo test --workspace", "taiko_cli qa run --manifest fixtures/synthetic/phase1_synthetic_manifest.toml --threshold-ms 1.0 --format json", "taiko_cli qa verdict --input reports/qa/phase1_loop.qa.json --format json"]
+acceptance_docs = ["docs/24_phase1_normal_play_compatibility_contract.md", "docs/coverage/phase1_fixture_to_feature_traceability.md"]
+qa_required = true
+failure_route_required = true
+
+[[tickets]]
+ticket_id = "TKT-0008"
+title = "Branch parser N/E/M SECTION LEVELHOLD"
+stage = "branching"
+category = "chart_parser"
+depends_on = ["TKT-0005", "TKT-0006"]
+primary_crates = ["taiko_chart", "taiko_runtime", "taiko_cli"]
+required_commands = ["cargo test --workspace", "taiko_cli qa run --manifest fixtures/synthetic/phase1_synthetic_manifest.toml --threshold-ms 1.0 --format json", "taiko_cli qa verdict --input reports/qa/phase1_loop.qa.json --format json"]
+acceptance_docs = ["research/opentaiko/06_branching_model.md", "docs/coverage/phase1_fixture_to_feature_traceability.md"]
+qa_required = true
+failure_route_required = true
+
+[[tickets]]
+ticket_id = "TKT-0009"
+title = "Branch condition evaluator"
+stage = "branching"
+category = "runtime_logic"
+depends_on = ["TKT-0008", "TKT-0011"]
+primary_crates = ["taiko_runtime", "taiko_timing", "taiko_cli"]
+required_commands = ["cargo test --workspace", "taiko_cli qa run --manifest fixtures/synthetic/phase1_synthetic_manifest.toml --threshold-ms 1.0 --format json", "taiko_cli qa verdict --input reports/qa/phase1_loop.qa.json --format json"]
+acceptance_docs = ["research/opentaiko/06_branching_model.md", "docs/coverage/phase1_acceptance_gate_matrix.md"]
+qa_required = true
+failure_route_required = true
+
+[[tickets]]
+ticket_id = "TKT-0010"
+title = "Headless autoplay baseline expansion"
+stage = "runtime_validation"
+category = "test_harness"
+depends_on = ["TKT-0005", "TKT-0006", "TKT-0007"]
+primary_crates = ["taiko_runtime", "taiko_test_support", "taiko_cli"]
+required_commands = ["cargo test --workspace", "taiko_cli headless autoplay --manifest fixtures/synthetic/phase1_synthetic_manifest.toml --mode perfect --format json", "taiko_cli qa run --manifest fixtures/synthetic/phase1_synthetic_manifest.toml --threshold-ms 1.0 --format json", "taiko_cli qa verdict --input reports/qa/phase1_loop.qa.json --format json"]
+acceptance_docs = ["docs/46_headless_autoplay_contract.md", "docs/coverage/phase1_fixture_to_feature_traceability.md"]
+qa_required = true
+failure_route_required = true
+
+[[tickets]]
+ticket_id = "TKT-0011"
+title = "Score gauge and clear model"
+stage = "gameplay_state"
+category = "score_gauge"
+depends_on = ["TKT-0010", "TKT-0007"]
+primary_crates = ["taiko_domain", "taiko_runtime", "taiko_cli"]
+required_commands = ["cargo test --workspace", "taiko_cli qa run --manifest fixtures/synthetic/phase1_synthetic_manifest.toml --threshold-ms 1.0 --format json", "taiko_cli qa verdict --input reports/qa/phase1_loop.qa.json --format json"]
+acceptance_docs = ["research/opentaiko/08_score_gauge_clear_model.md", "docs/coverage/phase1_acceptance_gate_matrix.md"]
+qa_required = true
+failure_route_required = true
+
+[[tickets]]
+ticket_id = "TKT-0012"
+title = "SCROLL and scroll mode model"
+stage = "visual_timing"
+category = "scroll_model"
+depends_on = ["TKT-0005", "TKT-0010"]
+primary_crates = ["taiko_chart", "taiko_timing", "taiko_runtime", "taiko_render", "taiko_cli"]
+required_commands = ["cargo test --workspace", "taiko_cli timing analyze --manifest fixtures/synthetic/phase1_synthetic_manifest.toml --threshold-ms 1.0 --format json", "taiko_cli qa run --manifest fixtures/synthetic/phase1_synthetic_manifest.toml --threshold-ms 1.0 --format json", "taiko_cli qa verdict --input reports/qa/phase1_loop.qa.json --format json"]
+acceptance_docs = ["research/opentaiko/07_scroll_and_visual_timing.md", "docs/coverage/phase1_fixture_to_feature_traceability.md"]
+qa_required = true
+failure_route_required = true
+
+[[tickets]]
+ticket_id = "TKT-0013"
+title = "SUDDEN DIRECTION JPOSSCROLL parse/report"
+stage = "visual_options"
+category = "phase1_parse_report"
+depends_on = ["TKT-0012"]
+primary_crates = ["taiko_chart", "taiko_runtime", "taiko_cli"]
+required_commands = ["cargo test --workspace", "taiko_cli qa run --manifest fixtures/synthetic/phase1_synthetic_manifest.toml --threshold-ms 1.0 --format json", "taiko_cli qa verdict --input reports/qa/phase1_loop.qa.json --format json"]
+acceptance_docs = ["research/opentaiko/07_scroll_and_visual_timing.md", "docs/25_phase1_feature_classification.md"]
+qa_required = true
+failure_route_required = true
+
+[[tickets]]
+ticket_id = "TKT-0014"
+title = "Timing log schema expansion"
+stage = "timing_evidence"
+category = "telemetry_schema"
+depends_on = ["TKT-0010", "TKT-0011", "TKT-0012"]
+primary_crates = ["taiko_timing", "taiko_runtime", "taiko_cli"]
+required_commands = ["cargo test --workspace", "taiko_cli timing analyze --manifest fixtures/synthetic/phase1_synthetic_manifest.toml --threshold-ms 1.0 --format json", "taiko_cli qa run --manifest fixtures/synthetic/phase1_synthetic_manifest.toml --threshold-ms 1.0 --format json", "taiko_cli qa verdict --input reports/qa/phase1_loop.qa.json --format json"]
+acceptance_docs = ["docs/43_timing_log_schema.md", "docs/47_timing_log_analyzer_contract.md"]
+qa_required = true
+failure_route_required = true
+
+[[tickets]]
+ticket_id = "TKT-0015"
+title = "Timing log analyzer expansion"
+stage = "timing_evidence"
+category = "analyzer"
+depends_on = ["TKT-0014"]
+primary_crates = ["taiko_timing", "taiko_cli"]
+required_commands = ["cargo test --workspace", "taiko_cli timing analyze --manifest fixtures/synthetic/phase1_synthetic_manifest.toml --threshold-ms 1.0 --format json", "taiko_cli qa run --manifest fixtures/synthetic/phase1_synthetic_manifest.toml --threshold-ms 1.0 --format json", "taiko_cli qa verdict --input reports/qa/phase1_loop.qa.json --format json"]
+acceptance_docs = ["docs/44_timing_log_analyzer_spec.md", "docs/47_timing_log_analyzer_contract.md"]
+qa_required = true
+failure_route_required = true
+
+[[tickets]]
+ticket_id = "TKT-0035"
+title = "Synthetic fixture coverage pack"
+stage = "coverage_expansion"
+category = "fixture_coverage"
+depends_on = ["TKT-0015"]
+primary_crates = ["taiko_chart", "taiko_runtime", "taiko_timing", "taiko_cli"]
+required_commands = ["cargo test --workspace", "scripts/validate_fixture_manifest.py", "scripts/validate_synthetic_fixture_structure.py", "taiko_cli qa run --manifest fixtures/synthetic/phase1_synthetic_manifest.toml --threshold-ms 1.0 --format json", "taiko_cli qa verdict --input reports/qa/phase1_loop.qa.json --format json"]
+acceptance_docs = ["docs/coverage/phase1_fixture_to_feature_traceability.md", "docs/coverage/phase1_feature_coverage_matrix.md"]
+qa_required = true
+failure_route_required = true
+
+[[tickets]]
+ticket_id = "TKT-0075"
+title = "User-selected song validation harness"
+stage = "user_song_validation"
+category = "external_input_validation"
+depends_on = ["TKT-0035"]
+primary_crates = ["taiko_chart", "taiko_runtime", "taiko_timing", "taiko_cli"]
+required_commands = ["cargo test --workspace", "taiko_cli qa run --manifest fixtures/synthetic/phase1_synthetic_manifest.toml --threshold-ms 1.0 --format json", "taiko_cli qa verdict --input reports/qa/phase1_loop.qa.json --format json"]
+acceptance_docs = ["docs/26_phase1_user_selected_song_validation.md", "docs/coverage/phase1_user_song_category_matrix.md"]
+qa_required = true
+failure_route_required = true

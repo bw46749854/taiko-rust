@@ -1,0 +1,46 @@
+{
+  "schema": "schemas/ticket_transition_schema.md",
+  "verdict": "pass",
+  "mode": "plan",
+  "run_id": "RUN-OPS-0007-MERGED-FIXTURE",
+  "generated_at_utc": "2026-06-27T04:58:46.504435+00:00",
+  "api_key_required": false,
+  "ai_worker": "not_used",
+  "merge_history": {
+    "run_id": "RUN-OPS-0007-MERGED-FIXTURE",
+    "ticket_id": "OPS-0007",
+    "pr_number": 107,
+    "merge_method": "squash",
+    "base_branch": "main",
+    "head_sha": "bbbbbb1234567890abcdef1234567890abcdef12",
+    "metadata_path": "reports/session_metadata/OPS-0007.json",
+    "qa_verdict_path": "reports/qa/OPS-0007.json",
+    "controller_workflow": "loop-controller",
+    "dry_run": true,
+    "merged_at_utc": null
+  },
+  "merged_ticket": "OPS-0007",
+  "next_ready_ticket": "OPS-0008",
+  "status_updates": [
+    {
+      "ticket_id": "OPS-0007",
+      "path": ".loop/tickets/OPS-0007.md",
+      "from": "Done",
+      "to": "Done",
+      "changed": false
+    },
+    {
+      "ticket_id": "OPS-0008",
+      "path": ".loop/tickets/OPS-0008.md",
+      "from": "Ready",
+      "to": "Ready",
+      "changed": false
+    }
+  ],
+  "ready_tickets_after": [
+    "OPS-0008"
+  ],
+  "reasons": [
+    "ticket transition policy satisfied"
+  ]
+}

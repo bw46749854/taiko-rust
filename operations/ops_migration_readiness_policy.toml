@@ -1,0 +1,32 @@
+# OPS-0009 final readiness policy.
+status = "canonical"
+policy_name = "opentaiko_ops_migration_readiness_policy"
+ticket = "OPS-0009"
+static_check = "scripts/check_ops_migration_readiness.py"
+schema = "schemas/ops_migration_readiness_schema.md"
+publication_report_json = "reports/loop/publication_readiness_report.json"
+publication_report_markdown = "reports/loop/publication_readiness_report.md"
+ops_gate_report = ".loop/session_logs/GATE-OPS-0000-report.md"
+phase1_gate_report = ".loop/session_logs/GATE-0090-report.md"
+first_ready_gameplay_ticket = "TKT-0005"
+api_key_required = false
+ai_workers_in_github_actions = false
+openai_codex_action_allowed = false
+phase1_gameplay_entry_unlocked = true
+max_ready_tickets = 1
+
+[required_static_checks]
+public_repository = "scripts/check_public_repository_static.py"
+asset_bundle = "scripts/check_asset_bundle_manifest.py --manifest operations/dev_asset_bundle.example.toml"
+github_actions_gate = "scripts/check_github_actions_gate_static.py"
+auto_merge = "scripts/check_auto_merge_conditions.py"
+ticket_transition = "scripts/check_ticket_transition_static.py"
+worker_handoff = "scripts/check_worker_handoff_static.py"
+e2e_smoke = "scripts/check_e2e_smoke_static.py --static-only"
+phase1_entry = "scripts/check_phase1_gameplay_start_static.py"
+
+[ready_state]
+only_ready_ticket = "TKT-0005"
+ops_tickets_required_status = "Done"
+phase1_entry_support_ticket = "TKT-0060"
+phase1_entry_support_status = "Done"

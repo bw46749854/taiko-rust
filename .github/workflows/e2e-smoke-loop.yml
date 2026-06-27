@@ -1,0 +1,35 @@
+name: e2e-smoke-loop
+
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows:
+      - loop-controller
+    types:
+      - completed
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  smoke:
+    name: e2e-smoke-loop
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: OPS-0004 asset bundle dry-run
+        run: scripts/fetch_dev_asset_bundle.py --manifest operations/dev_asset_bundle.example.toml --dry-run --emit-json reports/assets/asset_bundle_fetch_dry_run.json
+      - name: Run Step22 static smoke check
+        run: scripts/check_e2e_smoke_static.py
+      - name: Generate Step22 smoke evidence
+        run: scripts/run_e2e_smoke_loop.sh --scenario all --dry-run --out reports/e2e_smoke/latest
+      - name: Upload E2E smoke evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-smoke-report
+          path: reports/e2e_smoke/latest

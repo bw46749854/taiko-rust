@@ -1,0 +1,63 @@
+# Step18 role path policy for autonomous loop PR gating.
+status = "canonical"
+version = 1
+
+[roles.impl]
+branch_prefixes = ["impl/"]
+required_worktree_prefix = "worktrees/impl/"
+allow_prefixes = ["crates/", "docs/", "fixtures/synthetic/", "reports/commands/", "reports/session_metadata/", "operations/", "prompts/"]
+deny_prefixes = ["reports/qa/", "reports/reviews/", ".loop/session_logs/"]
+deny_exact = ["Cargo.lock"]
+may_write_code = true
+may_write_qa_verdict = false
+may_merge = false
+
+[roles.qa]
+branch_prefixes = ["qa/"]
+required_worktree_prefix = "worktrees/qa/"
+allow_prefixes = ["reports/qa/", "reports/regression/", "reports/failures/", "reports/session_metadata/"]
+deny_prefixes = ["crates/", "src/", "docs/", "fixtures/", ".loop/tickets/"]
+deny_exact = ["Cargo.toml", "Cargo.lock"]
+may_write_code = false
+may_write_qa_verdict = true
+may_merge = false
+
+[roles.review]
+branch_prefixes = ["review/"]
+required_worktree_prefix = "worktrees/review/"
+allow_prefixes = ["reports/reviews/", "reports/session_metadata/"]
+deny_prefixes = ["crates/", "src/", "reports/qa/", ".loop/tickets/"]
+deny_exact = ["Cargo.toml", "Cargo.lock"]
+may_write_code = false
+may_write_qa_verdict = false
+may_merge = false
+
+[roles.control]
+branch_prefixes = ["loop/"]
+required_worktree_prefix = "worktrees/control/"
+allow_prefixes = [".loop/tickets/", ".loop/gates/", ".loop/session_logs/", "reports/loop/", "reports/session_metadata/", "operations/", "docs/", "prompts/", "scripts/", ".github/", "README.md", "AGENTS.md", "STEP"]
+deny_prefixes = ["crates/"]
+deny_exact = ["Cargo.toml", "Cargo.lock"]
+may_write_code = false
+may_write_qa_verdict = false
+may_merge = true
+
+[roles.test-infra]
+branch_prefixes = ["test/"]
+required_worktree_prefix = "worktrees/test-infra/"
+allow_prefixes = ["crates/taiko_test_support/", "crates/taiko_cli/", "scripts/", "fixtures/synthetic/", "reports/test/", "reports/session_metadata/", "docs/", "operations/"]
+deny_prefixes = ["reports/qa/"]
+deny_exact = []
+may_write_code = true
+may_write_qa_verdict = false
+may_merge = false
+
+[roles.spec]
+branch_prefixes = ["spec/"]
+required_worktree_prefix = "worktrees/spec/"
+allow_prefixes = ["docs/", "research/", "prompts/", "operations/", "reports/session_metadata/"]
+deny_prefixes = ["crates/", "reports/qa/"]
+deny_exact = ["Cargo.toml", "Cargo.lock"]
+may_write_code = false
+may_write_qa_verdict = false
+may_merge = false

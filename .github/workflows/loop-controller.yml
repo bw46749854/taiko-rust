@@ -1,0 +1,92 @@
+name: loop-controller
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "Controller mode"
+        required: false
+        default: "plan"
+        type: choice
+        options:
+          - plan
+          - apply
+  workflow_run:
+    workflows:
+      - loop-pr-gate
+      - rust-preflight
+      - phase1-loop
+      - phase1-gameplay-entry
+      - codex-review
+    types:
+      - completed
+  schedule:
+    - cron: '17 * * * *'
+
+concurrency:
+  group: loop-controller-main
+  cancel-in-progress: false
+
+jobs:
+  loop-controller:
+    name: loop-controller
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
+    timeout-minutes: 20
+    permissions:
+      contents: write
+      pull-requests: write
+      actions: read
+      checks: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          # loop-controller is the only privileged workflow. It checks out the trusted default branch for
+          # controller scripts and must not checkout untrusted PR head code in workflow_run context.
+          persist-credentials: true
+
+      - name: OPS-0005 GitHub Actions gate normalization
+        run: scripts/check_github_actions_gate_static.py
+
+      - name: Auto-merge static validation
+        run: scripts/check_auto_merge_conditions.py
+
+      - name: Ticket transition static validation
+        run: scripts/check_ticket_transition_static.py
+
+      - name: Worker handoff static validation
+        run: scripts/check_worker_handoff_static.py
+
+      - name: Existing static gate floor
+        run: scripts/ci_local_equivalent.sh --static-only
+
+      - name: Plan controller action
+        run: scripts/loop_controller_github.sh --mode plan
+
+      - name: Apply controller action on manual apply
+        if: github.event_name == 'workflow_dispatch' && inputs.mode == 'apply'
+        run: scripts/loop_controller_github.sh --mode apply
+
+      - name: Emit worker handoff preview
+        run: scripts/loop_emit_worker_handoff.py --mode controller --run-id "RUN-HANDOFF-${{ github.run_id }}"
+
+      - name: Auto-merge candidate fixture contract
+        run: |
+          scripts/select_auto_merge_candidate.py --input fixtures/loop_controller/pass_candidate.json --out reports/loop/candidates/pass_candidate_plan.json --markdown reports/loop/candidates/pass_candidate_plan.md --expect pass
+          scripts/select_auto_merge_candidate.py --input fixtures/loop_controller/reject_candidate.json --out reports/loop/candidates/reject_candidate_plan.json --expect reject
+          scripts/select_auto_merge_candidate.py --input fixtures/loop_controller/block_candidate.json --out reports/loop/candidates/block_candidate_plan.json --expect block
+          echo "scripts/loop_auto_merge_pr.sh consumes the selected candidate only in apply mode"
+
+      - name: Upload loop-controller reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: loop-controller-reports
+          path: |
+            reports/loop/github-controller/
+            reports/loop/candidates/
+            reports/loop/merge_history/
+            reports/loop/ticket_transitions/
+            reports/loop/worker_handoff/
+            reports/regression/

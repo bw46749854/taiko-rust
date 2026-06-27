@@ -1,0 +1,14 @@
+{
+  "schema": "auto_merge_history/v1",
+  "run_id": "RUN-MERGE-OPS-0009-FIXTURE",
+  "ticket_id": "OPS-0009",
+  "pr_number": 1009,
+  "base_branch": "main",
+  "head_branch": "loop/OPS-0009-e2e-smoke-and-phase1-entry-unlock",
+  "head_sha": "OPS0009HEAD",
+  "merge_method": "squash",
+  "dry_run": true,
+  "merged_at_utc": "2026-06-27T00:00:00+00:00",
+  "api_key_required": false,
+  "ai_worker": "not_used"
+}
