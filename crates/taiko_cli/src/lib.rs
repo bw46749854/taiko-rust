@@ -2529,6 +2529,26 @@ fn render_gates(gates: &[Gate], format: OutputFormat) -> String {
     }
 }
 
+fn render_next(selection: &NextSelection, format: OutputFormat) -> String {
+    match (selection, format) {
+        (NextSelection::Selected { ticket_id, reason }, OutputFormat::Json) => format!(
+            "{{\"verdict\":\"ready\",\"ticket_id\":\"{}\",\"reason\":\"{}\"}}",
+            escape_json(ticket_id),
+            escape_json(reason)
+        ),
+        (NextSelection::Block { reason }, OutputFormat::Json) => format!(
+            "{{\"verdict\":\"block\",\"ticket_id\":null,\"reason\":\"{}\"}}",
+            escape_json(reason)
+        ),
+        (NextSelection::Selected { ticket_id, reason }, OutputFormat::Markdown) => {
+            format!("- verdict: `ready`\n- ticket_id: `{ticket_id}`\n- reason: {reason}")
+        }
+        (NextSelection::Block { reason }, OutputFormat::Markdown) => {
+            format!("- verdict: `block`\n- ticket_id: `null`\n- reason: {reason}")
+        }
+    }
+}
+
 
 fn render_loop_run_once_plan(plan: &LoopRunOncePlan, format: OutputFormat) -> String {
     match format {

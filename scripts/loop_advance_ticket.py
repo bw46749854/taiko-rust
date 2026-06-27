@@ -22,6 +22,7 @@ except ModuleNotFoundError:  # pragma: no cover
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_POLICY = ROOT / "operations" / "ticket_transition_policy.toml"
+DEFAULT_PHASE1_MANIFEST = ROOT / "operations" / "phase1_feature_ticket_manifest.toml"
 STATUS_RE = re.compile(r"^Status:\s*(.+?)\s*$", re.MULTILINE)
 TICKET_RE = re.compile(r"^(?:OPS|TKT)-\d{4}$")
 
@@ -107,6 +108,63 @@ def ready_tickets(ticket_dir: Path) -> list[str]:
     return ready
 
 
+def load_phase1_manifest(path: Path = DEFAULT_PHASE1_MANIFEST) -> dict:
+    if not path.is_file() or tomllib is None:
+        return {}
+    return tomllib.loads(path.read_text(encoding="utf-8"))
+
+
+def gate_path(gate_id: str) -> Path | None:
+    matches = sorted((ROOT / ".loop" / "gates").glob(f"{gate_id}*.md"))
+    return matches[0] if matches else None
+
+
+def gate_status(gate_id: str) -> str | None:
+    path = gate_path(gate_id)
+    if path is None:
+        return None
+    text = path.read_text(encoding="utf-8")
+    match = STATUS_RE.search(text)
+    return match.group(1).strip() if match else None
+
+
+def dependency_satisfied(dep: str, simulated: dict[str, str]) -> bool:
+    if dep.startswith("TKT-") or dep.startswith("OPS-"):
+        return simulated.get(dep) == "Done"
+    if dep.startswith("GATE-"):
+        return gate_status(dep) == "passed"
+    return False
+
+
+def next_phase1_ticket_id(merged_ticket: str | None, ticket_dir: Path, simulated: dict[str, str]) -> str | None:
+    """Select the deterministic next Phase1 gameplay ticket from the manifest.
+
+    The OPS transition policy only unlocks the first gameplay ticket. Once a
+    TKT-* gameplay ticket is merged, the post-bootstrap loop must use
+    operations/phase1_feature_ticket_manifest.toml so the loop can continue
+    without hard-coded TKT-0005 assumptions.
+    """
+    if not merged_ticket or not merged_ticket.startswith("TKT-"):
+        return None
+    manifest = load_phase1_manifest()
+    tickets = manifest.get("tickets") or []
+    candidates: list[str] = []
+    for entry in tickets:
+        ticket_id = entry.get("ticket_id")
+        if not isinstance(ticket_id, str) or not ticket_id.startswith("TKT-"):
+            continue
+        path = ticket_path(ticket_id, ticket_dir)
+        if not path.is_file():
+            continue
+        status = simulated.get(ticket_id)
+        if status not in {"Blocked", "Ready"}:
+            continue
+        deps = entry.get("depends_on") or []
+        if all(isinstance(dep, str) and dependency_satisfied(dep, simulated) for dep in deps):
+            candidates.append(ticket_id)
+    return sorted(candidates)[0] if candidates else None
+
+
 def next_ticket_id(merged_ticket: str, policy: dict) -> str | None:
     ops = policy.get("ops_migration") or {}
     completion = policy.get("ops_completion") or {}
@@ -151,6 +209,15 @@ def build_plan(history: dict, policy: dict, ticket_dir: Path, mode: str, allow_d
         else:
             reasons.append(f"merged ticket file does not exist: {merged_ticket}")
 
+    simulated: dict[str, str] = {}
+    for path in sorted(ticket_dir.glob("*.md")):
+        simulated[path.stem] = read_ticket_status(path)
+    for update in updates:
+        simulated[update.ticket_id] = update.new
+
+    if next_ticket is None and merged_ticket and str(merged_ticket).startswith("TKT-"):
+        next_ticket = next_phase1_ticket_id(merged_ticket, ticket_dir, simulated)
+
     if next_ticket:
         next_path = ticket_path(next_ticket, ticket_dir)
         if next_path.is_file():
@@ -163,9 +230,6 @@ def build_plan(history: dict, policy: dict, ticket_dir: Path, mode: str, allow_d
     else:
         reasons.append("no dependency-satisfied next ticket is defined by transition policy")
 
-    simulated: dict[str, str] = {}
-    for path in sorted(ticket_dir.glob("*.md")):
-        simulated[path.stem] = read_ticket_status(path)
     for update in updates:
         simulated[update.ticket_id] = update.new
 
