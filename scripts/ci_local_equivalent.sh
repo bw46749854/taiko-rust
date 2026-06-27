@@ -52,6 +52,8 @@ run scripts/check_github_pr_orchestration_static.py
 run scripts/check_github_actions_gate_static.py
 run scripts/check_rust_preflight_static.py
 run scripts/check_codex_cloud_env_static.py
+run scripts/check_bootstrap_consistency.sh
+run scripts/check_post_bootstrap_runtime_state.py --static-only
 run scripts/check_loop_controller_static.py
 run scripts/check_session_separation.py
 run scripts/check_role_path_policy.py
@@ -64,9 +66,12 @@ run scripts/check_ops_migration_readiness.py --static-only
 run scripts/select_auto_merge_candidate.py --input fixtures/loop_controller/pass_candidate.json --out reports/loop/candidates/pass_candidate_plan.json --markdown reports/loop/candidates/pass_candidate_plan.md --expect pass
 run scripts/select_auto_merge_candidate.py --input fixtures/loop_controller/reject_candidate.json --out reports/loop/candidates/reject_candidate_plan.json --expect reject
 run scripts/select_auto_merge_candidate.py --input fixtures/loop_controller/block_candidate.json --out reports/loop/candidates/block_candidate_plan.json --expect block
-run scripts/loop_advance_ticket.py --merge-history fixtures/loop_controller/merge_history_ops0007.json --mode plan --allow-dry-run-history --out reports/loop/ticket_transitions/ops0007_to_ops0008_plan.json --markdown reports/loop/ticket_transitions/ops0007_to_ops0008_plan.md --expect pass
-run scripts/loop_advance_ticket.py --merge-history fixtures/loop_controller/merge_history_ops0009.json --mode plan --allow-dry-run-history --out reports/loop/ticket_transitions/ops0009_to_tkt0005_plan.json --markdown reports/loop/ticket_transitions/ops0009_to_tkt0005_plan.md --expect pass
-run scripts/loop_emit_worker_handoff.py --mode plan --run-id RUN-HANDOFF-CI --expect plan
+# scripts/check_ticket_transition_static.py exercises scripts/loop_advance_ticket.py
+# against isolated pre/post OPS fixture ticket directories. Do not run the
+# transition engine against the live .loop/tickets state here because this
+# repository may already be post-OPS.
+# scripts/check_worker_handoff_static.py exercises scripts/loop_emit_worker_handoff.py
+# with controlled Ready-ticket fixtures; avoid live-state handoff expectations here.
 run scripts/check_public_repository_static.py
 run scripts/check_asset_bundle_manifest.py --manifest operations/dev_asset_bundle.example.toml
 run scripts/fetch_dev_asset_bundle.py --manifest operations/dev_asset_bundle.example.toml --dry-run --emit-json reports/assets/asset_bundle_fetch_dry_run.json
