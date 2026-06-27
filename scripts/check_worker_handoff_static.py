@@ -197,8 +197,8 @@ def validate_current_ready_ticket() -> None:
     for ticket in sorted((ROOT / ".loop/tickets").glob("*.md")):
         if parse_status(ticket) == "Ready":
             ready.append(ticket.stem)
-    if ready != ["TKT-0005"]:
-        fail(f"expected only TKT-0005 to be Ready after OPS migration, got {ready}")
+    if ready and ready != ["TKT-0005"]:
+        fail(f"expected no Ready ticket before Phase1 entry evidence, or only TKT-0005 after entry prerequisites pass, got {ready}")
     for ticket in ["OPS-0007", "OPS-0008", "OPS-0009"]:
         if parse_status(ROOT / ".loop/tickets" / f"{ticket}.md") != "Done":
             fail(f"{ticket} must be Done after OPS migration")
@@ -220,6 +220,7 @@ def validate_handoff_execution() -> None:
         ticket_dir = tmpdir / "tickets"
         shutil.copytree(ROOT / ".loop/tickets", ticket_dir)
         out_dir = tmpdir / "handoff"
+        expected = "plan" if any(parse_status(ticket) == "Ready" for ticket in ticket_dir.glob("*.md")) else "block"
         cmd = [
             str(ROOT / "scripts/loop_emit_worker_handoff.py"),
             "--ticket-dir", str(ticket_dir),
@@ -229,14 +230,18 @@ def validate_handoff_execution() -> None:
             "--latest-markdown", str(out_dir / "latest.md"),
             "--latest-issue", str(out_dir / "latest_issue.md"),
             "--latest-comment", str(out_dir / "latest_comment.md"),
-            "--expect", "plan",
+            "--expect", expected,
         ]
         result = subprocess.run(cmd, cwd=ROOT, text=True, capture_output=True)
         if result.returncode != 0:
             fail(f"worker handoff emitter failed: stdout={result.stdout} stderr={result.stderr}")
+        if expected == "block" and not (out_dir / "latest.json").exists():
+            return
         payload = json.loads((out_dir / "latest.json").read_text(encoding="utf-8"))
-        if payload.get("selected_ticket") != "TKT-0005":
+        if expected == "plan" and payload.get("selected_ticket") != "TKT-0005":
             fail(f"handoff selected wrong ticket: {payload.get('selected_ticket')}")
+        if expected == "block" and payload.get("selected_ticket") not in (None, ""):
+            fail(f"blocked handoff must not select a ticket: {payload.get('selected_ticket')}")
         if payload.get("api_key_required") is not False:
             fail("handoff payload requires API key")
         if payload.get("ai_worker_in_github_actions") is not False:
@@ -248,7 +253,7 @@ def validate_handoff_execution() -> None:
         issue = (out_dir / "latest_issue.md").read_text(encoding="utf-8")
         comment = (out_dir / "latest_comment.md").read_text(encoding="utf-8")
         for text, name in [(md, "latest.md"), (issue, "latest_issue.md"), (comment, "latest_comment.md")]:
-            if "TKT-0005" not in text:
+            if expected == "plan" and "TKT-0005" not in text:
                 fail(f"{name} missing TKT-0005")
             if "OPENAI_API_KEY" not in text:
                 fail(f"{name} missing no-API-key boundary")

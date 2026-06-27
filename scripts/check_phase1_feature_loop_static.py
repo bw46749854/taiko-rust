@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from pathlib import Path
 import re
+import subprocess
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -148,6 +149,10 @@ def main() -> int:
     for term in ['check_phase1_feature_loop_static.py', 'phase1 feature validate', 'phase1 feature plan']:
         if term not in workflow:
             fail(f'workflow missing Step13 term: {term}')
+
+    result = subprocess.run([sys.executable, str(ROOT / 'scripts/check_phase1_entry_state_consistency.py')], cwd=ROOT, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False)
+    if result.returncode != 0:
+        fail(result.stderr.strip() or result.stdout.strip() or 'phase1 entry state consistency check failed')
 
     print('phase1 feature loop static check passed')
     return 0

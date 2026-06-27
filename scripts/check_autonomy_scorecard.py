@@ -166,8 +166,8 @@ def main() -> int:
                 ready_tickets.append(ticket)
                 if "Next-ticket transition evidence" not in text:
                     failures.append(f"{ticket.relative_to(ROOT)} is Ready but lacks Next-ticket transition evidence")
-        if len(ready_tickets) != 1 or ready_tickets[0].name != "TKT-0005.md":
-            failures.append("expected only TKT-0005 to be Ready after operations migration")
+        if ready_tickets and (len(ready_tickets) != 1 or ready_tickets[0].name != "TKT-0005.md"):
+            failures.append("expected no Ready gameplay ticket before entry evidence, or only TKT-0005 when entry prerequisites pass")
 
     for path in operational_files():
         if path.name == "check_autonomy_scorecard.py":

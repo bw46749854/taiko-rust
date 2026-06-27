@@ -94,6 +94,17 @@ def status_of_ticket(ticket_id: str) -> str:
     return m.group(1).strip() if m else "Unknown"
 
 
+def status_of_gate(gate_id: str) -> str:
+    suffix = {"GATE-0070": "failure-feedback-ready", "GATE-0080": "qa-regression-ready", "GATE-0090": "phase1-feature-loop-ready"}.get(gate_id)
+    if not suffix:
+        return "missing"
+    path = ROOT / ".loop" / "gates" / f"{gate_id}-{suffix}.md"
+    if not path.is_file():
+        return "missing"
+    m = re.search(r"^Status:\s*(.+)$", read(path), re.M)
+    return m.group(1).strip() if m else "Unknown"
+
+
 def gate_report_exists(gate_id: str) -> bool:
     return (ROOT / ".loop" / "session_logs" / f"{gate_id}-report.md").is_file()
 
@@ -169,11 +180,18 @@ def build_start_packet(args: argparse.Namespace) -> dict[str, Any]:
         if not (ROOT / "crates" / crate / "Cargo.toml").is_file():
             issues.append(f"primary crate missing: {crate}")
 
+    if ticket.get("status") != "Ready":
+        missing_prerequisites.append(f"{ticket_id}: required Ready, actual {ticket.get('status')}")
+
     for dep in entry.get("depends_on", []):
         if dep.startswith("TKT-") and status_of_ticket(dep) != "Done":
             missing_prerequisites.append(f"{dep}: required Done, actual {status_of_ticket(dep)}")
-        elif dep.startswith("GATE-") and not gate_report_exists(dep):
-            missing_prerequisites.append(f"{dep}: missing .loop/session_logs/{dep}-report.md")
+        elif dep.startswith("GATE-"):
+            actual_gate_status = status_of_gate(dep)
+            if actual_gate_status != "passed":
+                missing_prerequisites.append(f"{dep}: required passed, actual {actual_gate_status}")
+            if not gate_report_exists(dep):
+                missing_prerequisites.append(f"{dep}: missing .loop/session_logs/{dep}-report.md")
 
     required_support_files = [
         "docs/95_phase1_gameplay_loop_start.md",

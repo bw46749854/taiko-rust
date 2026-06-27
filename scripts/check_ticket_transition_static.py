@@ -177,8 +177,8 @@ def validate_current_ready_ticket() -> None:
     for ticket in sorted((ROOT / ".loop/tickets").glob("*.md")):
         if parse_status(ticket) == "Ready":
             ready.append(ticket.stem)
-    if ready != ["TKT-0005"]:
-        fail(f"expected only TKT-0005 to be Ready after OPS migration, got {ready}")
+    if ready and ready != ["TKT-0005"]:
+        fail(f"expected no Ready ticket before Phase1 entry evidence, or only TKT-0005 after entry prerequisites pass, got {ready}")
     for ticket in ["OPS-0007", "OPS-0008", "OPS-0009"]:
         if parse_status(ROOT / ".loop/tickets" / f"{ticket}.md") != "Done":
             fail(f"{ticket} must be Done after OPS migration")

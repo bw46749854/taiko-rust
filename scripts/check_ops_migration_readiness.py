@@ -42,17 +42,16 @@ REQUIRED_TERMS = {
     ],
     "reports/loop/publication_readiness_report.md": [
         "Status: pass",
-        "Only Ready ticket: `TKT-0005`",
         "OPENAI_API_KEY",
         "CODEX_API_KEY",
     ],
     ".loop/session_logs/GATE-OPS-0000-report.md": [
         "Status: pass",
-        "Exactly one Ready ticket remains after migration: `TKT-0005`",
     ],
     ".loop/session_logs/GATE-0090-report.md": [
-        "Status: pass",
+        "Status: block",
         "TKT-0005",
+        "after OPS migration but before Phase1 gameplay start",
     ],
     "operations/loop_policy.toml": [
         "active = false",
@@ -87,7 +86,7 @@ REQUIRED_TERMS = {
         "latest.json",
     ],
     "scripts/check_phase1_gameplay_start_static.py": [
-        "renderer must emit ready after OPS-0009 unlock",
+        "renderer must emit ready or block",
         "TKT-0005",
     ],
 }
@@ -143,25 +142,37 @@ def validate_statuses() -> None:
         ticket = ROOT / ".loop/tickets" / f"OPS-{i:04d}.md"
         if status(ticket) != "Done":
             fail(f"OPS-{i:04d} must be Done after OPS migration")
-    if status(ROOT / ".loop/tickets/TKT-0060.md") != "Done":
-        fail("TKT-0060 must be Done before TKT-0005 can start")
-    if status(ROOT / ".loop/tickets/TKT-0005.md") != "Ready":
-        fail("TKT-0005 must be Ready after OPS migration")
     ready = ready_tickets()
-    if ready != ["TKT-0005"]:
-        fail(f"expected only TKT-0005 to be Ready, got {ready}")
+    tkt5_status = status(ROOT / ".loop/tickets/TKT-0005.md")
+    if tkt5_status == "Ready":
+        required = {
+            ".loop/tickets/TKT-0040.md": "Done",
+            ".loop/gates/GATE-0070-failure-feedback-ready.md": "passed",
+            ".loop/tickets/TKT-0050.md": "Done",
+            ".loop/gates/GATE-0080-qa-regression-ready.md": "passed",
+            ".loop/tickets/TKT-0060.md": "Done",
+            ".loop/gates/GATE-0090-phase1-feature-loop-ready.md": "passed",
+        }
+        for rel, expected in required.items():
+            actual = status(ROOT / rel)
+            if actual != expected:
+                fail(f"TKT-0005 Ready requires {rel} status {expected}, got {actual}")
+        if ready != ["TKT-0005"]:
+            fail(f"expected only TKT-0005 to be Ready, got {ready}")
+    elif ready:
+        fail(f"unexpected Ready ticket(s) before Phase1 gameplay entry: {ready}")
     if status(ROOT / ".loop/gates/GATE-OPS-0000-migration-ready.md") != "passed":
         fail("GATE-OPS-0000 must be passed")
-    if status(ROOT / ".loop/gates/GATE-0090-phase1-feature-loop-ready.md") != "passed":
-        fail("GATE-0090 must be passed")
+    if status(ROOT / ".loop/tickets/TKT-0005.md") == "Ready" and status(ROOT / ".loop/gates/GATE-0090-phase1-feature-loop-ready.md") != "passed":
+        fail("GATE-0090 must be passed when TKT-0005 is Ready")
 
 
 def validate_public_report() -> None:
     payload = json.loads(read("reports/loop/publication_readiness_report.json"))
     if payload.get("verdict") != "pass":
         fail("publication readiness report must pass")
-    if payload.get("only_ready_ticket") != "TKT-0005":
-        fail("publication readiness report must name TKT-0005 as only Ready ticket")
+    if payload.get("only_ready_ticket") not in (None, "", "TKT-0005"):
+        fail("publication readiness report must name no Ready ticket before entry evidence, or TKT-0005 after prerequisites pass")
     if payload.get("api_key_required") is not False:
         fail("publication readiness report must not require API keys")
     if payload.get("ai_worker_in_github_actions") is not False:
@@ -172,12 +183,16 @@ def validate_phase1_packet() -> None:
     packet = json.loads(read("reports/phase1_gameplay_loop/RUN-PHASE1-ENTRY-OPS0009/phase1_gameplay_start.json"))
     if packet.get("ticket_id") != "TKT-0005":
         fail("Phase1 packet must select TKT-0005")
-    if packet.get("verdict") != "ready":
-        fail(f"Phase1 packet must be ready, got {packet.get('verdict')}")
-    if packet.get("next_action") != "start_phase1_gameplay_ticket_worker":
-        fail("Phase1 packet must start the gameplay worker")
-    if packet.get("missing_prerequisites"):
-        fail(f"Phase1 packet has missing prerequisites: {packet.get('missing_prerequisites')}")
+    if packet.get("verdict") == "ready":
+        if packet.get("next_action") != "start_phase1_gameplay_ticket_worker":
+            fail("Phase1 packet must start the gameplay worker")
+        if packet.get("missing_prerequisites"):
+            fail(f"Phase1 packet has missing prerequisites: {packet.get('missing_prerequisites')}")
+    elif packet.get("verdict") == "block":
+        if packet.get("next_action") != "wait_for_phase1_entry_evidence":
+            fail("blocked Phase1 packet must wait for evidence")
+    else:
+        fail(f"Phase1 packet must be ready or block, got {packet.get('verdict')}")
 
 
 def validate_workflows() -> None:
@@ -198,6 +213,7 @@ def run_non_recursive_checks() -> None:
         ["scripts/check_ticket_transition_static.py"],
         ["scripts/check_worker_handoff_static.py"],
         ["scripts/check_e2e_smoke_static.py", "--static-only"],
+        ["scripts/check_phase1_entry_state_consistency.py"],
         ["scripts/check_phase1_gameplay_start_static.py"],
     ]
     for cmd in commands:
