@@ -17,7 +17,7 @@ This contract closes the gap between ticket execution and durable GitHub state.
 | `scripts/loop_open_pr.sh <ticket-id>` | Push the ticket branch and open a PR with evidence checklist. |
 | `scripts/loop_apply_qa_verdict.py --ticket <ticket-id> --verdict <json>` | Convert QA pass/reject/block JSON into ticket transition evidence. |
 | `scripts/loop_merge_and_advance.sh <ticket-id>` | Merge a passing PR and print the next-ticket command. |
-| `scripts/check_github_pr_orchestration_static.py` | Validate that this Step14 contract remains wired into the package. |
+| `scripts/check_github_pr_orchestration_static.py` | Validate that this GitHub PR orchestration contract remains wired into the package. |
 
 All commands must be safe to run with `--dry-run`.
 

@@ -1,7 +1,7 @@
 # 24_phase1_normal_play_compatibility_contract: Phase1通常プレイ互換契約
 
-作成日: 2026-06-25  
-状態: Step1新規・採用候補  
+作成日: 2026-06-25
+Status: canonical
 入力: `research/opentaiko/10_phase1_adoption_decisions.md`
 
 ## 1. 目的
@@ -100,7 +100,7 @@ Phase1は、OpenTaiko通常プレイ要素を次の3分類で扱う。
 | 分類 | 契約 |
 |---|---|
 | Must implement gameplay | 通常プレイ・headless・analyzerの全経路で実装する |
-| Must parse / must not crash | parse/reportし、panicを禁止する。通常プレイ完全再現はStep2で採用判断する |
+| Must parse / must not crash | parse/reportし、panicを禁止する。通常プレイ完全再現はOpenTaiko researchで採用判断する |
 | Explicit non-scope with report | 実装対象に入れない。検出時にreportし、Phase1完了判定から除外する |
 
 分類の正本は `docs/25_phase1_feature_classification.md` とする。
@@ -111,7 +111,7 @@ Phase1の合格判定は、synthetic fixtureとuser-selected songの二層で行
 
 ### 5.1 Synthetic fixture
 
-Synthetic fixtureは仕様網羅のために使う。Step3で25〜35譜面へ分割する。
+Synthetic fixtureは仕様網羅のために使う。coverage designで25〜35譜面へ分割する。
 
 最低限、次を網羅する。
 
@@ -157,9 +157,9 @@ Phase1 PASSには次が必要である。
 - non-scope項目が実装scopeに混入していない。
 - QA/回帰検証Sessionが最終reportを作成。
 
-## 7. Step2へ送る未確定項目
+## 7. OpenTaiko researchへ送る未確定項目
 
-Step1ではCompatibility Contractを固定する。次の細部はStep2のOpenTaiko実装調査で確定する。
+compatibility contractではCompatibility Contractを固定する。次の細部はOpenTaiko researchのOpenTaiko実装調査で確定する。
 
 - 複素SCROLLの数値表現
 - SUDDEN/DIRECTION/JPOSSCROLLの最小再現深度

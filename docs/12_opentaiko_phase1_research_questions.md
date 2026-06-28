@@ -1,12 +1,12 @@
 # 12_opentaiko_phase1_research_questions: Phase1向けOpenTaiko調査質問
 
-作成日: 2026-06-25  
-状態: Step1改訂・Compatibility Contract対応  
+作成日: 2026-06-25
+Status: adopted
 入力: `docs/11_opentaiko_feature_taxonomy.md`, `docs/24_phase1_normal_play_compatibility_contract.md`
 
 ## 1. 目的
 
-この文書は、Step2の仕様抽出SessionがOpenTaiko実装から回答すべき質問を定義する。回答は `research/opentaiko/` に保存し、`docs/25_phase1_feature_classification.md` の分類を確定させる。
+この文書は、OpenTaiko researchの仕様抽出SessionがOpenTaiko実装から回答すべき質問を定義する。回答は `research/opentaiko/` に保存し、`docs/25_phase1_feature_classification.md` の分類を確定させる。
 
 ## 2. 回答形式
 
@@ -31,10 +31,10 @@
 
 ## 3. 優先度
 
-| 優先度 | 意味 | Step2での扱い |
+| 優先度 | 意味 | OpenTaiko researchでの扱い |
 |---|---|---|
-| P0 | Compatibility Contract確定に必須 | Step2完了前に回答必須 |
-| P1 | 設計・ticket化に必須 | Step3開始前に回答必須 |
+| P0 | Compatibility Contract確定に必須 | OpenTaiko research完了前に回答必須 |
+| P1 | 設計・ticket化に必須 | coverage design開始前に回答必須 |
 | P2 | 互換report精度向上に必要 | 実装ticket前に回答 |
 
 ## 4. `.tja` metadata / COURSE / audio質問
@@ -118,7 +118,7 @@
 | LOG-003 | P0 | Must parse / must not crash項目のcompatibility reportに必要なfieldは何か | Rust版独自設計 |
 | LOG-004 | P1 | user-selected song validation reportに必要なsummary fieldは何か | Rust版独自設計 |
 
-## 11. Step2成果物への割当
+## 11. OpenTaiko research成果物への割当
 
 | 成果物 | 回答する質問群 |
 |---|---|

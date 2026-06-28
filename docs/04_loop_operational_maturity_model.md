@@ -21,11 +21,11 @@ The model is intentionally stricter than bootstrap package health. A package can
 | 5 | Failure feedback loop | QA rejects generate repair tickets and rerun paths | 75-85 |
 | 6 | Sustained Phase1 autonomous loop | Multiple tickets advance through implementation, QA, repair, and regression without extra human judgement | 85-100 |
 
-## 3. Current Step6 target
+## 3. Current autonomy scorecard target
 
-Step6 targets Level 1 completion and prepares Level 2.
+autonomy scorecard targets Level 1 completion and prepares Level 2.
 
-The expected score after Step6 remains low relative to the final goal because Rust implementation and CLI execution are still absent. Step6 raises quality by making the objective measurable and by making future tickets accountable to the autonomous loop scorecard.
+The expected score after autonomy scorecard remains low relative to the final goal because Rust implementation and CLI execution are still absent. autonomy scorecard raises quality by making the objective measurable and by making future tickets accountable to the autonomous loop scorecard.
 
 ## 4. Mandatory promotion rules
 

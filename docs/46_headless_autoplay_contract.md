@@ -10,7 +10,7 @@ This contract supports the top-level objective from `docs/00_project_objective.m
 
 ## Command surface
 
-The Step9 MVP command surface is:
+The headless autoplay MVP command surface is:
 
 ```bash
 taiko_cli headless autoplay --chart fixtures/synthetic/phase1_core/fx_core_001_basic_notes.tja --mode perfect --format json
@@ -23,7 +23,7 @@ headless_autoplay --manifest fixtures/synthetic/phase1_synthetic_manifest.toml -
 
 ## Scope
 
-Step9 implements only deterministic perfect autoplay for synthetic fixtures that already pass fixture validation.
+headless autoplay implements only deterministic perfect autoplay for synthetic fixtures that already pass fixture validation.
 
 Included:
 
@@ -43,7 +43,7 @@ Excluded:
 - branch execution;
 - golden expectation comparison.
 
-Those remain later tickets. The Step9 MVP exists to make the autoplay execution path observable before detailed timing semantics are added.
+Those remain later tickets. The headless autoplay MVP exists to make the autoplay execution path observable before detailed timing semantics are added.
 
 ## Required JSON fields
 
@@ -97,7 +97,7 @@ A report fails when any chart fails structural inspection, any chart has zero sc
 
 ## Failure categories
 
-Step9 failures must be classified into one of these categories:
+headless autoplay failures must be classified into one of these categories:
 
 - `headless_cli_contract_error`
 - `headless_fixture_load_error`

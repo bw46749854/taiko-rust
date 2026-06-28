@@ -1,6 +1,6 @@
 # Timing Log Analyzer Spec
 
-Status: Step3 expanded analyzer specification
+Status: canonical
 
 ## 1. Purpose
 

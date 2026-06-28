@@ -1,13 +1,13 @@
 # Phase1 Acceptance Gate Matrix
 
-Status: adopted for Step3 coverage design
+Status: adopted
 
 ## 1. Gate sequence
 
 | Gate | Name | Owner session | Input | Output |
 |---|---|---|---|---|
-| GATE-0000 | Spec repair | Design review session | Step1/Step2 docs | Phase1 scope accepted |
-| GATE-0010 | Coverage ready | QA/regression session | Step3 docs + fixture inventory | fixture/user-song coverage accepted |
+| GATE-0000 | Spec repair | Design review session | compatibility/research docs | Phase1 scope accepted |
+| GATE-0010 | Coverage ready | QA/regression session | coverage design docs + fixture inventory | fixture/user-song coverage accepted |
 | GATE-0020 | Implementation ready | Control session | gates 0000/0010 + tickets | implementation batch can start |
 | GATE-0100 | Synthetic regression pass | QA/regression session | implemented code + synthetic fixtures | all controlled behavior passes |
 | GATE-0200 | User-song validation pass | QA/regression session | local user manifest + implemented code | Phase1 real-song compatibility accepted |

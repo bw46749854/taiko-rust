@@ -1,7 +1,7 @@
 # 26_phase1_user_selected_song_validation: ユーザー選定曲検証方針
 
-作成日: 2026-06-25  
-状態: canonical  
+作成日: 2026-06-25
+状態: canonical
 入力: `research/opentaiko/10_phase1_adoption_decisions.md`
 
 ## 1. 目的
@@ -53,7 +53,7 @@ Synthetic fixturesは仕様網羅を検証する。User-selected songsは、Open
 
 ## 5. Manifestに必要な情報
 
-Step3でschema化する。Step1時点では、必要fieldを次で固定する。
+coverage designでschema化する。compatibility contract時点では、必要fieldを次で固定する。
 
 ```yaml
 songs:
@@ -112,9 +112,9 @@ songs:
 - compatibility warningはreportへ出る。
 - Explicit non-scope項目を検出した曲はPhase1合格曲へ数えない。
 
-## 8. Step3へ送る作業
+## 8. coverage designへ送る作業
 
-Step3で次を作成する。
+coverage designで次を作成する。
 
 - `fixtures/user_selected/README.md`
 - `fixtures/user_selected/manifests/user_song_manifest.schema.md`

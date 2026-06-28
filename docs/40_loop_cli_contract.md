@@ -7,11 +7,11 @@ Last updated: 2026-06-25
 
 `taiko_cli` is the machine interface for the autonomous loop. It converts Markdown ticket/gate state and validation reports into deterministic pass/fail/block decisions.
 
-This document is the Step7 MVP contract. Step7 adds a Rust workspace and an initial `taiko_cli` implementation for the loop orchestration commands. Full gameplay, parser, headless autoplay, and timing analyzer behavior remains out of scope.
+This document is the Loop CLI MVP contract. Loop CLI MVP adds a Rust workspace and an initial `taiko_cli` implementation for the loop orchestration commands. Full gameplay, parser, headless autoplay, and timing analyzer behavior remains out of scope.
 
-## 2. Scope for Step7 MVP
+## 2. Scope for Loop CLI MVP
 
-Step7 must implement the minimum loop orchestration commands before gameplay implementation expands.
+Loop CLI MVP must implement the minimum loop orchestration commands before gameplay implementation expands.
 
 Required commands:
 
@@ -81,7 +81,7 @@ Outputs a concise current loop status report containing:
 
 ## 4. Output format
 
-Every command must support JSON output by Step7 or Step8.
+Every command must support JSON output by Loop CLI MVP or fixture validation.
 
 Required flag:
 
@@ -91,11 +91,11 @@ Required flag:
 
 Human-readable Markdown output may also exist, but JSON is the source of truth for QA and CI.
 
-## 5. Non-goals for Step7
+## 5. Non-goals for Loop CLI MVP
 
-Step7 does not need full parser, gameplay, audio, rendering, or timing analyzer implementation.
+Loop CLI MVP does not need full parser, gameplay, audio, rendering, or timing analyzer implementation.
 
-Step7 must create enough workspace and CLI substrate so later tickets can produce machine-readable loop evidence.
+Loop CLI MVP must create enough workspace and CLI substrate so later tickets can produce machine-readable loop evidence.
 
 ## 6. Acceptance criteria for TKT-0001 update
 
@@ -107,9 +107,9 @@ Step7 must create enough workspace and CLI substrate so later tickets can produc
 - Required `loop` subcommands exist.
 - Commands can parse current `.loop/tickets` and `.loop/gates` files.
 - `taiko_cli loop next --format json` returns `TKT-0000` before GATE-0000 is recorded as passed, or returns a block verdict after `TKT-0000` is In Progress/Done but gate reports are missing.
-## 7. Step7 implementation payload
+## 7. Loop CLI MVP implementation payload
 
-Step7 adds the canonical Rust workspace and the Loop CLI MVP substrate. The repository now contains:
+Loop CLI MVP adds the canonical Rust workspace and the Loop CLI MVP substrate. The repository now contains:
 
 - `Cargo.toml`
 - `crates/taiko_domain/`
@@ -121,7 +121,7 @@ Step7 adds the canonical Rust workspace and the Loop CLI MVP substrate. The repo
 - `crates/taiko_test_support/`
 - `crates/taiko_cli/`
 
-Step7 intentionally uses only Rust standard-library code plus workspace-local crates. This keeps the first autonomous loop substrate independent of network package resolution.
+Loop CLI MVP intentionally uses only Rust standard-library code plus workspace-local crates. This keeps the first autonomous loop substrate independent of network package resolution.
 
 The CLI must expose machine-readable JSON for these commands:
 
@@ -133,16 +133,16 @@ taiko_cli loop gate GATE-0000 --dry-run --format json
 taiko_cli loop report status --format json
 ```
 
-`headless_autoplay`, `timing_log_analyzer`, and `taiko_play` are compile-time skeleton binaries in Step7. Their behavioral implementation is owned by later tickets.
+`headless_autoplay`, `timing_log_analyzer`, and `taiko_play` are compile-time skeleton binaries in Loop CLI MVP. Their behavioral implementation is owned by later tickets.
 
-## 8. Step7 validation split
+## 8. Loop CLI MVP validation split
 
 Rust-enabled sessions must execute the cargo commands from `TKT-0001`. Bootstrap-only validation environments may execute `scripts/check_rust_workspace_static.py` to verify the presence of the workspace, canonical crates, binaries, and Loop CLI command surface before Rust is available.
 
 
-## 9. Step8 fixture validation command surface
+## 9. Fixture validation command surface
 
-Step8 extends `taiko_cli` with the first executable test-harness commands. These commands are part of the autonomous loop evidence surface, not full gameplay implementation.
+The fixture validation surface extends `taiko_cli` with the first executable test-harness commands. These commands are part of the autonomous loop evidence surface, not full gameplay implementation.
 
 Required commands:
 
@@ -153,11 +153,11 @@ taiko_cli fixture inspect fixtures/synthetic/phase1_core/fx_core_001_basic_notes
 
 `fixture validate` must read the synthetic manifest, inspect all referenced `.tja` files, and return a single JSON verdict. `fixture inspect` must return a structural report for one `.tja` file. The required fields and pass/fail rules are defined in `docs/45_fixture_validation_contract.md`.
 
-Step8 still does not implement timing schedule calculation, branch execution, scoring, gauge, audio playback, rendering, headless autoplay, or timing log analysis.
+The fixture validation surface still does not implement timing schedule calculation, branch execution, scoring, gauge, audio playback, rendering, headless autoplay, or timing log analysis.
 
-## 10. Step9 headless autoplay command surface
+## 10. Headless autoplay command surface
 
-Step9 extends `taiko_cli` with the first runtime execution commands. These commands are part of the autonomous loop evidence surface, not full OpenTaiko-compatible gameplay implementation.
+The headless autoplay surface extends `taiko_cli` with the first runtime execution commands. These commands are part of the autonomous loop evidence surface, not full OpenTaiko-compatible gameplay implementation.
 
 Required commands:
 
@@ -169,11 +169,11 @@ headless_autoplay --manifest fixtures/synthetic/phase1_synthetic_manifest.toml -
 
 `headless autoplay` must load already-validated synthetic fixtures, run render-free and audio-free perfect autoplay, and return deterministic JSON with note, hit, miss, song-end, and fixture verdict fields. The required fields and pass/fail rules are defined in `docs/46_headless_autoplay_contract.md`.
 
-Step9 still does not implement OpenTaiko-compatible timing precision, judgement windows, score, gauge, audio scheduling, render behavior, branch execution, or golden comparison. Those remain downstream tickets that must consume the headless JSON evidence surface.
+The headless autoplay surface still does not implement OpenTaiko-compatible timing precision, judgement windows, score, gauge, audio scheduling, render behavior, branch execution, or golden comparison. Those remain downstream tickets that must consume the headless JSON evidence surface.
 
-## 11. Step10 timing analyzer command surface
+## 11. Timing analyzer command surface
 
-Step10 extends `taiko_cli` with the first timing self-verification commands. These commands analyze Step9 headless autoplay evidence and return deterministic JSON metrics for QA / Regression Session.
+The timing analyzer surface extends `taiko_cli` with the first timing self-verification commands. These commands analyze headless autoplay evidence and return deterministic JSON metrics for QA / Regression Session.
 
 Required commands:
 
@@ -185,7 +185,7 @@ timing_log_analyzer --input reports/headless_autoplay/phase1_synthetic.perfect.j
 
 `timing analyze` must emit `max_error_ms`, `mean_error_ms`, `p95_error_ms`, `threshold_ms`, `failed_count`, `analyzed_event_count`, and `failure_categories`. The required fields and pass/fail rules are defined in `docs/47_timing_log_analyzer_contract.md`.
 
-Step10 still does not implement final OpenTaiko-compatible audio sync, judgement windows, scroll timing, or golden comparison. Those remain downstream tickets that must consume the timing analyzer JSON evidence surface.
+The timing analyzer surface still does not implement final OpenTaiko-compatible audio sync, judgement windows, scroll timing, or golden comparison. Those remain downstream tickets that must consume the timing analyzer JSON evidence surface.
 
 ## 12. failure feedback route command surface
 

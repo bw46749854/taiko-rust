@@ -9,9 +9,9 @@ Fixture validation is the first executable test-harness layer for the autonomous
 
 This contract supports the controlling objective in `docs/00_project_objective.md`: AI sessions must be able to read tickets, implement work, verify results, detect failures, route failures into repair tickets, and select the next ticket without extra human judgement.
 
-## 2. Scope for Step8 MVP
+## 2. Scope for fixture validation MVP
 
-Step8 implements the minimum fixture validation surface required before parser, scheduler, headless autoplay, and timing analyzer tickets proceed.
+fixture validation implements the minimum fixture validation surface required before parser, scheduler, headless autoplay, and timing analyzer tickets proceed.
 
 Required commands:
 
@@ -90,15 +90,15 @@ A fixture inspection passes only when:
 - at least one `#START` exists;
 - at least one `#END` exists;
 - `#END` count is not less than `#START` count;
-- at least one playable note token exists. In Step8 this includes non-zero digit tokens and uppercase synthetic special-note tokens such as `C`, `F`, and `G`;
-- every TJA command in the fixture is classified by the Step8 known-command set;
+- at least one playable note token exists. In fixture validation this includes non-zero digit tokens and uppercase synthetic special-note tokens such as `C`, `F`, and `G`;
+- every TJA command in the fixture is classified by the fixture validation known-command set;
 - no invalid chart token appears inside chart data.
 
 Warnings may be present, but any error severity issue makes the verdict `fail`.
 
-## 6. Known-command set for Step8
+## 6. Known-command set for fixture validation
 
-The Step8 MVP must classify the commands already used by committed synthetic fixtures:
+The fixture validation MVP must classify the commands already used by committed synthetic fixtures:
 
 ```text
 #START
@@ -135,7 +135,7 @@ This set is intentionally fixture-facing. Full OpenTaiko command semantics remai
 
 ## 7. Out of scope
 
-Step8 does not implement:
+fixture validation does not implement:
 
 - complete OpenTaiko parser semantics;
 - course selection behavior beyond structural reporting;
@@ -146,7 +146,7 @@ Step8 does not implement:
 - headless autoplay;
 - timing log analysis.
 
-Those behaviors must not be accepted as implicit merely because Step8 fixture validation passes.
+Those behaviors must not be accepted as implicit merely because fixture validation passes.
 
 ## 8. Failure routing
 

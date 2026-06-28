@@ -1,7 +1,7 @@
 # 42_judgement_model: Judgementモデル
 
-作成日: 2026-06-25  
-状態: 第5回ドラフト・採用候補  
+作成日: 2026-06-25
+Status: canonical
 上流文書: `docs/20_phase1_scope.md`, `docs/22_phase1_acceptance_criteria.md`, `docs/32_data_model.md`, `docs/40_timing_model.md`
 
 ## 1. 目的
@@ -84,7 +84,7 @@ Phase1 default profileを次に固定する。
 | `phase1-default` | 25,000us | 75,000us | 108,000us |
 | `strict-test` | 10,000us | 20,000us | 30,000us |
 
-OpenTaiko互換値は未確定値として扱う。第2回調査で最終抽出するまで、Rust版のacceptanceはfixture profileのexpected一致で判定する。
+OpenTaiko互換値は未確定値として扱う。OpenTaiko調査設計調査で最終抽出するまで、Rust版のacceptanceはfixture profileのexpected一致で判定する。
 
 ## 5. InputKind
 
@@ -248,7 +248,7 @@ expectedは次の通りである。
 
 ---
 
-## Step2 Amendment: branch/score/gauge連携
+## Branch, score, and gauge integration
 
 Judgement modelは単独では完結しない。Phase1ではjudge resultを次へ伝播する。
 

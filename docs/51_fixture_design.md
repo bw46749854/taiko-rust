@@ -1,6 +1,6 @@
 # Fixture Design
 
-Status: Step3 expanded fixture design
+Status: adopted
 
 ## 1. Design goal
 

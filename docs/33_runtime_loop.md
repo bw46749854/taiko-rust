@@ -1,7 +1,7 @@
 # 33_runtime_loop: Runtime Loop定義
 
-作成日: 2026-06-25  
-状態: 第4回ドラフト・採用候補  
+作成日: 2026-06-25
+Status: canonical
 上流文書: `docs/30_rust_architecture_overview.md`, `docs/31_module_boundaries.md`, `docs/32_data_model.md`
 
 ## 1. 目的
@@ -175,7 +175,7 @@ Phase1では、曲終了の判定候補を次の順序で扱う。
 - active roll/balloonがない。
 - audioがended、またはchart endから設定済み猶予時間を超えた。
 
-終了猶予時間の初期値は第5回で固定する。第4回ではconfig化だけを要求する。
+終了猶予時間の初期値はTiming / Audio / Judgement検証設計で固定する。Rustアーキテクチャ方針ではconfig化だけを要求する。
 
 ## 10. 描画ありloop
 
@@ -224,7 +224,7 @@ write summary
 
 ### 11.1 headless tick
 
-headless tickは固定intervalで進める。初期値は `1 ms` とする。第5回で、密集譜面と境界判定を確認して確定する。
+headless tickは固定intervalで進める。初期値は `1 ms` とする。Timing / Audio / Judgement検証設計で、密集譜面と境界判定を確認して確定する。
 
 Autoplay inputの時刻はtick時刻ではなく、対象ノーツの `ChartTimeUs` そのものにする。これにより、headless tick粒度でPerfectがずれない。
 
@@ -295,9 +295,9 @@ runtime loopの単体テストは次を必須にする。
 - render snapshot生成がruntime stateを変更しない。
 - audio timeが単調でないstepはerrorになる。
 
-## 16. 第5回への未確定値
+## 16. Timing / Audio / Judgement検証設計への未確定値
 
-第4回では構造だけを固定し、次の数値は第5回で確定する。
+Rustアーキテクチャ方針では構造だけを固定し、次の数値はTiming / Audio / Judgement検証設計で確定する。
 
 - perfect/good/miss window
 - big_pair_window
@@ -309,7 +309,7 @@ runtime loopの単体テストは次を必須にする。
 
 ---
 
-## Step2 Amendment: runtime loop追加要件
+## Runtime loop compatibility requirements
 
 Runtime loopは次の順序を採用する。
 

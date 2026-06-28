@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Validate committed synthetic TJA fixture structure without Rust.
 
-This mirrors the Step8 Fixture Validation MVP pass/fail rules closely enough for
+This mirrors the fixture validation command surface pass/fail rules closely enough for
 bootstrap-only environments. Rust-enabled sessions must still run the actual
 `taiko_cli fixture ...` commands before accepting TKT-0002.
 """

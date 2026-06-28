@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Static validation for Step16 Codex Cloud / CI hardening files."""
+"""Static validation for canonical Codex Cloud / CI hardening files."""
 from __future__ import annotations
 
 import os
@@ -166,11 +166,11 @@ def check_workflows_and_docs_wiring() -> None:
         "scripts/check_codex_cloud_env_static.py",
     ]:
         if term not in bootstrap:
-            fail(f"check_bootstrap_consistency.sh missing Step16 term: {term}")
+            fail(f"check_bootstrap_consistency.sh missing Codex Cloud environment term: {term}")
     for rel in ["README.md", "AGENTS.md", "scripts/README.md", "docs/53_ci_commands.md", "docs/80_codex_execution_checklist.md"]:
         text = read_text(rel)
-        if "Step16" not in text and "canonical" not in text:
-            fail(f"{rel} must mention Step16/canonical")
+        if "Codex Cloud" not in text and "canonical" not in text:
+            fail(f"{rel} must mention Codex Cloud/canonical")
 
 
 def main() -> int:

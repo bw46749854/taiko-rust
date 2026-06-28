@@ -1,6 +1,6 @@
 # Phase1 User-selected Song Category Matrix
 
-Status: adopted for Step3 coverage design
+Status: adopted
 
 ## 1. Purpose
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Static validation for the Step7 Rust workspace and Loop CLI MVP.
+"""Static validation for the canonical Rust workspace and Loop CLI MVP.
 
 This script exists because bootstrap package validation must still run in
 environments where Rust is not installed. It does not replace cargo checks;
@@ -110,7 +110,7 @@ def main() -> int:
                 fail(f"taiko_cli source missing JSON/status field: {field}", failures)
         for disallowed in ["serde", "clap", "anyhow", "tokio"]:
             if disallowed in cli_text:
-                fail(f"taiko_cli Step7 MVP must not depend on external crate token: {disallowed}", failures)
+                fail(f"taiko_cli Loop CLI MVP must not depend on external crate token: {disallowed}", failures)
 
     tkt = ROOT / ".loop/tickets/TKT-0001.md"
     if tkt.is_file():

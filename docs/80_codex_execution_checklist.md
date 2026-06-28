@@ -16,7 +16,7 @@ Status: canonical
 - [ ] Read `.loop/gates/GATE-0000-spec-repair.md`.
 - [ ] Confirm only `OPS-0001` is Ready.
 - [ ] Confirm canonical crate names.
-- [ ] Confirm Step1/Step2/Step3 documents exist.
+- [ ] Confirm compatibility/research/coverage documents exist.
 - [ ] Confirm coverage matrix exists.
 - [ ] Confirm `fixtures/synthetic/phase1_synthetic_manifest.toml` exists and validates.
 - [ ] Confirm user-selected song manifest docs exist.
@@ -52,7 +52,7 @@ taiko_cli user-song validate --manifest fixtures/user_selected/manifests/user_so
 Commands that do not exist yet are command contracts for implementation tickets. Early tickets must create them as stubs or real commands according to ticket scope.
 
 
-## Step14 PR orchestration checklist
+## GitHub PR orchestration PR orchestration checklist
 
 Before the first implementation PR:
 
@@ -80,7 +80,7 @@ scripts/loop_merge_and_advance.sh <ticket-id> --pr <number> --verdict <qa-verdic
 A docs-only/bootstrap PR may use `--docs-only` for merge only when the ticket's own required checks do not include Rust runtime commands.
 
 
-## Step16 Codex Cloud / CI environment checklist
+## Codex Cloud / CI environment Codex Cloud / CI environment checklist
 
 Before starting `TKT-0001`:
 
@@ -93,7 +93,7 @@ Before starting `TKT-0001`:
 - [ ] No workflow exposes `OPENAI_API_KEY` or `CODEX_API_KEY` as a job-level environment variable in a job that checks out or runs repository-controlled code.
 - [ ] `docs/87_secret_and_network_policy.md` is referenced in the first gate report.
 
-## Step15 Rust preflight checklist
+## Rust preflight Rust preflight checklist
 
 Before accepting `TKT-0001` or passing `GATE-0030`:
 

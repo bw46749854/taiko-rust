@@ -7,7 +7,7 @@ Last updated: 2026-06-25
 
 The timing analyzer is the machine-verifiable precision evidence layer for the autonomous Phase1 loop. It converts headless autoplay evidence into pass/reject JSON so QA / Regression Session can detect timing-adjacent failures and route them to repair tickets without listening to audio, watching rendering, or manually inspecting TJA charts.
 
-Step10 is an MVP over Step9 perfect-autoplay evidence. It intentionally reports deterministic zero-error timing for passing perfect-autoplay fixtures. Later tickets replace this MVP model with real chart-time samples, OpenTaiko-compatible scheduling, audio latency handling, judgement-window boundaries, and golden regression baselines.
+timing analyzer is an MVP over headless autoplay perfect-autoplay evidence. It intentionally reports deterministic zero-error timing for passing perfect-autoplay fixtures. Later tickets replace this MVP model with real chart-time samples, OpenTaiko-compatible scheduling, audio latency handling, judgement-window boundaries, and golden regression baselines.
 
 ## Required commands
 
@@ -72,7 +72,7 @@ A report fails when any fixture has mismatched expected/actual event count, miss
 
 ## Failure categories
 
-Step10 failures must be classified into one of these categories:
+timing analyzer failures must be classified into one of these categories:
 
 - `parser_error`
 - `chart_time_error`
@@ -102,14 +102,14 @@ Passing `GATE-0060` permits detailed scheduler, OpenTaiko-compatible chart time,
 
 ## Non-goals
 
-Step10 does not implement:
+timing analyzer does not implement:
 
 - audio device latency measurement;
 - OpenTaiko-compatible input latency compensation;
-- real BPM/measure-derived note timestamps beyond Step9 MVP evidence;
+- real BPM/measure-derived note timestamps beyond headless autoplay MVP evidence;
 - visual scroll timing analysis;
 - judgement-window boundary testing;
 - score, gauge, branch execution, or rendering;
 - golden baseline update policy enforcement.
 
-Those are downstream tickets that must consume the Step10 analyzer contract.
+Those are downstream tickets that must consume the timing analyzer analyzer contract.

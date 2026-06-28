@@ -27,7 +27,7 @@ Usage: scripts/ci_local_equivalent.sh [--static-only] [--post-bootstrap] [--out 
 
 Runs the same validation families expected in CI/Codex Cloud.
 
-Default mode requires Rust and runs the Step15 runtime preflight.
+Default mode requires Rust and runs the runtime preflight.
 --static-only runs only Python/Bash static checks and does not require Rust.
 --post-bootstrap enables post-OPS runtime-state validation.
 HELP

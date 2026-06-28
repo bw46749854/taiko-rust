@@ -45,7 +45,7 @@ A completed ticket worktree can be removed after:
 - remaining risks are transferred to follow-up tickets.
 
 
-## Step14 executable orchestration
+## GitHub PR orchestration executable orchestration
 
 `docs/84_github_pr_loop_contract.md` is the authoritative GitHub branch/worktree/PR contract. The worktree policy is now enforced by:
 
@@ -81,4 +81,4 @@ worktrees/test-infra/<ticket-id>
 worktrees/spec/<ticket-id>
 ```
 
-`Test Infrastructure Session` and `Test Infra Session` are normalized to `test-infra` to remove the Step16/17 branch/worktree mismatch.
+`Test Infrastructure Session` and `Test Infra Session` are normalized to `test-infra` to remove the environment/controller branch/worktree mismatch.

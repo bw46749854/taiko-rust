@@ -1,6 +1,6 @@
 # Phase1 Fixture to Feature Traceability
 
-Status: adopted for Step3 coverage design
+Status: adopted
 
 ## 1. Fixture inventory
 

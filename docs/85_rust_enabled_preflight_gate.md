@@ -4,7 +4,7 @@ Status: canonical
 
 ## Purpose
 
-Step15 defines the first dynamic verification gate for the bootstrap package. Static scripts can prove that files and command contracts exist, but they cannot prove that the Rust workspace builds or that `taiko_cli` emits the JSON evidence required by later autonomous-loop stages.
+Rust preflight defines the first dynamic verification gate for the bootstrap package. Static scripts can prove that files and command contracts exist, but they cannot prove that the Rust workspace builds or that `taiko_cli` emits the JSON evidence required by later autonomous-loop stages.
 
 The Rust-enabled preflight gate is the first required non-static proof surface. It must run in GitHub Actions, Codex Cloud, or another Rust-enabled CI runner before `TKT-0001` can be accepted as Done.
 
@@ -34,7 +34,7 @@ For the narrow `TKT-0001` / `GATE-0030` acceptance path, the minimum scope is:
 scripts/run_rust_preflight.sh --scope loop-cli --out reports/preflight/latest
 ```
 
-The default scope is `current-package` because the Step15 package already includes Step7 through Step14 Rust command surfaces. The Control Session must prefer `current-package` in CI and Codex Cloud. The narrower `loop-cli` scope is reserved for diagnosing the first workspace/Loop CLI failure before fixture, autoplay, timing, QA, and phase1-feature commands are trusted.
+The default scope is `current-package` because the Rust preflight package already includes Loop CLI MVP through GitHub PR orchestration Rust command surfaces. The Control Session must prefer `current-package` in CI and Codex Cloud. The narrower `loop-cli` scope is reserved for diagnosing the first workspace/Loop CLI failure before fixture, autoplay, timing, QA, and phase1-feature commands are trusted.
 
 ## Scope definitions
 
@@ -58,7 +58,7 @@ cargo run -p taiko_cli --bin taiko_cli -- loop report status --format json
 
 ### `current-package`
 
-`current-package` includes all `loop-cli` commands plus the runtime command surfaces added by Step8 through Phase1 gameplay entry gate:
+`current-package` includes all `loop-cli` commands plus the runtime command surfaces added by fixture validation through Phase1 gameplay entry gate:
 
 ```bash
 cargo run -p taiko_cli --bin taiko_cli -- fixture validate --manifest fixtures/synthetic/phase1_synthetic_manifest.toml --format json
@@ -114,7 +114,7 @@ A `block` verdict is not acceptance. A `reject` verdict is also not acceptance. 
 
 ## Gate integration
 
-`GATE-0030` passes only when the Rust-enabled preflight evidence is valid and has verdict `pass` for at least `loop-cli` scope. The preferred gate report includes `current-package` scope because later Step8-Phase1 gameplay entry gate command surfaces are already present in this package.
+`GATE-0030` passes only when the Rust-enabled preflight evidence is valid and has verdict `pass` for at least `loop-cli` scope. The preferred gate report includes `current-package` scope because later fixture validation-Phase1 gameplay entry gate command surfaces are already present in this package.
 
 The required evidence validator is:
 

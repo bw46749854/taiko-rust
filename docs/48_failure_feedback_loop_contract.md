@@ -91,7 +91,7 @@ A valid repair ticket must include Source failure, Required reproduction command
 
 ## 7. Approved categories
 
-The failure feedback route accepts all categories from `docs/07_failure_feedback_protocol.md` plus command-surface categories introduced by Step8-Step10:
+The failure feedback route accepts all categories from `docs/07_failure_feedback_protocol.md` plus command-surface categories introduced by fixture/autoplay/timing:
 
 - `fixture_manifest_error`
 - `fixture_file_missing`

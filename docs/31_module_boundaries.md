@@ -1,7 +1,7 @@
 # 31_module_boundaries: Module境界定義
 
-作成日: 2026-06-25  
-状態: 第4回ドラフト・採用候補  
+作成日: 2026-06-25
+Status: canonical
 上流文書: `docs/30_rust_architecture_overview.md`
 
 ## 1. 目的
@@ -330,9 +330,9 @@ pub struct AnalyzeReport {
 
 ---
 
-## Step2 Amendment: crate境界の確定
+## Canonical crate boundaries
 
-Step2以降は `taiko_domain` をpure domain crateの正本名にする。旧文書に残る `taiko_core` は採用しない。
+OpenTaiko research以降は `taiko_domain` をpure domain crateの正本名にする。旧文書に残る `taiko_core` は採用しない。
 
 | crate | 許可する依存 | 禁止する依存 |
 |---|---|---|

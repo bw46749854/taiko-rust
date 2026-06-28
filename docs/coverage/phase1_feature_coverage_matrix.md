@@ -1,7 +1,7 @@
 # Phase1 Feature Coverage Matrix
 
-Status: adopted for Step3 coverage design  
-Scope source: Step1 Compatibility Contract, Step2 OpenTaiko research, `research/opentaiko/10_phase1_adoption_decisions.md`
+Status: adopted
+Scope source: compatibility contract Compatibility Contract, OpenTaiko research OpenTaiko research, `research/opentaiko/10_phase1_adoption_decisions.md`
 
 ## 1. Purpose
 

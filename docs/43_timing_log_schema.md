@@ -1,6 +1,6 @@
 # Timing Log Schema
 
-Status: Step3 expanded schema
+Status: canonical
 
 ## 1. Purpose
 

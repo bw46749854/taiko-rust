@@ -1,6 +1,6 @@
 # Golden Update Policy
 
-Status: Step3 expanded policy
+Status: canonical
 
 ## 1. Rule
 

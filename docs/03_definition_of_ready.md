@@ -1,7 +1,7 @@
 # 03_definition_of_ready: Phase1実装開始前 Definition of Ready
 
-作成日: 2026-06-25  
-状態: 第1回ドラフト・採用候補
+作成日: 2026-06-25
+Status: canonical
 
 ## 1. Definition of Readyの目的
 
@@ -214,7 +214,7 @@ QAは別worktreeで検証し、`templates/qa_report_template.md` に従って結
 
 | 層 | 必須状態 | 判定者 |
 |---|---|---|
-| Project Ready | 第1回成果物が揃っている | 管制Session |
+| Project Ready | 準備計画成果物が揃っている | 管制Session |
 | Specification Ready | Phase1仕様とOpenTaiko調査設計が揃っている | 設計レビューSession |
 | Engineering Ready | Rust設計、timing設計、test harness設計が揃っている | 設計レビューSession + テスト基盤Session |
 | Operation Ready | Session分離、worktree、PR、QA、failure loopが揃っている | 管制Session + QA/回帰検証Session |
@@ -224,7 +224,7 @@ QAは別worktreeで検証し、`templates/qa_report_template.md` に従って結
 
 Phase1実装開始は、次の状態で行う。
 
-- 第1回から第9回までの成果物が存在する。
+- 準備計画からCodex作業開始パッケージまでの成果物が存在する。
 - `AGENTS.md` が存在する。
 - 各Session起動プロンプトが存在する。
 - 初回バックログが存在する。

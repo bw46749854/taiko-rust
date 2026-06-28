@@ -48,8 +48,8 @@ The target loop must support this sequence:
 9. Control Session routes the failure into an existing repair ticket or creates a new repair ticket.
 10. The next ticket is selected by gate state, dependency state, and evidence, not by ad hoc judgement.
 
-## 5. Implication for Step6
+## 5. Implication for autonomy scorecard
 
-Step6 changes the package from “bootstrap documents are healthy” to “all bootstrap documents are evaluated against autonomous loop operation.”
+autonomy scorecard changes the package from “bootstrap documents are healthy” to “all bootstrap documents are evaluated against autonomous loop operation.”
 
-Step6 does not implement the Rust workspace. It defines the scorecard, gate transition rules, failure feedback protocol, and Loop CLI contract that make the next implementation step machine-checkable.
+autonomy scorecard does not implement the Rust workspace. It defines the scorecard, gate transition rules, failure feedback protocol, and Loop CLI contract that make the next implementation step machine-checkable.
