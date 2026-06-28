@@ -1,0 +1,1 @@
+{"verdict":"pass","route":"reject","repair_kind":"REPAIR","source_failure_id":"FF-0001","source_ticket_or_gate":"GATE-0060","category":"timing_cli_contract_error","materialized_ticket_id":"TKT-9001","original_ticket_should_remain":"Rejected","reason":"implementation or contract behavior has concrete failing evidence","missing_fields":[]}

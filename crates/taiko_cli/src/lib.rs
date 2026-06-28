@@ -1500,7 +1500,9 @@ fn ingest_failures(root: &Path, patterns: &[String]) -> CliResult<FailureIngestR
 
     let mut reports = Vec::new();
     for path in paths {
-        reports.push(parse_failure_report_file(root, &path)?);
+        if is_failure_report_file(&path)? {
+            reports.push(parse_failure_report_file(root, &path)?);
+        }
     }
 
     let mut seen: BTreeMap<String, usize> = BTreeMap::new();
@@ -1531,6 +1533,13 @@ fn ingest_failures(root: &Path, patterns: &[String]) -> CliResult<FailureIngestR
         duplicate_keys,
         reports,
     })
+}
+
+fn is_failure_report_file(path: &Path) -> CliResult<bool> {
+    let text = read_file(path)?;
+    Ok(text
+        .lines()
+        .any(|line| line.trim_start().starts_with("# Failure Report:")))
 }
 
 fn expand_report_pattern(root: &Path, pattern: &str) -> Vec<PathBuf> {
@@ -2733,7 +2742,24 @@ fn render_ticket_validation(report: &TicketValidationReport, format: OutputForma
 }
 
 fn failure_report_json(report: &FailureReport) -> String {
-    format!("{{\"failure_id\":\"{}\",\"source_ticket_or_gate\":\"{}\",\"category\":\"{}\",\"reproduction_command\":\"{}\",\"expected_class\":\"{}\",\"actual_class\":\"{}\",\"proposed_ticket_id\":\"{}\",\"regression_command\":\"{}\",\"duplicate_key\":\"{}\",\"missing_fields\":{},\"path\":\"{}\"}}", escape_json(&report.failure_id), escape_json(&report.source_ticket_or_gate), escape_json(&report.category), escape_json(&report.reproduction_command), escape_json(&report.expected_class), escape_json(&report.actual_class), escape_json(&report.proposed_ticket_id), escape_json(&report.regression_command), escape_json(&report.duplicate_key), string_array_json(&report.missing_fields), escape_json(&report.path))
+    let classification = classify_failure_report(report);
+    format!(
+        "{{\"failure_id\":\"{}\",\"source_ticket_or_gate\":\"{}\",\"category\":\"{}\",\"route\":\"{}\",\"repair_kind\":\"{}\",\"original_ticket_should_remain\":\"{}\",\"reproduction_command\":\"{}\",\"expected_class\":\"{}\",\"actual_class\":\"{}\",\"proposed_ticket_id\":\"{}\",\"regression_command\":\"{}\",\"duplicate_key\":\"{}\",\"missing_fields\":{},\"path\":\"{}\"}}",
+        escape_json(&report.failure_id),
+        escape_json(&report.source_ticket_or_gate),
+        escape_json(&report.category),
+        escape_json(&classification.route),
+        escape_json(&classification.repair_kind),
+        escape_json(&classification.original_ticket_should_remain),
+        escape_json(&report.reproduction_command),
+        escape_json(&report.expected_class),
+        escape_json(&report.actual_class),
+        escape_json(&report.proposed_ticket_id),
+        escape_json(&report.regression_command),
+        escape_json(&report.duplicate_key),
+        string_array_json(&report.missing_fields),
+        escape_json(&report.path)
+    )
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
