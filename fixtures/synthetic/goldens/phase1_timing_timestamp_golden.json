@@ -1,0 +1,23 @@
+{
+  "schema_version": "phase1-timing-timestamp-golden/v1",
+  "source_policy": "docs/52_golden_update_policy.md",
+  "description": "Expected event timestamps for TKT-0005 BPM/MEASURE/DELAY/OFFSET synthetic timing fixtures. actual_ms is populated from the current deterministic timing evidence path and must be regenerated only under the golden update policy.",
+  "events": [
+    {"fixture_id":"FX-TIME-001","event_index":0,"event_type":"note_scheduled","expected_ms":1000.0,"actual_ms":1000.0,"error_ms":0.0,"tolerance_ms":1.0},
+    {"fixture_id":"FX-TIME-001","event_index":1,"event_type":"note_scheduled","expected_ms":3000.0,"actual_ms":3000.0,"error_ms":0.0,"tolerance_ms":1.0},
+    {"fixture_id":"FX-TIME-002","event_index":0,"event_type":"note_scheduled","expected_ms":-1000.0,"actual_ms":-1000.0,"error_ms":0.0,"tolerance_ms":1.0},
+    {"fixture_id":"FX-TIME-003","event_index":0,"event_type":"note_scheduled","expected_ms":0.0,"actual_ms":0.0,"error_ms":0.0,"tolerance_ms":1.0},
+    {"fixture_id":"FX-TIME-003","event_index":1,"event_type":"bpm_changed","expected_ms":2000.0,"actual_ms":2000.0,"error_ms":0.0,"tolerance_ms":1.0},
+    {"fixture_id":"FX-TIME-003","event_index":2,"event_type":"note_scheduled","expected_ms":2000.0,"actual_ms":2000.0,"error_ms":0.0,"tolerance_ms":1.0},
+    {"fixture_id":"FX-TIME-003","event_index":3,"event_type":"bpm_changed","expected_ms":3333.333,"actual_ms":3333.333,"error_ms":0.0,"tolerance_ms":1.0},
+    {"fixture_id":"FX-TIME-003","event_index":4,"event_type":"note_scheduled","expected_ms":3333.333,"actual_ms":3333.333,"error_ms":0.0,"tolerance_ms":1.0},
+    {"fixture_id":"FX-TIME-004","event_index":0,"event_type":"note_scheduled","expected_ms":0.0,"actual_ms":0.0,"error_ms":0.0,"tolerance_ms":1.0},
+    {"fixture_id":"FX-TIME-004","event_index":1,"event_type":"measure_changed","expected_ms":2000.0,"actual_ms":2000.0,"error_ms":0.0,"tolerance_ms":1.0},
+    {"fixture_id":"FX-TIME-004","event_index":2,"event_type":"note_scheduled","expected_ms":2000.0,"actual_ms":2000.0,"error_ms":0.0,"tolerance_ms":1.0},
+    {"fixture_id":"FX-TIME-004","event_index":3,"event_type":"measure_changed","expected_ms":3500.0,"actual_ms":3500.0,"error_ms":0.0,"tolerance_ms":1.0},
+    {"fixture_id":"FX-TIME-004","event_index":4,"event_type":"note_scheduled","expected_ms":3500.0,"actual_ms":3500.0,"error_ms":0.0,"tolerance_ms":1.0},
+    {"fixture_id":"FX-TIME-005","event_index":0,"event_type":"note_scheduled","expected_ms":0.0,"actual_ms":0.0,"error_ms":0.0,"tolerance_ms":1.0},
+    {"fixture_id":"FX-TIME-005","event_index":1,"event_type":"delay_applied","expected_ms":2000.0,"actual_ms":2000.0,"error_ms":0.0,"tolerance_ms":1.0},
+    {"fixture_id":"FX-TIME-005","event_index":2,"event_type":"note_scheduled","expected_ms":3500.0,"actual_ms":3500.0,"error_ms":0.0,"tolerance_ms":1.0}
+  ]
+}
