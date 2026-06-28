@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Static validation for Step20 Plus-plan Codex Automation operation."""
+"""Static validation for ChatGPT-plan Codex automation Codex Automation operation."""
 from __future__ import annotations
 import sys
 from pathlib import Path
@@ -60,13 +60,13 @@ CHECKS = [
         "codex-review-request.md",
     ]),
     ("docs/87_secret_and_network_policy.md", [
-        "Plus-plan Step20 rule",
+        "Plus-plan ChatGPT-plan Codex operation rule",
         "openai/codex-action@v1",
         "not used",
         "GitHub Actions must not call AI workers",
     ]),
     ("docs/83_codex_surface_decision.md", [
-        "Step20 Plus-plan update",
+        "ChatGPT-plan Codex automation update",
         "Codex App Automations",
         "API-key GitHub Action worker is not the primary surface",
     ]),

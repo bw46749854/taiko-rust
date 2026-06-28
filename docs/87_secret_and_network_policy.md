@@ -28,7 +28,7 @@ The repository-scoped `.codex/config.toml` excludes common secret names from sub
 
 Do not set `OPENAI_API_KEY` or `CODEX_API_KEY` as a job-level environment variable in any workflow that checks out or runs repository-controlled code.
 
-## Plus-plan Step20 rule
+## Plus-plan ChatGPT-plan Codex operation rule
 
 For this package, `openai/codex-action@v1` is not used for normal implementation, review, QA, or controller work. GitHub Actions must not call AI workers. GitHub Actions may only run deterministic repository checks, create review-request comments, upload artifacts, and later perform mechanical auto-merge/advance.
 
@@ -94,6 +94,6 @@ A local runner may contain user-selected songs for validation, but those paths m
 A blocked security/network violation must not be converted into a docs-only pass.
 
 
-## Step21 auto-merge rule
+## auto-merge controller rule
 
 The loop-controller workflow uses `GITHUB_TOKEN` permissions for repository mechanics only. It must not use `OPENAI_API_KEY`, `CODEX_API_KEY`, or `openai/codex-action@v1`. AI implementation remains on Codex Cloud/App/CLI surfaces authenticated through the ChatGPT plan.

@@ -26,7 +26,7 @@ This matrix maps Phase1 gameplay ticket categories to the minimum command eviden
 
 ## 3. Reject routing
 
-Any command failure in the matrix must route to Step11 failure feedback. The failure category should be selected from the existing failure taxonomy:
+Any command failure in the matrix must route to failure feedback route. The failure category should be selected from the existing failure taxonomy:
 
 - `parser_error`
 - `chart_time_error`

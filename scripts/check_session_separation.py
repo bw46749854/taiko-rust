@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate Step18 session-separation metadata.
+"""Validate session separation-separation metadata.
 
 Default invocation performs static package validation. Use --metadata or --ticket
 for a concrete PR/run metadata file. --pr-gate validates changed metadata files
@@ -149,7 +149,7 @@ def infer_pr_role() -> str:
 def static_check() -> None:
     for rel in REQUIRED_FILES:
         if not (ROOT / rel).is_file():
-            fail(f"missing required Step18 file: {rel}")
+            fail(f"missing required session separation file: {rel}")
     template = ROOT / "templates/session_run_metadata_template.toml"
     issues = validate_metadata(template, require_qa_verdict=False)
     allowed_template_issues = [issue for issue in issues if not issue.startswith("implementation_worktree must be")]

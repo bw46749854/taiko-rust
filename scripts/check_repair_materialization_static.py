@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Static validation for Step19 repair-ticket materialization and retry budget."""
+"""Static validation for repair materialization and retry budget."""
 from __future__ import annotations
 import sys
 from pathlib import Path
@@ -62,13 +62,13 @@ CHECKS = [
         "max_controller_runs_per_hour = 4",
     ]),
     ("docs/40_loop_cli_contract.md", [
-        "Step19 repair materialization and retry-budget command surface",
+        "repair materialization and retry-budget command surface",
         "taiko_cli loop failure classify --input",
         "taiko_cli loop ticket materialize --from-failure",
         "taiko_cli loop retry-budget check --ticket",
     ]),
     ("docs/48_failure_feedback_loop_contract.md", [
-        "Step19 materialization contract",
+        "repair materialization contract",
         "materialized_ticket_id",
         "original_ticket_should_remain",
     ]),
@@ -85,7 +85,7 @@ def main() -> int:
     failures: list[str] = []
     for rel in REQUIRED_FILES:
         if not (ROOT / rel).is_file():
-            failures.append(f"missing required Step19 file: {rel}")
+            failures.append(f"missing required repair materialization and retry-budget route file: {rel}")
     for rel, terms in CHECKS:
         path = ROOT / rel
         if not path.is_file():

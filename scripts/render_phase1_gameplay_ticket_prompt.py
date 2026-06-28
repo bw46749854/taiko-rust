@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Render the Step23 Phase1 gameplay ticket start packet.
+"""Render the Phase1 gameplay worker handoff ticket start packet.
 
 This script is deterministic and does not call OpenAI APIs. It is the bridge
 between the feature-ticket manifest and a Codex Cloud/App/CLI worker prompt.
@@ -144,7 +144,7 @@ def build_start_packet(args: argparse.Namespace) -> dict[str, Any]:
     if first_feature_ticket != DEFAULT_TICKET:
         issues.append(f"first_feature_ticket must be {DEFAULT_TICKET}, got {first_feature_ticket or 'missing'}")
     if ticket_id != DEFAULT_TICKET:
-        issues.append("Step23 only opens the first gameplay lane; selected ticket must be TKT-0005")
+        issues.append("The Phase1 gameplay worker handoff only opens the first gameplay lane; selected ticket must be TKT-0005")
     entry = manifest_entry(entries, ticket_id)
     if entry is None:
         issues.append(f"manifest entry missing: {ticket_id}")
@@ -330,7 +330,7 @@ def render_prompt(packet: dict[str, Any]) -> str:
         "- Do not mark tickets Done.",
         "- Do not pass gates.",
         "- Do not use `OPENAI_API_KEY`, `CODEX_API_KEY`, or `openai/codex-action@v1`.",
-        "- Route reject/block through the Step19 repair materialization path.",
+        "- Route reject/block through the repair materialization and retry-budget route path.",
     ]
     return "\n".join(lines) + "\n"
 

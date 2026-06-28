@@ -5,7 +5,7 @@ Last updated: 2026-06-25
 
 ## 1. Purpose
 
-Step11 makes the failure feedback loop executable enough for autonomous AI sessions.
+The failure feedback route makes the failure feedback loop executable enough for autonomous AI sessions.
 
 The controlling objective is not merely to store failure reports. The objective is to convert a QA reject, timing anomaly, parser error, gate block, or CLI contract failure into a machine-readable failure record and a repair-ticket proposal without additional human design judgement.
 
@@ -91,7 +91,7 @@ A valid repair ticket must include Source failure, Required reproduction command
 
 ## 7. Approved categories
 
-Step11 accepts all categories from `docs/07_failure_feedback_protocol.md` plus command-surface categories introduced by Step8-Step10:
+The failure feedback route accepts all categories from `docs/07_failure_feedback_protocol.md` plus command-surface categories introduced by Step8-Step10:
 
 - `fixture_manifest_error`
 - `fixture_file_missing`
@@ -126,11 +126,11 @@ Passing `GATE-0070` permits Phase1 gameplay implementation tickets such as `TKT-
 
 ## 10. Non-goals
 
-Step11 does not need automatic file mutation, automatic branch creation, or automatic PR creation. It must make failure-to-ticket routing deterministic and machine-readable. Later CI and QA work may consume this command surface to create files automatically.
+failure feedback route does not need automatic file mutation, automatic branch creation, or automatic PR creation. It must make failure-to-ticket routing deterministic and machine-readable. Later CI and QA work may consume this command surface to create files automatically.
 
-## Step19 materialization contract
+## repair materialization contract
 
-Step19 upgrades the failure feedback loop from proposal-only to executable ticket creation.
+The repair materialization and retry-budget route upgrades the failure feedback loop from proposal-only to executable ticket creation.
 
 New required commands:
 

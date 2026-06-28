@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# OPS-0009 E2E smoke loop. This script composes the Step17-Step21 controller,
+# OPS-0009 E2E smoke loop. This script composes the loop run-once controller-auto-merge controller controller,
 # metadata, repair, retry, auto-merge, and revert surfaces without calling AI
 # providers and without requiring OPENAI_API_KEY.
 
@@ -79,7 +79,7 @@ summary = {
     "scenarios": {},
 }
 (out / "summary.json").write_text(json.dumps(summary, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
-(out / "summary.md").write_text(f"# Step22 E2E Smoke Loop\n\n- run_id: `{run_id}`\n- dry_run: `true`\n- AI worker: `not_used`\n- API key required: `false`\n", encoding="utf-8")
+(out / "summary.md").write_text(f"# E2E smoke loop E2E Smoke Loop\n\n- run_id: `{run_id}`\n- dry_run: `true`\n- AI worker: `not_used`\n- API key required: `false`\n", encoding="utf-8")
 PY
 
 if run_scenario pass; then
@@ -177,7 +177,7 @@ Worktree: worktrees/repair/TKT-REPAIR-SMOKE-REJECT
 
 ## Objective
 
-Preview the Step19 repair materialization route for a QA reject without mutating .loop/tickets.
+Preview the repair materialization and retry-budget route route for a QA reject without mutating .loop/tickets.
 
 ## Source failure
 
@@ -231,7 +231,7 @@ Worktree: worktrees/env/TKT-ENV-SMOKE-BLOCK
 
 ## Objective
 
-Preview the Step19 blocker materialization route for a QA block without mutating .loop/tickets.
+Preview the blocker materialization route for a QA block without mutating .loop/tickets.
 
 ## Source failure
 

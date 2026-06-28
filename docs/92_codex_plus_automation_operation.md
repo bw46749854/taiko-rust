@@ -4,7 +4,7 @@ Status: canonical
 
 ## Purpose
 
-Step20 defines the execution surface for running the autonomous loop within a personal ChatGPT Plus plan. The project must not depend on `OPENAI_API_KEY`, `CODEX_API_KEY`, `openai/codex-action`, or other API-metered workers for normal loop operation.
+ChatGPT-plan Codex operation defines the execution surface for running the autonomous loop within a personal ChatGPT Plus plan. The project must not depend on `OPENAI_API_KEY`, `CODEX_API_KEY`, `openai/codex-action`, or other API-metered workers for normal loop operation.
 
 The adopted model is a heartbeat loop:
 
@@ -24,9 +24,9 @@ GitHub Actions
 
 ## Non-goal
 
-Step20 does not implement Phase1 gameplay features and does not enable auto-merge. Auto-merge controller work belongs to the next step.
+ChatGPT-plan Codex operation does not implement Phase1 gameplay features and does not enable auto-merge. Auto-merge controller work belongs to the next step.
 
-Step20 also does not install a GitHub Actions AI worker. Any workflow that checks out this repository must remain deterministic and must not invoke `openai/codex-action@v1`.
+ChatGPT-plan Codex operation also does not install a GitHub Actions AI worker. Any workflow that checks out this repository must remain deterministic and must not invoke `openai/codex-action@v1`.
 
 ## Plus-plan compatibility rules
 
@@ -87,7 +87,7 @@ The human operator does only platform setup:
 7. Codex modifies one ticket scope only.
 8. Codex opens a PR.
 9. GitHub Actions enforce deterministic gates.
-10. Later Step21 auto-merge merges only passing PRs.
+10. Later auto-merge controller merges only passing PRs.
 ```
 
 ## GitHub review workflow change

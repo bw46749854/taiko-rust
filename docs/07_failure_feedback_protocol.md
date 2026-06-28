@@ -67,7 +67,7 @@ Duplicate failures update the existing repair ticket rather than creating a new 
 
 ## 6. Required future CLI behavior
 
-Step7 and Step11 must make this protocol executable through commands equivalent to:
+Step7 and failure feedback route must make this protocol executable through commands equivalent to:
 
 ```bash
 taiko_cli loop failure ingest reports/failures/*.md
@@ -77,11 +77,11 @@ taiko_cli loop ticket validate .loop/tickets/TKT-XXXX.md
 
 Until those commands exist, failure reports must still follow `templates/failure_report_template.md` so the future CLI can parse them.
 
-## 7. Step11 executable failure feedback surface
+## 7. Executable failure feedback route surface
 
 Status: canonical
 
-Step11 makes the required future CLI behavior executable through these commands:
+The failure feedback route makes the required future CLI behavior executable through these commands:
 
 ```bash
 taiko_cli loop failure ingest reports/failures/*.md --format json
@@ -106,7 +106,7 @@ Additional Step8-Step10 command-surface categories are approved for routing:
 - `runtime_mvp_regression`
 - `timing_cli_contract_error`
 
-## Step19 executable materialization update
+## Executable repair materialization update
 
 Failure feedback now has two distinct stages.
 

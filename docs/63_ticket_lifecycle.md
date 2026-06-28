@@ -50,7 +50,7 @@ A Done ticket must be reopened or followed by a corrective ticket when:
 - OpenTaiko research contradicts the adopted behavior,
 - a previously ignored command appears in normal-play charts.
 
-## Step19 repair and blocker lifecycle
+## repair materialization and retry-budget route repair and blocker lifecycle
 
 A `reject` or `block` verdict must not depend on human ticket drafting.
 

@@ -5,11 +5,11 @@ Last updated: 2026-06-25
 
 ## 1. Purpose
 
-Step12 makes QA / Regression Session verdicts machine-readable.
+The QA verdict route makes QA / Regression Session verdicts machine-readable.
 
 The controlling objective is not to add another review checklist. The objective is to let a separate QA / Regression Session run deterministic commands, receive `pass`, `reject`, or `block`, and route the result back into the loop without additional human design judgement.
 
-This contract is the first QA gate that consumes the Step8 fixture validator, Step9 headless autoplay evidence, Step10 timing analyzer, and Step11 failure-feedback route as one verdict.
+This contract is the first QA gate that consumes the Step8 fixture validator, Step9 headless autoplay evidence, Step10 timing analyzer, and failure-feedback route route as one verdict.
 
 ## 2. Required command surface
 
@@ -23,7 +23,7 @@ The command surface belongs to `taiko_cli`. It is part of autonomous loop orches
 
 ## 3. `qa run` contract
 
-`qa run` executes the minimum autonomous regression chain available at Step12.
+`qa run` executes the minimum autonomous regression chain available at QA verdict route.
 
 Required internal checks:
 
@@ -43,7 +43,7 @@ Required JSON fields:
 | `fixture_verdict` | `pass` / `reject` outcome from fixture validation |
 | `headless_verdict` | `pass` / `reject` outcome from headless autoplay |
 | `timing_verdict` | `pass` / `reject` outcome from timing analyzer |
-| `failure_route_ready` | Whether Step11 failure feedback route exists |
+| `failure_route_ready` | Whether failure feedback route route exists |
 | `required_reports` | Reports expected to be archived by QA Session |
 | `issues` | Machine-readable issues that explain reject/block |
 
@@ -81,7 +81,7 @@ Verdict rules:
 | Both directories exist and files differ or disappear | `reject` |
 | Either directory is missing | `block` |
 
-Step12 only requires deterministic file comparison. OpenTaiko-equivalence tolerance policy remains the responsibility of timing and gameplay-specific later tickets.
+The QA verdict route only requires deterministic file comparison. OpenTaiko-equivalence tolerance policy remains the responsibility of timing and gameplay-specific later tickets.
 
 ## 6. `qa verdict` contract
 
@@ -113,11 +113,11 @@ Verdict mapping:
 - `taiko_cli qa verdict` JSON;
 - cargo command results in Rust-enabled sessions;
 - evidence that QA Session ran in a different worktree from the implementation worktree;
-- failure-feedback route confirmation from Step11.
+- failure-feedback route confirmation from failure feedback route.
 
 ## 8. Non-goals
 
-Step12 does not require complete OpenTaiko timing equivalence, full chart feature implementation, automatic PR creation, or automatic branch mutation. It creates a deterministic QA verdict layer that later Phase1 feature tickets must satisfy.
+The QA verdict route does not require complete OpenTaiko timing equivalence, full chart feature implementation, automatic PR creation, or automatic branch mutation. It creates a deterministic QA verdict layer that later Phase1 feature tickets must satisfy.
 
 ## 9. Asset bundle verdict routing
 

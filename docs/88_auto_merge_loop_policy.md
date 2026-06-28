@@ -4,7 +4,7 @@ Status: canonical
 
 ## Purpose
 
-Step17 establishes the controller foundation for an autonomous loop that can eventually merge passing work without human approval. The immediate implementation is `loop run-once`; later steps add metadata enforcement, repair-ticket materialization, Codex Automation operation, and auto-merge workflows.
+loop run-once controller establishes the controller foundation for an autonomous loop that can eventually merge passing work without human approval. The immediate implementation is `loop run-once`; later steps add metadata enforcement, repair-ticket materialization, Codex Automation operation, and auto-merge workflows.
 
 This policy adopts auto-merge as the target state for this project. The repository does not contain production databases, commercial assets, or external API side effects that require human merge approval. The risk model is therefore loop-quality drift, history pollution, and unbounded execution, not data exfiltration or production destruction.
 
@@ -21,7 +21,7 @@ A merge is permitted only after machine evidence shows:
 - retry budget is not exceeded,
 - next-ticket transition evidence exists.
 
-Step17 does not enable automatic merge by itself. It produces the state-machine and `run-once` plan surface that later steps use to drive merge decisions.
+loop run-once controller does not enable automatic merge by itself. It produces the state-machine and `run-once` plan surface that later steps use to drive merge decisions.
 
 ## Controller responsibility split
 
@@ -32,7 +32,7 @@ Step17 does not enable automatic merge by itself. It produces the state-machine 
 | `--mode plan` | Inspect tickets, gates, failures, and return the next action as JSON/Markdown without side effects. |
 | `--mode apply` | Write controller artifacts under `reports/loop/<run_id>/` and render the next Codex prompt. |
 
-Step17 `apply` does not mark gameplay tickets Ready, Done, or merged. Ticket mutation remains controlled by existing gate/QA/merge scripts until later steps add stronger metadata enforcement.
+loop run-once controller `apply` does not mark gameplay tickets Ready, Done, or merged. Ticket mutation remains controlled by existing gate/QA/merge scripts until later steps add stronger metadata enforcement.
 
 ## Plus-plan operation rule
 
@@ -59,14 +59,14 @@ Later steps extend this to `run_qa`, `merge`, `materialize_repair`, `materialize
 These artifacts are controller evidence, not acceptance evidence for Rust preflight, QA, or Phase1 gameplay.
 
 
-## Step20 automation handoff note
+## Codex automation handoff note
 
-Step20 does not enable auto-merge. It ensures the worker handoff can run through Codex Cloud, Codex App Automations, or Codex CLI signed in with ChatGPT. GitHub Actions remain deterministic and must not invoke `openai/codex-action@v1`.
+ChatGPT-plan Codex operation does not enable auto-merge. It ensures the worker handoff can run through Codex Cloud, Codex App Automations, or Codex CLI signed in with ChatGPT. GitHub Actions remain deterministic and must not invoke `openai/codex-action@v1`.
 
 
-## Step21 update
+## auto-merge controller update
 
-Step21 adds `.github/workflows/loop-controller.yml`, `scripts/check_auto_merge_conditions.py`, `scripts/loop_auto_merge_pr.sh`, and `scripts/loop_revert_last_merge.sh`. GitHub Actions may perform gate/merge/advance mechanics but must not call AI providers or require `OPENAI_API_KEY`.
+The auto-merge controller adds `.github/workflows/loop-controller.yml`, `scripts/check_auto_merge_conditions.py`, `scripts/loop_auto_merge_pr.sh`, and `scripts/loop_revert_last_merge.sh`. GitHub Actions may perform gate/merge/advance mechanics but must not call AI providers or require `OPENAI_API_KEY`.
 
 ## OPS-0006 candidate discovery update
 

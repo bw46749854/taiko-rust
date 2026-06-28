@@ -1,11 +1,11 @@
-# Step19 Repair Materialization and Retry Budget
+# repair materialization and retry-budget route Repair Materialization and Retry Budget
 
 Status: canonical
 Purpose: make failure feedback executable without human conversion from report to ticket.
 
 ## 1. Scope
 
-Step19 adds the missing link between QA failure evidence and the next runnable loop ticket.
+The repair materialization and retry-budget route adds the missing link between QA failure evidence and the next runnable loop ticket.
 
 It covers:
 
@@ -86,7 +86,7 @@ taiko_cli loop retry-budget check --ticket TKT-0005 --format json
 
 ## 5. Controller use
 
-`loop run-once` uses Step19 outputs as follows:
+`loop run-once` uses repair materialization outputs as follows:
 
 ```text
 open failure exists
@@ -97,7 +97,7 @@ open failure exists
   -> retry budget block: stop and route to Control Session
 ```
 
-Step20 may use the generated `next_codex_prompt.md` to ask Codex Cloud or Codex Automations to work on the materialized ticket. GitHub Actions still must not call Codex through `OPENAI_API_KEY`.
+ChatGPT-plan Codex operation may use the generated `next_codex_prompt.md` to ask Codex Cloud or Codex Automations to work on the materialized ticket. GitHub Actions still must not call Codex through `OPENAI_API_KEY`.
 
 ## 6. Acceptance criteria
 

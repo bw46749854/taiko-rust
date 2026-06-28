@@ -1,4 +1,4 @@
-# Step19 failure classification rules.
+# failure classification rules.
 # The loop distinguishes concrete implementation regressions from blockers that
 # must repair specification, environment, or tooling evidence before gameplay work continues.
 

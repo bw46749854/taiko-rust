@@ -4,7 +4,7 @@ Status: canonical
 
 ## Purpose
 
-Step18 converts the self-approval prevention rule from prose into machine-checkable metadata and path policy.
+Session separation converts the self-approval prevention rule from prose into machine-checkable metadata and path policy.
 
 The goal is not to protect confidential data. The goal is to stop the autonomous loop from accepting its own work without separate Implementation, Review, QA, and Control evidence.
 
@@ -80,6 +80,6 @@ scripts/check_role_path_policy.py --pr-gate
 
 The scripts are intentionally Python-only so the separation gate can run even before Rust dynamic preflight succeeds.
 
-## Step18 boundary
+## session separation boundary
 
-Step18 does not auto-merge, does not materialize repair tickets, and does not start Phase1 gameplay work. It only makes later auto-merge decisions machine-checkable.
+Session separation does not auto-merge, does not materialize repair tickets, and does not start Phase1 gameplay work. It only makes later auto-merge decisions machine-checkable.

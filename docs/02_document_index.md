@@ -179,7 +179,7 @@ Status: canonical
 - `scripts/ci_local_equivalent.sh`
 - `scripts/check_codex_cloud_env_static.py`
 
-## Step17 loop controller
+## loop run-once controller loop controller
 
 - `docs/88_auto_merge_loop_policy.md`
 - `docs/89_loop_controller_state_machine.md`
@@ -194,21 +194,21 @@ Status: canonical
 - `scripts/check_loop_controller_static.py`
 
 
-## Step18 additions
+## session separation additions
 
 - `docs/90_session_metadata_and_path_policy.md` — machine-readable session metadata, role worktree separation, and path policy gate.
 - `operations/path_policy.toml` — role allow/deny path policy for PR gating.
 - `schemas/session_metadata_schema.md` — metadata field contract.
 
 
-## Step19 additions
+## repair materialization and retry-budget route additions
 
 - `docs/91_repair_materialization_and_retry_budget.md`
 - `docs/92_codex_plus_automation_operation.md` — failure classification, repair/blocker ticket materialization, and retry budget contract.
 - `operations/failure_classification_rules.toml` — reject/block route table.
 - `operations/retry_budget.toml` — loop retry limits.
 - `templates/repair_ticket_template.md` and `templates/blocker_ticket_template.md` — generated ticket shapes.
-- `scripts/check_repair_materialization_static.py` — static validation for Step19.
+- `scripts/check_repair_materialization_static.py` — static validation for repair materialization and retry-budget route.
 
 - `operations/codex_automation_policy.toml`
 - `prompts/70_codex_automation_loop_runner.md`
@@ -218,7 +218,7 @@ Status: canonical
 - `reports/loop_automation/README.md`
 
 
-## Step21 auto-merge controller
+## auto-merge controller controller
 
 - `docs/93_github_actions_auto_merge_controller.md` — GitHub Actions gate/merge/advance controller contract.
 - `operations/auto_merge_policy.toml` — machine-readable auto-merge policy.
@@ -240,7 +240,7 @@ Status: canonical
 - `docs/93_github_actions_auto_merge_controller.md`
 - `docs/94_e2e_smoke_loop_verification.md`
 
-## Step23 Phase1 gameplay loop start
+## Phase1 gameplay worker handoff
 
 - `docs/95_phase1_gameplay_loop_start.md`
 - `operations/phase1_gameplay_loop_policy.toml`

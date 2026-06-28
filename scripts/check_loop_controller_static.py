@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Static validation for Step17 loop-controller foundation.
+"""Static validation for loop run-once controller foundation.
 
 This check intentionally does not require Rust. Runtime validation remains the
 responsibility of Rust preflight in a Rust-enabled environment.
@@ -69,12 +69,12 @@ REQUIRED_TERMS = {
         "cargo run -p taiko_cli --bin taiko_cli",
     ],
     "README.md": [
-        "Step17",
+        "loop run-once controller",
         "loop run-once",
         "scripts/loop_run_once.sh --mode plan",
     ],
     "AGENTS.md": [
-        "Step17 operational note",
+        "Loop run-once controller operational note",
         "loop run-once",
         "OPENAI_API_KEY",
     ],

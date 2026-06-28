@@ -92,11 +92,11 @@ The current package includes the first executable loop substrate and timing evid
 
 Step10 raises operational readiness by adding the first machine-readable timing self-verification surface. It does not raise Phase1 gameplay completion by itself.
 
-## 8. Step11 operational estimate
+## 8. failure feedback route operational estimate
 
-The Step11 package adds executable failure feedback routing. Rust-enabled sessions must still prove the estimate with cargo and CLI output.
+The failure feedback route package adds executable failure feedback routing. Rust-enabled sessions must still prove the estimate with cargo and CLI output.
 
-| Axis ID | Weight | Step11 estimate | Reason |
+| Axis ID | Weight | failure feedback route estimate | Reason |
 |---|---:|---:|---|
 | A1 | 10 | 8 | Governance remains stable |
 | A2 | 15 | 12 | Failures and repair tickets now have machine-readable command surfaces |
@@ -107,4 +107,4 @@ The Step11 package adds executable failure feedback routing. Rust-enabled sessio
 | A7 | 10 | 8 | Failure reports can be ingested and converted into repair-ticket proposals |
 | **Total** | **100** | **68** | Operational loop can now route rejects back into repair work, but is not yet CI-enforced |
 
-Step11 raises self-repair readiness. It does not raise Phase1 gameplay completion by itself.
+The failure feedback route raises self-repair readiness. It does not raise Phase1 gameplay completion by itself.

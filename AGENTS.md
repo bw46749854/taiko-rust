@@ -35,14 +35,14 @@ Commercial songs, audio files, images, videos, and copyrighted chart assets are 
 - Any unsupported OpenTaiko command observed in normal-play charts must be reported explicitly, not silently ignored.
 
 - QA / Regression Session verdicts must be produced by `taiko_cli qa run`, `taiko_cli qa compare`, or `taiko_cli qa verdict`; prose-only QA conclusions are not sufficient.
-- A `reject` verdict must be routed to Step11 failure feedback before downstream gameplay tickets proceed.
+- A `reject` verdict must be routed to failure feedback route before downstream gameplay tickets proceed.
 - A `block` verdict must identify missing machine evidence rather than asking for ad hoc human judgement.
 - PRs must use `docs/84_github_pr_loop_contract.md`; branch/worktree/PR/QA/merge/advance steps cannot be replaced by informal chat approval.
 - PR cannot merge without separate review evidence, QA transition evidence, and no-user-asset confirmation.
 - `TKT-0001` and `GATE-0030` cannot pass from static Rust workspace inspection alone; Rust preflight evidence is mandatory.
 - Codex Cloud / CI environment changes must preserve `rust-toolchain.toml`, `scripts/codex_cloud_setup.sh`, `scripts/ci_local_equivalent.sh`, and `docs/87_secret_and_network_policy.md`.
-- Step17 controller work must preserve `docs/88_auto_merge_loop_policy.md`, `docs/89_loop_controller_state_machine.md`, `operations/loop_policy.toml`, `scripts/loop_run_once.sh`, and `scripts/check_loop_controller_static.py`.
-- Step22 E2E smoke loop work must preserve `docs/94_e2e_smoke_loop_verification.md`, `operations/e2e_smoke_policy.toml`, `scripts/run_e2e_smoke_loop.sh`, and `scripts/check_e2e_smoke_static.py`. Actions must not call AI providers, `OPENAI_API_KEY`, or `openai/codex-action@v1`.
+- loop run-once controller work must preserve `docs/88_auto_merge_loop_policy.md`, `docs/89_loop_controller_state_machine.md`, `operations/loop_policy.toml`, `scripts/loop_run_once.sh`, and `scripts/check_loop_controller_static.py`.
+- E2E smoke loop work must preserve `docs/94_e2e_smoke_loop_verification.md`, `operations/e2e_smoke_policy.toml`, `scripts/run_e2e_smoke_loop.sh`, and `scripts/check_e2e_smoke_static.py`. Actions must not call AI providers, `OPENAI_API_KEY`, or `openai/codex-action@v1`.
 
 ## 3. Canonical crate and binary names
 
@@ -248,7 +248,7 @@ Step10 timing analysis is an MVP over Step9 perfect-autoplay evidence. Passing S
 
 Any ticket touching parser timing, scheduler, scroll, judgement, runtime ticks, or audio sync must preserve the Step10 analyzer contract and add stronger evidence rather than replacing it with manual inspection.
 
-## Step11 operational note
+## Failure feedback route operational note
 
 The failure feedback loop is now part of the executable autonomous-loop substrate. `taiko_cli` must expose:
 
@@ -261,7 +261,7 @@ taiko_cli loop ticket validate .loop/tickets/TKT-0040.md --format json
 No gameplay feature ticket may use manual QA judgement as the only repair route after `GATE-0060`. Phase1 feature work beginning with `TKT-0005` remains Blocked until `TKT-0040` is Done and `GATE-0070` passes.
 
 
-## Step12 QA regression gate command surface
+## QA verdict route gate command surface
 
 The QA / Regression Session must prefer the following machine-readable commands over prose judgement:
 
@@ -273,13 +273,13 @@ taiko_cli qa verdict --input reports/qa/phase1_loop.qa.json --format json
 
 `pass` advances to the next eligible ticket, `reject` routes to failure feedback and repair-ticket proposal, and `block` requires missing evidence to be produced before implementation continues.
 
-## Step13 phase1 feature-loop entry rule
+## Phase1 gameplay entry gate rule
 
 The first Phase1 gameplay feature ticket is `TKT-0005`. It must not be selected until `TKT-0060` is Done and `GATE-0090` has passed.
 
 Control Session must use `operations/phase1_feature_ticket_manifest.toml` plus `taiko_cli phase1 feature plan --format json` to identify the next gameplay feature ticket. Manual ordering from prose is not allowed.
 
-Every Phase1 gameplay feature ticket must include QA run evidence, QA verdict evidence, failure-route evidence, and next-ticket transition evidence. A QA `reject` must be routed through Step11 failure feedback before downstream tickets proceed.
+Every Phase1 gameplay feature ticket must include QA run evidence, QA verdict evidence, failure-route evidence, and next-ticket transition evidence. A QA `reject` must be routed through failure feedback route before downstream tickets proceed.
 
 
 ## Step14 operational note
@@ -320,7 +320,7 @@ scripts/ci_local_equivalent.sh --out reports/preflight/latest
 `rust-toolchain.toml` is the canonical Rust version contract. Do not rely on floating `stable` as ticket acceptance evidence. Codex Cloud agent internet access remains off by default; setup-script internet is only for installing the pinned Rust toolchain and dependencies. No implementation ticket may introduce job-level `OPENAI_API_KEY` or `CODEX_API_KEY` in workflows that check out or run repository-controlled code.
 
 
-## Step17 operational note
+## Loop run-once controller operational note
 
 `loop run-once` is now the canonical controller preview command:
 
@@ -333,15 +333,15 @@ scripts/loop_run_once.sh --mode apply
 
 The controller emits exactly one next action: `start_worker`, `classify_failure`, or `wait_for_ready_ticket`. `--mode apply` writes only controller artifacts under `reports/loop/<run_id>/`; it must not mark gameplay tickets Done, pass gates, or merge branches.
 
-Step17 does not require `OPENAI_API_KEY` or `CODEX_API_KEY`. GitHub Actions may run deterministic validation and future auto-merge logic, but AI implementation remains on the ChatGPT-plan Codex Cloud / Codex App / CLI / Automations surface.
+The loop run-once controller does not require `OPENAI_API_KEY` or `CODEX_API_KEY`. GitHub Actions may run deterministic validation and future auto-merge logic, but AI implementation remains on the ChatGPT-plan Codex Cloud / Codex App / CLI / Automations surface.
 
 
-## Step18 operational note
+## Session separation operational note
 
 Session separation is now a machine-readable gate. Any PR that advances a ticket must provide `reports/session_metadata/<ticket-id>.toml`. Implementation, Review, and QA session IDs must be distinct. Implementation Sessions must not write QA verdict files. QA Sessions must not modify `crates/`. Use role-specific worktrees through `scripts/loop_create_worktree.sh <ticket-id> --role <role>`.
 
 
-## Step19 repair materialization rules
+## Repair materialization and retry-budget route rules
 
 Failure reports must be classified before downstream work continues. Use `taiko_cli loop failure classify --input <failure-report> --format json` to decide `reject` versus `block`.
 
@@ -349,31 +349,31 @@ Use `taiko_cli loop ticket materialize --from-failure <failure-report> --format 
 
 Use `taiko_cli loop retry-budget check --ticket <ticket-id> --format json` before repeated repair attempts. A `block` retry-budget verdict stops the loop and routes to Control Session.
 
-Step19 does not require API-key based Codex execution. AI work remains on Codex Cloud/App/CLI/Automations under the ChatGPT plan, while GitHub Actions handles gate checks and transitions.
+The repair materialization and retry-budget route does not require API-key based Codex execution. AI work remains on Codex Cloud/App/CLI/Automations under the ChatGPT plan, while GitHub Actions handles gate checks and transitions.
 
 
-## Step20 operational note
+## ChatGPT-plan Codex operation operational note
 
-Step20 adopts ChatGPT-plan Codex operation. Codex Cloud, Codex App Automations, or Codex CLI signed in with ChatGPT are the AI execution surfaces. GitHub Actions must not invoke `openai/codex-action@v1`, must not require `OPENAI_API_KEY` or `CODEX_API_KEY`, and must remain deterministic. Use `prompts/70_codex_automation_loop_runner.md`, `prompts/71_codex_cloud_ticket_worker.md`, and `scripts/render_next_codex_prompt.py` for automation handoff.
+ChatGPT-plan Codex operation uses ChatGPT-plan Codex surfaces. Codex Cloud, Codex App Automations, or Codex CLI signed in with ChatGPT are the AI execution surfaces. GitHub Actions must not invoke `openai/codex-action@v1`, must not require `OPENAI_API_KEY` or `CODEX_API_KEY`, and must remain deterministic. Use `prompts/70_codex_automation_loop_runner.md`, `prompts/71_codex_cloud_ticket_worker.md`, and `scripts/render_next_codex_prompt.py` for automation handoff.
 
 
-## Step21 operational note
+## auto-merge controller operational note
 
-GitHub Actions auto-merge controller is the only automated merge surface introduced in Step21. Actions must not call AI providers, must not require `OPENAI_API_KEY`, and must not use `openai/codex-action@v1`.
+GitHub Actions auto-merge controller is the only automated merge surface for the autonomous loop. Actions must not call AI providers, must not require `OPENAI_API_KEY`, and must not use `openai/codex-action@v1`.
 
 The controller may merge only when `scripts/check_auto_merge_conditions.py` passes with ticket metadata, QA verdict, session separation, role path policy, no-user-asset validation, retry budget, and required gate evidence. QA `reject` and QA `block` are never mergeable.
 
 Autonomous merge records belong in `reports/loop/merge_history/<run_id>.json`. Regression evidence belongs in `reports/regression/<run_id>.json` and is handled through a revert PR, not by direct force-push or manual history rewrite.
 
 
-## Step22 operational note
+## E2E smoke loop operational note
 
-Step22 introduces the E2E smoke loop for the autonomous controller substrate. The smoke loop must cover pass, reject, block, retry, and revert routes in dry-run mode before Phase1 gameplay tickets begin. Actions must not call AI providers; Codex Cloud/App/CLI remains the worker surface, and GitHub Actions remains the gate, merge, advance, and smoke-verification surface.
+The E2E smoke loop verifies the autonomous controller substrate. The smoke loop must cover pass, reject, block, retry, and revert routes in dry-run mode before Phase1 gameplay tickets begin. Actions must not call AI providers; Codex Cloud/App/CLI remains the worker surface, and GitHub Actions remains the gate, merge, advance, and smoke-verification surface.
 
 
-## Step23 operational note
+## Phase1 gameplay worker handoff operational note
 
-Step23 opens the Phase1 gameplay lane through a deterministic start packet. Use:
+The Phase1 gameplay worker handoff opens the Phase1 gameplay lane through a deterministic start packet. Use:
 
 ```bash
 scripts/render_phase1_gameplay_ticket_prompt.py --ticket TKT-0005 --dry-run

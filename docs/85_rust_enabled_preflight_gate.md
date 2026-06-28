@@ -58,7 +58,7 @@ cargo run -p taiko_cli --bin taiko_cli -- loop report status --format json
 
 ### `current-package`
 
-`current-package` includes all `loop-cli` commands plus the runtime command surfaces added by Step8 through Step13:
+`current-package` includes all `loop-cli` commands plus the runtime command surfaces added by Step8 through Phase1 gameplay entry gate:
 
 ```bash
 cargo run -p taiko_cli --bin taiko_cli -- fixture validate --manifest fixtures/synthetic/phase1_synthetic_manifest.toml --format json
@@ -114,7 +114,7 @@ A `block` verdict is not acceptance. A `reject` verdict is also not acceptance. 
 
 ## Gate integration
 
-`GATE-0030` passes only when the Rust-enabled preflight evidence is valid and has verdict `pass` for at least `loop-cli` scope. The preferred gate report includes `current-package` scope because later Step8-Step13 command surfaces are already present in this package.
+`GATE-0030` passes only when the Rust-enabled preflight evidence is valid and has verdict `pass` for at least `loop-cli` scope. The preferred gate report includes `current-package` scope because later Step8-Phase1 gameplay entry gate command surfaces are already present in this package.
 
 The required evidence validator is:
 

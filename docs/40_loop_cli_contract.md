@@ -187,9 +187,9 @@ timing_log_analyzer --input reports/headless_autoplay/phase1_synthetic.perfect.j
 
 Step10 still does not implement final OpenTaiko-compatible audio sync, judgement windows, scroll timing, or golden comparison. Those remain downstream tickets that must consume the timing analyzer JSON evidence surface.
 
-## 12. Step11 failure feedback command surface
+## 12. failure feedback route command surface
 
-Step11 extends `taiko_cli` with the first executable failure-to-ticket routing commands. These commands are part of loop orchestration and must not require gameplay, audio, rendering, or manual QA interpretation.
+The failure feedback route extends `taiko_cli` with the first executable failure-to-ticket routing commands. These commands are part of loop orchestration and must not require gameplay, audio, rendering, or manual QA interpretation.
 
 Required commands:
 
@@ -208,9 +208,9 @@ taiko_cli loop ticket validate .loop/tickets/TKT-0040.md --format json
 The full field contract is defined in `docs/48_failure_feedback_loop_contract.md`.
 
 
-## 16. Step17 loop run-once controller command surface
+## 16. loop run-once controller loop run-once controller command surface
 
-Step17 extends `taiko_cli` with the first controller command that chooses exactly one next action from current repository state. This command is orchestration evidence, not gameplay evidence.
+loop run-once controller extends `taiko_cli` with the first controller command that chooses exactly one next action from current repository state. This command is orchestration evidence, not gameplay evidence.
 
 Required commands:
 
@@ -229,10 +229,10 @@ scripts/loop_run_once.sh --mode apply
 
 The JSON contract includes `run_id`, `state`, `verdict`, `selected_ticket`, `next_action`, branch/worktree preview fields, required commands, open failures, missing gate evidence, and artifact paths.
 
-Step17 supports only the initial state actions: `start_worker`, `classify_failure`, and `wait_for_ready_ticket`. Later steps add QA execution, repair materialization, auto-merge, ticket advancement, and rollback actions.
+The loop run-once controller supports only the initial state actions: `start_worker`, `classify_failure`, and `wait_for_ready_ticket`. Later steps add QA execution, repair materialization, auto-merge, ticket advancement, and rollback actions.
 
 
-## Step18 session metadata output
+## session separation metadata output
 
 `taiko_cli loop run-once --mode apply --format json` now writes a starter session metadata file when a ticket is selected:
 
@@ -247,9 +247,9 @@ scripts/check_session_separation.py --metadata reports/session_metadata/<ticket-
 scripts/check_role_path_policy.py --role impl --changed-file crates/taiko_runtime/src/lib.rs
 ```
 
-## 18. Step19 repair materialization and retry-budget command surface
+## 18. repair materialization and retry-budget command surface
 
-Step19 extends `taiko_cli` so the loop no longer stops at repair-ticket proposals.
+The repair materialization and retry-budget route extends `taiko_cli` so the loop no longer stops at repair-ticket proposals.
 
 Required commands:
 
@@ -265,12 +265,12 @@ taiko_cli loop retry-budget check --ticket TKT-9001 --format json
 
 `loop retry-budget check` reads `operations/retry_budget.toml` and returns whether the loop may continue or must stop and route to Control Session.
 
-Step19 still does not run Codex through `OPENAI_API_KEY` and does not begin Phase1 gameplay implementation.
+The repair materialization and retry-budget route still does not run Codex through `OPENAI_API_KEY` and does not begin Phase1 gameplay implementation.
 
 
-## Step20 Codex Automation handoff surface
+## ChatGPT-plan Codex automation handoff surface
 
-Step20 keeps AI execution on ChatGPT-plan Codex surfaces and keeps GitHub Actions deterministic. The fallback renderer is available when Rust is not installed:
+ChatGPT-plan Codex operation keeps AI execution on ChatGPT-plan Codex surfaces and keeps GitHub Actions deterministic. The fallback renderer is available when Rust is not installed:
 
 ```bash
 scripts/render_next_codex_prompt.py --mode automation --dry-run
@@ -280,9 +280,9 @@ scripts/check_codex_automation_static.py
 
 The renderer writes `reports/loop/<run_id>/next_codex_prompt.md` and does not require `OPENAI_API_KEY`, `CODEX_API_KEY`, or `openai/codex-action@v1`.
 
-## Step23 Phase1 gameplay start support
+## Phase1 gameplay worker handoff support
 
-Step23 adds a deterministic Python renderer rather than a new Rust CLI surface, because the first gameplay-ticket handoff must remain available in environments where Rust has not yet been dynamically proven.
+The Phase1 gameplay worker handoff adds a deterministic Python renderer rather than a new Rust CLI surface, because the first gameplay-ticket handoff must remain available in environments where Rust has not yet been dynamically proven.
 
 ```bash
 scripts/render_phase1_gameplay_ticket_prompt.py --ticket TKT-0005 --dry-run

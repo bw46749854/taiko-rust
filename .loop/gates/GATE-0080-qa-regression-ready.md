@@ -6,7 +6,7 @@ Reviewer: QA / Regression Session
 
 ## Purpose
 
-Confirm that a separate QA / Regression Session can run the autonomous regression chain, produce `pass`, `reject`, or `block`, and route rejects into the Step11 failure-feedback loop without extra human judgement.
+Confirm that a separate QA / Regression Session can run the autonomous regression chain, produce `pass`, `reject`, or `block`, and route rejects into the failure-feedback route loop without extra human judgement.
 
 ## Autonomy scorecard impact
 
@@ -79,5 +79,5 @@ taiko_cli qa verdict --input reports/qa/phase1_loop.qa.json --format json
 ## Next-ticket transition
 
 - `pass`: `TKT-0060` may become eligible to validate the Phase1 feature-loop manifest before `TKT-0005` can start.
-- `reject`: route to Step11 failure feedback and proposed repair ticket.
+- `reject`: route to failure feedback route and proposed repair ticket.
 - `block`: keep Phase1 gameplay feature tickets Blocked until QA evidence can be generated.

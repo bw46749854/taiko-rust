@@ -1,4 +1,4 @@
-# Step19 retry budget.
+# retry budget.
 # These limits prevent infinite repair loops while preserving full auto-merge.
 
 schema_version = 1
