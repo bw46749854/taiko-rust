@@ -1,8 +1,8 @@
-//! Minimal taiko_render skeleton for the OpenTaiko Phase1 autonomous loop.
+//! Optional visual-state projection support for the OpenTaiko Phase1 autonomous loop.
 //!
-//! Gameplay implementation is intentionally out of scope for Rust workspace skeleton. This crate
-//! exists so later tickets can add Phase1 functionality without renaming the
-//! canonical workspace layout.
+//! This crate currently exposes the minimal Phase1 evidence surface used by smoke
+//! tests. Full gameplay rendering behavior is tracked by the Phase1 feature
+//! tickets and the Phase1 normal-play compatibility contract.
 
 /// Returns the canonical crate name for workspace and CLI diagnostics.
 #[must_use]

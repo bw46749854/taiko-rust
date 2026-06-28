@@ -5,7 +5,8 @@
 //! into a machine-readable playback result that QA Session can pass or reject
 //! without manual chart inspection. Full OpenTaiko-compatible timeline, scroll,
 //! audio scheduling, judgement windows, score, gauge, branch execution, and
-//! timing-log analysis remain later tickets.
+//! timing-log analysis are tracked by the Phase1 feature tickets and the Phase1
+//! normal-play compatibility contract.
 
 use std::fmt;
 use std::path::Path;
