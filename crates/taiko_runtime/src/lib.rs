@@ -1,6 +1,6 @@
 //! Headless runtime MVP for the OpenTaiko Phase1 autonomous loop.
 //!
-//! Step9 deliberately implements only deterministic, audio-free and render-free
+//! Headless autoplay evidence contract deliberately implements only deterministic, audio-free and render-free
 //! perfect autoplay evidence. It converts already-validated TJA fixture structure
 //! into a machine-readable playback result that QA Session can pass or reject
 //! without manual chart inspection. Full OpenTaiko-compatible timeline, scroll,

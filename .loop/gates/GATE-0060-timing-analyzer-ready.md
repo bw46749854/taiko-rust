@@ -6,7 +6,7 @@ Reviewer: QA / Regression Session
 
 ## Purpose
 
-Confirm that Step9 headless autoplay evidence can be analyzed as deterministic timing evidence, producing JSON pass/reject reports with threshold metrics and failure categories. This gate is the first machine-verifiable timing self-check before OpenTaiko-compatible scheduling, audio sync, and judgement precision work proceeds.
+Confirm that headless autoplay evidence can be analyzed as deterministic timing evidence, producing JSON pass/reject reports with threshold metrics and failure categories. This gate is the first machine-verifiable timing self-check before OpenTaiko-compatible scheduling, audio sync, and judgement precision work proceeds.
 
 ## Autonomy scorecard impact
 

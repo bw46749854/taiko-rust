@@ -129,7 +129,7 @@ pub struct LoopStatus {
     pub open_failures: Vec<String>,
 }
 
-/// Step17 loop-controller run-once plan.
+/// Loop run-once controller plan.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct LoopRunOncePlan {
     pub run_id: String,
@@ -1179,7 +1179,7 @@ fn render_session_metadata(plan: &LoopRunOncePlan) -> String {
     let review_worktree = plan.review_worktree.as_deref().unwrap_or("none");
     let qa_worktree = plan.qa_worktree.as_deref().unwrap_or("none");
     format!(
-        "# Step18 session metadata. Fill approval fields from separated sessions before merge.\n\nschema_version = 1\nrun_id = \"{}\"\nticket_id = \"{}\"\nimplementation_session_id = \"impl-{}\"\nreview_session_id = \"review-{}\"\nqa_session_id = \"qa-{}\"\nimplementation_branch = \"{}\"\nimplementation_worktree = \"{}\"\nreview_worktree = \"{}\"\nqa_worktree = \"{}\"\nqa_verdict_path = \"reports/qa/{}.verdict.json\"\npreflight_report_path = \"reports/preflight/{}/rust_preflight_report.json\"\nimplementation_may_write_code = true\nreview_may_write_code = false\nqa_may_write_code = false\ncontrol_may_merge = true\nnext_action = \"{}\"\n",
+        "# Session separation metadata. Fill approval fields from separated sessions before merge.\n\nschema_version = 1\nrun_id = \"{}\"\nticket_id = \"{}\"\nimplementation_session_id = \"impl-{}\"\nreview_session_id = \"review-{}\"\nqa_session_id = \"qa-{}\"\nimplementation_branch = \"{}\"\nimplementation_worktree = \"{}\"\nreview_worktree = \"{}\"\nqa_worktree = \"{}\"\nqa_verdict_path = \"reports/qa/{}.verdict.json\"\npreflight_report_path = \"reports/preflight/{}/rust_preflight_report.json\"\nimplementation_may_write_code = true\nreview_may_write_code = false\nqa_may_write_code = false\ncontrol_may_merge = true\nnext_action = \"{}\"\n",
         plan.run_id,
         ticket,
         plan.run_id,
@@ -1876,7 +1876,7 @@ fn render_materialized_ticket_body(
     let source_state = &classification.original_ticket_should_remain;
     let repair_scope = repair_scope_for_category(&report.category);
     format!(
-        "# {}: {}\n\nStatus: Ready\nOwner session: {}\nReview session: QA / Regression Session\nWorktree: `{}`\n\n## 1. Objective\n\nMaterialized by Step19 failure routing. Resolve failure `{}` classified as `{}` via `{}` route without broadening scope beyond the recorded evidence.\n\n## 2. Source failure\n\n- Failure report: `{}`\n- Source ticket or gate: `{}`\n- Source item remains: `{}`\n- Duplicate key: `{}`\n- Route: `{}`\n- Repair kind: `{}`\n- Route reason: {}\n\n## 3. Minimal repair scope\n\n{}\n\n## 4. Required reproduction command\n\n```bash\n{}\n```\n\n## 5. Required regression command\n\n```bash\n{}\n```\n\n## 6. Retry budget\n\n- Check budget before implementation: `taiko_cli loop retry-budget check --ticket {}`\n- Do not continue when retry budget verdict is `block`.\n\n## 7. Acceptance criteria\n\n- The reproduction command no longer fails.\n- The regression command returns a `pass` verdict.\n- `taiko_cli loop failure classify --input {}` keeps a stable route.\n- The original ticket or gate can be re-evaluated without manual judgement.\n",
+        "# {}: {}\n\nStatus: Ready\nOwner session: {}\nReview session: QA / Regression Session\nWorktree: `{}`\n\n## 1. Objective\n\nMaterialized by the failure feedback route. Resolve failure `{}` classified as `{}` via `{}` route without broadening scope beyond the recorded evidence.\n\n## 2. Source failure\n\n- Failure report: `{}`\n- Source ticket or gate: `{}`\n- Source item remains: `{}`\n- Duplicate key: `{}`\n- Route: `{}`\n- Repair kind: `{}`\n- Route reason: {}\n\n## 3. Minimal repair scope\n\n{}\n\n## 4. Required reproduction command\n\n```bash\n{}\n```\n\n## 5. Required regression command\n\n```bash\n{}\n```\n\n## 6. Retry budget\n\n- Check budget before implementation: `taiko_cli loop retry-budget check --ticket {}`\n- Do not continue when retry budget verdict is `block`.\n\n## 7. Acceptance criteria\n\n- The reproduction command no longer fails.\n- The regression command returns a `pass` verdict.\n- `taiko_cli loop failure classify --input {}` keeps a stable route.\n- The original ticket or gate can be re-evaluated without manual judgement.\n",
         ticket_id,
         title,
         owner_session,
