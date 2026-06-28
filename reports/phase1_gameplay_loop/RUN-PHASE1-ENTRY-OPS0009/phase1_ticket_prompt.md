@@ -1,12 +1,12 @@
 # Phase1 Gameplay Ticket Worker: TKT-0005
 
 Run ID: `RUN-PHASE1-ENTRY-OPS0009`
-Verdict: `block`
-Next action: `wait_for_phase1_entry_evidence`
+Verdict: `ready`
+Next action: `start_phase1_gameplay_ticket_worker`
 
 ## Authorization
 
-Do not implement. The Phase1 gameplay entry evidence is missing or invalid.
+This start packet is ready. You may implement exactly this ticket and create a PR after evidence is produced.
 
 ## Required reads
 
@@ -44,4 +44,4 @@ Do not implement. The Phase1 gameplay entry evidence is missing or invalid.
 - Do not mark tickets Done.
 - Do not pass gates.
 - Do not use `OPENAI_API_KEY`, `CODEX_API_KEY`, or `openai/codex-action@v1`.
-- Route reject/block through the Step19 repair materialization path.
+- Route reject/block through the repair materialization and retry-budget route path.

@@ -1,6 +1,6 @@
 # GATE-0070: Failure feedback ready
 
-Status: active
+Status: passed
 Owner: Control Session
 Reviewer: QA / Regression Session
 
