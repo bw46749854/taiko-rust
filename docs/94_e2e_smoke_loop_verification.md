@@ -6,7 +6,7 @@ Status: canonical
 
 The E2E smoke loop verifies that the autonomous loop substrate can be exercised end-to-end without starting Phase1 gameplay implementation and without calling AI providers from GitHub Actions.
 
-This is a smoke verification layer, not the final Phase1 gameplay acceptance test. It proves that the controller surfaces added in Steps17-21 can be composed into deterministic pass, reject, block, retry-budget, and revert evidence.
+This is a smoke verification layer, not the final Phase1 gameplay acceptance test. It proves that the controller surfaces added in Steps17-21 can be composed into deterministic pass, reject, block, retry-budget, and revert_required evidence.
 
 ## Scope
 
@@ -17,8 +17,9 @@ The smoke loop covers these routes:
 | `pass` | metadata + QA pass + auto-merge dry-run | merge candidate evidence is accepted |
 | `reject` | QA reject + failure report | repair ticket preview is produced |
 | `block` | QA block + missing evidence report | blocker ticket preview is produced |
-| `retry` | repeated repair/block attempts | retry budget stop evidence is produced |
-| `revert` | regression after autonomous merge | revert evidence and dry-run PR command are produced |
+| `retry_exhausted` | repeated repair/block attempts | retry_exhausted budget stop evidence is produced |
+| `revert_required` | regression after autonomous merge | revert_required evidence and dry-run PR command are produced |
+| `wait_for_evidence` | missing required machine evidence | wait-for-evidence controller artifact is produced |
 
 ## Non-scope
 
@@ -39,8 +40,8 @@ scripts/run_e2e_smoke_loop.sh --scenario all --dry-run --out /tmp/opentaiko-e2e-
 scripts/run_e2e_smoke_loop.sh --scenario pass --dry-run
 scripts/run_e2e_smoke_loop.sh --scenario reject --dry-run
 scripts/run_e2e_smoke_loop.sh --scenario block --dry-run
-scripts/run_e2e_smoke_loop.sh --scenario retry --dry-run
-scripts/run_e2e_smoke_loop.sh --scenario revert --dry-run
+scripts/run_e2e_smoke_loop.sh --scenario retry_exhausted --dry-run
+scripts/run_e2e_smoke_loop.sh --scenario revert_required --dry-run
 ```
 
 ## Evidence layout
@@ -59,8 +60,9 @@ reports/e2e_smoke/<run_id>/reject/failure.md
 reports/e2e_smoke/<run_id>/reject/materialized_tickets/TKT-REPAIR-SMOKE-REJECT.md
 reports/e2e_smoke/<run_id>/block/failure.md
 reports/e2e_smoke/<run_id>/block/materialized_tickets/TKT-ENV-SMOKE-BLOCK.md
-reports/e2e_smoke/<run_id>/retry/retry_budget.json
-reports/e2e_smoke/<run_id>/revert/regression/<run_id>-revert.json
+reports/e2e_smoke/<run_id>/retry_exhausted/retry_budget.json
+reports/e2e_smoke/<run_id>/revert_required/regression/<run_id>-revert_required.json
+reports/e2e_smoke/<run_id>/wait_for_evidence/controller_wait.json
 ```
 
 ## Acceptance criteria
@@ -72,9 +74,10 @@ The E2E smoke loop passes when:
 3. The pass scenario validates session metadata, role path policy, and auto-merge candidate evidence.
 4. The reject scenario produces repair-ticket materialization preview without modifying `.loop/tickets/`.
 5. The block scenario produces blocker-ticket materialization preview without modifying `.loop/tickets/`.
-6. The retry scenario produces stop evidence for excessive attempts.
-7. The revert scenario produces regression/revert evidence through `scripts/loop_revert_last_merge.sh --dry-run`.
-8. No workflow contains `openai/codex-action@v1` or `secrets.OPENAI_API_KEY` as an executable dependency.
+6. The retry_exhausted scenario produces stop evidence for excessive attempts.
+7. The revert_required scenario produces regression/revert evidence through `scripts/loop_revert_last_merge.sh --dry-run`.
+8. The wait_for_evidence scenario produces an explicit runnable controller artifact instead of prose-only or human-judgement routing.
+9. No workflow contains `openai/codex-action@v1` or `secrets.OPENAI_API_KEY` as an executable dependency.
 
 ## Relationship to Phase1 gameplay worker handoff
 
@@ -82,7 +85,7 @@ Phase1 gameplay worker handoff may start Phase1 gameplay tickets only after E2E 
 
 ## OPS-0009 final smoke extension
 
-`OPS-0009` extends the canonical smoke surface beyond `pass`, `reject`, `block`, `retry`, and `revert`.
+`OPS-0009` extends the canonical smoke surface beyond `pass`, `reject`, `block`, `retry_exhausted`, and `revert_required`.
 
 Additional scenarios:
 
@@ -97,3 +100,5 @@ scripts/run_e2e_smoke_loop.sh --scenario all --dry-run
 ```
 
 GitHub Actions remains a verifier/gate/controller/handoff emitter. It does not run Codex/GPT workers and does not require `OPENAI_API_KEY`, `CODEX_API_KEY`, or `openai/codex-action@v1`.
+
+- `wait_for_evidence` route emits controller evidence that missing machine evidence is the next runnable input.

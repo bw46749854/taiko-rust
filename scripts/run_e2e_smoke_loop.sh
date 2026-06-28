@@ -14,7 +14,7 @@ out_dir=""
 
 usage() {
   cat <<'USAGE'
-usage: scripts/run_e2e_smoke_loop.sh [--scenario pass|reject|block|retry|revert|advance|handoff|publication|all] [--run-id RUN] [--out DIR] [--dry-run]
+usage: scripts/run_e2e_smoke_loop.sh [--scenario pass|reject|block|retry_exhausted|revert_required|wait_for_evidence|advance|handoff|publication|all] [--run-id RUN] [--out DIR] [--dry-run]
 
 Runs a no-AI OPS-0009 E2E smoke loop. Default mode is dry-run. Evidence is
 written under reports/e2e_smoke/<run_id>/ unless --out is provided.
@@ -33,8 +33,8 @@ while [ "$#" -gt 0 ]; do
 done
 
 case "$scenario" in
-  pass|reject|block|retry|revert|advance|handoff|publication|all) ;;
-  *) echo "--scenario must be pass, reject, block, retry, revert, advance, handoff, publication, or all" >&2; exit 2 ;;
+  pass|reject|block|retry_exhausted|revert_required|wait_for_evidence|advance|handoff|publication|all) ;;
+  *) echo "--scenario must be pass, reject, block, retry_exhausted, revert_required, wait_for_evidence, advance, handoff, publication, or all" >&2; exit 2 ;;
 esac
 
 if [ -z "$out_dir" ]; then
@@ -137,6 +137,9 @@ EOFMETA
 }
 EOFMERGE
   echo "dry-run command=gh pr merge 9999 --squash --delete-branch" > "$dir/auto_merge_dry_run.log"
+  cat > "$dir/controller_route.json" <<EOFROUTE
+{"current_state":"candidate_pass","next_action":"merge","target_ticket":"TKT-SMOKE-PASS","required_evidence":["$dir/session_metadata.toml","$dir/qa.verdict.json"],"blocking_reason":"none","repair_route":"none","consumed_by_next_controller_run":true}
+EOFROUTE
 fi
 
 if run_scenario reject; then
@@ -189,7 +192,7 @@ EOFTICKET
 import json, sys
 from pathlib import Path
 p=Path(sys.argv[1]) / "classification.json"
-p.write_text(json.dumps({"verdict":"pass","route":"reject","repair_kind":"repair","materialized_ticket_id":"TKT-REPAIR-SMOKE-REJECT","original_ticket_should_remain":"Blocked"}, indent=2)+"\n", encoding="utf-8")
+p.write_text(json.dumps({"current_state":"qa_reject","next_action":"materialize_repair","target_ticket":"TKT-SMOKE-REJECT","required_evidence":["qa.verdict.json","failure.md"],"blocking_reason":"QA verdict is reject","repair_route":"failure_feedback_repair_ticket","verdict":"pass","route":"reject","repair_kind":"repair","materialized_ticket_id":"TKT-REPAIR-SMOKE-REJECT","original_ticket_should_remain":"Blocked","consumed_by_next_controller_run":True}, indent=2)+"\n", encoding="utf-8")
 PY
 fi
 
@@ -243,12 +246,12 @@ EOFBLOCKTICKET
 import json, sys
 from pathlib import Path
 p=Path(sys.argv[1]) / "classification.json"
-p.write_text(json.dumps({"verdict":"pass","route":"block_env","repair_kind":"env","materialized_ticket_id":"TKT-ENV-SMOKE-BLOCK","original_ticket_should_remain":"Blocked"}, indent=2)+"\n", encoding="utf-8")
+p.write_text(json.dumps({"current_state":"qa_block","next_action":"materialize_blocker_repair","target_ticket":"TKT-SMOKE-BLOCK","required_evidence":["qa.verdict.json","failure.md"],"blocking_reason":"QA verdict is block due to missing evidence","repair_route":"blocker_ticket_materialization","verdict":"pass","route":"block_env","repair_kind":"env","materialized_ticket_id":"TKT-ENV-SMOKE-BLOCK","original_ticket_should_remain":"Blocked","consumed_by_next_controller_run":True}, indent=2)+"\n", encoding="utf-8")
 PY
 fi
 
-if run_scenario retry; then
-  dir="$out_dir/retry"
+if run_scenario retry_exhausted; then
+  dir="$out_dir/retry_exhausted"
   mkdir -p "$dir"
   cat > "$dir/retry_budget.json" <<'EOFRETRY'
 {
@@ -260,16 +263,45 @@ if run_scenario retry; then
   "repair_attempts": 3,
   "block_attempts": 0,
   "same_failure_signature_count": 2,
+  "current_state": "retry_exhausted",
+  "target_ticket": "TKT-SMOKE-RETRY",
+  "required_evidence": ["reports/failures/FF-SMOKE-RETRY.md"],
+  "blocking_reason": "repair attempt budget exhausted",
+  "repair_route": "control_session_retry_budget_block",
   "next_action": "stop_and_mark_blocked",
+  "consumed_by_next_controller_run": true,
   "issues": ["repair attempt budget exhausted", "same failure signature repeated"]
 }
 EOFRETRY
 fi
 
-if run_scenario revert; then
-  dir="$out_dir/revert"
+if run_scenario revert_required; then
+  dir="$out_dir/revert_required"
   mkdir -p "$dir/regression"
-  scripts/loop_revert_last_merge.sh --run-id "$run_id-revert" --reason smoke-regression --commit SMOKECOMMIT --out "$dir/regression" --dry-run > "$dir/revert_dry_run.log"
+  scripts/loop_revert_last_merge.sh --run-id "$run_id-revert_required" --reason smoke-regression --commit SMOKECOMMIT --out "$dir/regression" --dry-run > "$dir/revert_dry_run.log"
+fi
+
+if run_scenario wait_for_evidence; then
+  dir="$out_dir/wait_for_evidence"
+  mkdir -p "$dir"
+  cat > "$dir/controller_wait.json" <<'EOFWAIT'
+{
+  "current_state": "missing_required_evidence",
+  "next_action": "wait_for_evidence",
+  "target_ticket": null,
+  "required_evidence": ["reports/preflight/latest/rust_preflight_report.json"],
+  "blocking_reason": "required preflight evidence is missing",
+  "repair_route": "produce_missing_machine_evidence",
+  "consumed_by_next_controller_run": true
+}
+EOFWAIT
+  cat > "$dir/controller_input.json" <<'EOFWAITIN'
+{
+  "artifact": "controller_wait.json",
+  "next_controller_run_consumes": ["required_evidence", "blocking_reason", "repair_route"],
+  "dry_run_only": true
+}
+EOFWAITIN
 fi
 
 if run_scenario advance; then
@@ -294,7 +326,7 @@ if run_scenario handoff; then
     --latest-markdown "$dir/latest.md" \
     --latest-issue "$dir/latest_issue.md" \
     --latest-comment "$dir/latest_comment.md" \
-    --expect plan
+    --expect block
 fi
 
 if run_scenario publication; then
@@ -311,7 +343,7 @@ import json, sys
 from datetime import datetime, timezone
 from pathlib import Path
 out=Path(sys.argv[1]); run_id=sys.argv[2]; scenario=sys.argv[3]
-expected=["pass","reject","block","retry","revert","advance","handoff","publication"] if scenario == "all" else [scenario]
+expected=["pass","reject","block","retry_exhausted","revert_required","wait_for_evidence","advance","handoff","publication"] if scenario == "all" else [scenario]
 summary=json.loads((out/"summary.json").read_text(encoding="utf-8"))
 for name in expected:
     summary["scenarios"][name] = "pass"

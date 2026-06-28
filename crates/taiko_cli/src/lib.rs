@@ -135,9 +135,14 @@ pub struct LoopRunOncePlan {
     pub run_id: String,
     pub mode: String,
     pub state: String,
+    pub current_state: String,
     pub verdict: String,
     pub selected_ticket: Option<String>,
+    pub target_ticket: Option<String>,
     pub next_action: String,
+    pub required_evidence: Vec<String>,
+    pub blocking_reason: String,
+    pub repair_route: String,
     pub reason: String,
     pub branch: Option<String>,
     pub implementation_worktree: Option<String>,
@@ -950,33 +955,48 @@ fn build_loop_run_once_plan(root: &Path, mode: &str) -> CliResult<LoopRunOncePla
         .map(|ticket| ticket.required_checks.clone())
         .unwrap_or_default();
 
-    let (state, verdict, next_action) = if selected_ticket.is_some() {
-        (
-            "ready_ticket".to_string(),
-            "plan".to_string(),
-            "start_worker".to_string(),
-        )
-    } else if !status.open_failures.is_empty() {
-        (
-            "open_failures".to_string(),
-            "block".to_string(),
-            "classify_failure".to_string(),
-        )
-    } else {
-        (
-            "no_ready_ticket".to_string(),
-            "block".to_string(),
-            "wait_for_ready_ticket".to_string(),
-        )
-    };
+    let (state, verdict, next_action, required_evidence, blocking_reason, repair_route) =
+        if selected_ticket.is_some() {
+            (
+                "ready_ticket".to_string(),
+                "plan".to_string(),
+                "start_worker".to_string(),
+                required_commands.clone(),
+                "none".to_string(),
+                "none".to_string(),
+            )
+        } else if !status.open_failures.is_empty() {
+            (
+                "open_failures".to_string(),
+                "block".to_string(),
+                "classify_failure".to_string(),
+                status.open_failures.clone(),
+                "open failure reports require classification".to_string(),
+                "failure_feedback_classification".to_string(),
+            )
+        } else {
+            (
+                "no_ready_ticket".to_string(),
+                "block".to_string(),
+                "wait_for_ready_ticket".to_string(),
+                status.missing_gate_evidence.clone(),
+                "no Ready ticket is available".to_string(),
+                "wait_for_evidence".to_string(),
+            )
+        };
 
     Ok(LoopRunOncePlan {
         run_id,
         mode: mode.to_string(),
+        current_state: state.clone(),
         state,
         verdict,
+        target_ticket: selected_ticket.clone(),
         selected_ticket,
         next_action,
+        required_evidence,
+        blocking_reason,
+        repair_route,
         reason,
         branch,
         implementation_worktree,
@@ -3078,47 +3098,12 @@ fn render_next(selection: &NextSelection, format: OutputFormat) -> String {
 fn render_loop_run_once_plan(plan: &LoopRunOncePlan, format: OutputFormat) -> String {
     match format {
         OutputFormat::Json => format!(
-            "{{\"run_id\":\"{}\",\"mode\":\"{}\",\"state\":\"{}\",\"verdict\":\"{}\",\"selected_ticket\":{},\"next_action\":\"{}\",\"reason\":\"{}\",\"branch\":{},\"implementation_worktree\":{},\"review_worktree\":{},\"qa_worktree\":{},\"session_metadata_path\":{},\"controller_report_json\":\"{}\",\"controller_report_markdown\":\"{}\",\"next_codex_prompt\":\"{}\",\"required_commands\":{},\"missing_gate_evidence\":{},\"open_failures\":{},\"artifacts_written\":{}}}",
-            escape_json(&plan.run_id),
-            escape_json(&plan.mode),
-            escape_json(&plan.state),
-            escape_json(&plan.verdict),
-            optional_string_json(plan.selected_ticket.as_deref()),
-            escape_json(&plan.next_action),
-            escape_json(&plan.reason),
-            optional_string_json(plan.branch.as_deref()),
-            optional_string_json(plan.implementation_worktree.as_deref()),
-            optional_string_json(plan.review_worktree.as_deref()),
-            optional_string_json(plan.qa_worktree.as_deref()),
-            optional_string_json(plan.session_metadata_path.as_deref()),
-            escape_json(&plan.controller_report_json),
-            escape_json(&plan.controller_report_markdown),
-            escape_json(&plan.next_codex_prompt),
-            string_array_json(&plan.required_commands),
-            string_array_json(&plan.missing_gate_evidence),
-            string_array_json(&plan.open_failures),
-            string_array_json(&plan.artifacts_written)
+            "{{\"run_id\":\"{}\",\"mode\":\"{}\",\"state\":\"{}\",\"current_state\":\"{}\",\"verdict\":\"{}\",\"selected_ticket\":{},\"target_ticket\":{},\"next_action\":\"{}\",\"required_evidence\":{},\"blocking_reason\":\"{}\",\"repair_route\":\"{}\",\"reason\":\"{}\",\"branch\":{},\"implementation_worktree\":{},\"review_worktree\":{},\"qa_worktree\":{},\"session_metadata_path\":{},\"controller_report_json\":\"{}\",\"controller_report_markdown\":\"{}\",\"next_codex_prompt\":\"{}\",\"required_commands\":{},\"missing_gate_evidence\":{},\"open_failures\":{},\"artifacts_written\":{}}}",
+            escape_json(&plan.run_id), escape_json(&plan.mode), escape_json(&plan.state), escape_json(&plan.current_state), escape_json(&plan.verdict), optional_string_json(plan.selected_ticket.as_deref()), optional_string_json(plan.target_ticket.as_deref()), escape_json(&plan.next_action), string_array_json(&plan.required_evidence), escape_json(&plan.blocking_reason), escape_json(&plan.repair_route), escape_json(&plan.reason), optional_string_json(plan.branch.as_deref()), optional_string_json(plan.implementation_worktree.as_deref()), optional_string_json(plan.review_worktree.as_deref()), optional_string_json(plan.qa_worktree.as_deref()), optional_string_json(plan.session_metadata_path.as_deref()), escape_json(&plan.controller_report_json), escape_json(&plan.controller_report_markdown), escape_json(&plan.next_codex_prompt), string_array_json(&plan.required_commands), string_array_json(&plan.missing_gate_evidence), string_array_json(&plan.open_failures), string_array_json(&plan.artifacts_written)
         ),
         OutputFormat::Markdown => format!(
-            "# Loop run-once controller plan\n\n- run_id: `{}`\n- mode: `{}`\n- state: `{}`\n- verdict: `{}`\n- selected_ticket: `{}`\n- next_action: `{}`\n- reason: {}\n- branch: `{}`\n- implementation_worktree: `{}`\n- review_worktree: `{}`\n- qa_worktree: `{}`\n- session_metadata_path: `{}`\n- controller_report_json: `{}`\n- controller_report_markdown: `{}`\n- next_codex_prompt: `{}`\n- missing_gate_evidence: {}\n- open_failures: {}\n- artifacts_written: {}",
-            plan.run_id,
-            plan.mode,
-            plan.state,
-            plan.verdict,
-            plan.selected_ticket.as_deref().unwrap_or("none"),
-            plan.next_action,
-            plan.reason,
-            plan.branch.as_deref().unwrap_or("none"),
-            plan.implementation_worktree.as_deref().unwrap_or("none"),
-            plan.review_worktree.as_deref().unwrap_or("none"),
-            plan.qa_worktree.as_deref().unwrap_or("none"),
-            plan.session_metadata_path.as_deref().unwrap_or("none"),
-            plan.controller_report_json,
-            plan.controller_report_markdown,
-            plan.next_codex_prompt,
-            plan.missing_gate_evidence.join(", "),
-            plan.open_failures.join(", "),
-            plan.artifacts_written.join(", "),
+            "# Loop run-once controller plan\n\n- run_id: `{}`\n- mode: `{}`\n- state: `{}`\n- current_state: `{}`\n- verdict: `{}`\n- selected_ticket: `{}`\n- target_ticket: `{}`\n- next_action: `{}`\n- required_evidence: {}\n- blocking_reason: {}\n- repair_route: `{}`\n- reason: {}\n- branch: `{}`\n- implementation_worktree: `{}`\n- review_worktree: `{}`\n- qa_worktree: `{}`\n- session_metadata_path: `{}`\n- controller_report_json: `{}`\n- controller_report_markdown: `{}`\n- next_codex_prompt: `{}`\n- missing_gate_evidence: {}\n- open_failures: {}\n- artifacts_written: {}",
+            plan.run_id, plan.mode, plan.state, plan.current_state, plan.verdict, plan.selected_ticket.as_deref().unwrap_or("none"), plan.target_ticket.as_deref().unwrap_or("none"), plan.next_action, plan.required_evidence.join(", "), plan.blocking_reason, plan.repair_route, plan.reason, plan.branch.as_deref().unwrap_or("none"), plan.implementation_worktree.as_deref().unwrap_or("none"), plan.review_worktree.as_deref().unwrap_or("none"), plan.qa_worktree.as_deref().unwrap_or("none"), plan.session_metadata_path.as_deref().unwrap_or("none"), plan.controller_report_json, plan.controller_report_markdown, plan.next_codex_prompt, plan.missing_gate_evidence.join(", "), plan.open_failures.join(", "), plan.artifacts_written.join(", "),
         ),
     }
 }

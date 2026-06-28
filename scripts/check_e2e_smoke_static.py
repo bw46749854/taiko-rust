@@ -28,8 +28,9 @@ REQUIRED_TERMS = {
         "pass",
         "reject",
         "block",
-        "retry",
-        "revert",
+        "retry_exhausted",
+        "revert_required",
+        "wait_for_evidence",
         "advance",
         "handoff",
         "publication",
@@ -54,7 +55,7 @@ REQUIRED_TERMS = {
     ],
     "scripts/run_e2e_smoke_loop.sh": [
         "set -euo pipefail",
-        "--scenario pass|reject|block|retry|revert|advance|handoff|publication|all",
+        "--scenario pass|reject|block|retry_exhausted|revert_required|wait_for_evidence|advance|handoff|publication|all",
         "scripts/check_auto_merge_conditions.py",
         "scripts/loop_auto_merge_pr.sh",
         "scripts/loop_revert_last_merge.sh",
@@ -142,8 +143,9 @@ def validate_smoke_run() -> None:
             "reject/materialized_tickets/TKT-REPAIR-SMOKE-REJECT.md",
             "block/failure.md",
             "block/materialized_tickets/TKT-ENV-SMOKE-BLOCK.md",
-            "retry/retry_budget.json",
-            "revert/regression/SMOKE-STATIC-CHECK-revert.json",
+            "retry_exhausted/retry_budget.json",
+            "revert_required/regression/SMOKE-STATIC-CHECK-revert_required.json",
+            "wait_for_evidence/controller_wait.json",
         ]
         missing = [rel for rel in required if not (tmp / rel).is_file()]
         if missing:
@@ -151,12 +153,34 @@ def validate_smoke_run() -> None:
         summary = json.loads((tmp / "summary.json").read_text(encoding="utf-8"))
         if summary.get("status") != "pass":
             fail("smoke summary did not pass")
-        for scenario in ["pass", "reject", "block", "retry", "revert", "advance", "handoff", "publication"]:
+        for scenario in ["pass", "reject", "block", "retry_exhausted", "revert_required", "wait_for_evidence", "advance", "handoff", "publication"]:
             if summary.get("scenarios", {}).get(scenario) != "pass":
                 fail(f"smoke scenario did not pass: {scenario}")
-        retry = json.loads((tmp / "retry/retry_budget.json").read_text(encoding="utf-8"))
+        retry = json.loads((tmp / "retry_exhausted/retry_budget.json").read_text(encoding="utf-8"))
         if retry.get("verdict") != "block":
             fail("retry scenario must produce block verdict")
+        route_files = [
+            "pass/controller_route.json",
+            "reject/classification.json",
+            "block/classification.json",
+            "retry_exhausted/retry_budget.json",
+            "revert_required/regression/SMOKE-STATIC-CHECK-revert_required.json",
+            "wait_for_evidence/controller_wait.json",
+        ]
+        forbidden_actions = {"", "prose-only", "human judgement required", "human judgment required"}
+        required_fields = {"current_state", "next_action", "target_ticket", "required_evidence", "blocking_reason", "repair_route"}
+        for rel in route_files:
+            payload = json.loads((tmp / rel).read_text(encoding="utf-8"))
+            missing_fields = sorted(field for field in required_fields if field not in payload)
+            if missing_fields:
+                fail(f"route artifact {rel} missing required controller schema fields: {', '.join(missing_fields)}")
+            action = str(payload.get("next_action", "")).strip().lower()
+            if action in forbidden_actions:
+                fail(f"route artifact {rel} has non-runnable next_action: {payload.get('next_action')!r}")
+            if "human judgement" in action or "human judgment" in action or action == "prose-only":
+                fail(f"route artifact {rel} requires human judgement instead of a runnable action")
+            if payload.get("consumed_by_next_controller_run") is not True:
+                fail(f"route artifact {rel} must declare consumed_by_next_controller_run=true")
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
 
