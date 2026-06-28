@@ -22,6 +22,10 @@ Phase1 completion means that OpenTaiko-supported normal-play TJA charts can be p
 
 Commercial songs, audio files, images, videos, and copyrighted chart assets are not committed to this repository. User-selected songs are referenced by local manifest only.
 
+## Documentation language policy
+
+Canonical operational docs, prompts, tickets, scripts, schemas, and code comments are English. Japanese explanatory files may exist only as explicitly marked translations or non-canonical explanations, for example `*.ja.md`, and must point to the English canonical source. Machine-readable keys, command names, gate IDs, ticket IDs, crate names, and schema fields remain English. If a Japanese document is canonical today, create the English canonical version first, then mark the Japanese version as a translation or archive. `prompts/` must remain English by default. Detailed rules live in `docs/02_documentation_language_policy.md`.
+
 ## 2. Non-negotiable loop constraints
 
 - Every ticket must include next-ticket transition evidence: which ticket or gate becomes eligible after pass/reject/block.
