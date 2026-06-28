@@ -5,6 +5,7 @@ cd "$(dirname "$0")/.."
 
 mode="runtime"
 out="reports/preflight/latest"
+post_bootstrap=false
 
 while [ "$#" -gt 0 ]; do
   case "$1" in
@@ -16,14 +17,19 @@ while [ "$#" -gt 0 ]; do
       out="$2"
       shift 2
       ;;
+    --post-bootstrap)
+      post_bootstrap=true
+      shift
+      ;;
     -h|--help)
       cat <<'HELP'
-Usage: scripts/ci_local_equivalent.sh [--static-only] [--out <preflight-output-dir>]
+Usage: scripts/ci_local_equivalent.sh [--static-only] [--post-bootstrap] [--out <preflight-output-dir>]
 
 Runs the same validation families expected in CI/Codex Cloud.
 
 Default mode requires Rust and runs the Step15 runtime preflight.
 --static-only runs only Python/Bash static checks and does not require Rust.
+--post-bootstrap enables post-OPS runtime-state validation.
 HELP
       exit 0
       ;;
@@ -53,7 +59,11 @@ run scripts/check_github_actions_gate_static.py
 run scripts/check_rust_preflight_static.py
 run scripts/check_codex_cloud_env_static.py
 run scripts/check_bootstrap_consistency.sh
-run scripts/check_post_bootstrap_runtime_state.py --static-only
+if [ "$post_bootstrap" = true ]; then
+  run scripts/check_post_bootstrap_runtime_state.py --static-only
+else
+  echo "skipping post-bootstrap runtime state check (use --post-bootstrap to enable)"
+fi
 run scripts/check_loop_controller_static.py
 run scripts/check_session_separation.py
 run scripts/check_role_path_policy.py

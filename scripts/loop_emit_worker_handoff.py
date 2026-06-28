@@ -194,6 +194,17 @@ def build_handoff(args: argparse.Namespace) -> dict[str, object]:
             "blocked_ticket": blocked_ticket["id"] if blocked_ticket else None,
             "blocked_ticket_path": blocked_ticket["path"] if blocked_ticket else None,
             "blocked_ticket_status": blocked_ticket["status"] if blocked_ticket else None,
+            "next_action": "wait_for_ready_ticket",
+        }
+    if not bool(policy.get("automation_armed")):
+        return {
+            **block_base,
+            "verdict": "block",
+            "reason": "LOOP_AUTOMATION_ARMED is false-equivalent; worker handoff is preview-only and cannot request execution.",
+            "blocked_ticket": selected_ticket["id"],
+            "blocked_ticket_path": selected_ticket["path"],
+            "blocked_ticket_status": selected_ticket["status"],
+            "next_action": "wait_for_loop_automation_armed",
         }
     ticket_id = str(selected_ticket["id"])
     branch = f"{branch_prefix(str(selected_ticket['owner_session']))}/{ticket_id}-{slugify(str(selected_ticket['title']))}"
@@ -237,6 +248,7 @@ def build_handoff(args: argparse.Namespace) -> dict[str, object]:
         "api_key_required": False,
         "ai_worker_in_github_actions": False,
         "github_actions_role": "emit_preview_handoff_artifacts_only",
+        "next_action": "start_worker",
         "ticket_required_checks_block": selected_ticket.get("required_checks_block", ""),
     }
 

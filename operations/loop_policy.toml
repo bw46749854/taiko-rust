@@ -24,6 +24,8 @@ max_controller_runs_per_hour = 2
 ready_ticket = "start_worker"
 open_failures = "classify_failure"
 no_ready_ticket = "wait_for_ready_ticket"
+no_ready_ticket_reason_required = true
+disarmed_handoff_action = "wait_for_loop_automation_armed"
 
 [artifacts]
 controller_plan_json = "reports/loop/<run_id>/controller_plan.json"

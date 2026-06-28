@@ -205,6 +205,12 @@ def validate_policy() -> None:
         fail("workflow_run handoff must require the armed switch")
     if policy.get("blocked_ticket_handoff_verdict") != "block":
         fail("blocked ticket handoff must produce a block verdict")
+    if policy.get("disarmed_handoff_next_action") != "wait_for_loop_automation_armed":
+        fail("disarmed handoff must wait for LOOP_AUTOMATION_ARMED")
+    if policy.get("no_ready_ticket_next_action") != "wait_for_ready_ticket":
+        fail("no Ready handoff must wait for a Ready ticket")
+    if policy.get("stale_latest_handoff_must_fail") is not True:
+        fail("stale latest worker handoff must be fail-closed")
 
 
 def validate_current_ready_ticket() -> None:
@@ -235,7 +241,10 @@ def validate_handoff_execution() -> None:
         ticket_dir = tmpdir / "tickets"
         shutil.copytree(ROOT / ".loop/tickets", ticket_dir)
         out_dir = tmpdir / "handoff"
-        expected = "plan" if any(parse_status(ticket) == "Ready" for ticket in ticket_dir.glob("*.md")) else "block"
+        policy_text = read("operations/worker_handoff_policy.toml")
+        automation_disarmed = "automation_armed = false" in policy_text
+        has_ready = any(parse_status(ticket) == "Ready" for ticket in ticket_dir.glob("*.md"))
+        expected = "block" if automation_disarmed or not has_ready else "plan"
         cmd = [
             str(ROOT / "scripts/loop_emit_worker_handoff.py"),
             "--ticket-dir", str(ticket_dir),
@@ -255,6 +264,10 @@ def validate_handoff_execution() -> None:
             fail(f"handoff selected wrong ticket: {payload.get('selected_ticket')}")
         if expected == "block" and payload.get("selected_ticket") not in (None, ""):
             fail(f"blocked handoff must not select a ticket: {payload.get('selected_ticket')}")
+        if automation_disarmed and payload.get("loop_automation_armed") is not False:
+            fail("disarmed handoff payload must record loop_automation_armed=false")
+        if automation_disarmed and has_ready and payload.get("next_action") != "wait_for_loop_automation_armed":
+            fail(f"disarmed handoff must wait for automation armed switch: {payload.get('next_action')}")
         if payload.get("api_key_required") is not False:
             fail("handoff payload requires API key")
         if payload.get("ai_worker_in_github_actions") is not False:
