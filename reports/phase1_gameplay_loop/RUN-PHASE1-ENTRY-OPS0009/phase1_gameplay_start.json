@@ -1,0 +1,63 @@
+{
+  "schema_version": "phase1-gameplay-start/v1",
+  "status": "canonical",
+  "run_id": "RUN-PHASE1-ENTRY-OPS0009",
+  "ticket_id": "TKT-0005",
+  "ticket_title": "BPM MEASURE DELAY OFFSET timeline",
+  "ticket_status": "Ready",
+  "manifest": "operations/phase1_feature_ticket_manifest.toml",
+  "manifest_first_feature_ticket": "TKT-0005",
+  "verdict": "ready",
+  "next_action": "start_phase1_gameplay_ticket_worker",
+  "force_preview": false,
+  "branch": "impl/TKT-0005-bpm-measure-delay-offset-timeline",
+  "implementation_worktree": "worktrees/impl/TKT-0005",
+  "review_worktree": "worktrees/review/TKT-0005",
+  "qa_worktree": "worktrees/qa/TKT-0005",
+  "session_metadata_path": "reports/session_metadata/TKT-0005.toml",
+  "report_dir": "reports/phase1_gameplay_loop/RUN-PHASE1-ENTRY-OPS0009",
+  "start_json": "reports/phase1_gameplay_loop/RUN-PHASE1-ENTRY-OPS0009/phase1_gameplay_start.json",
+  "start_markdown": "reports/phase1_gameplay_loop/RUN-PHASE1-ENTRY-OPS0009/phase1_gameplay_start.md",
+  "ticket_prompt": "reports/phase1_gameplay_loop/RUN-PHASE1-ENTRY-OPS0009/phase1_ticket_prompt.md",
+  "command_matrix": "reports/phase1_gameplay_loop/RUN-PHASE1-ENTRY-OPS0009/phase1_command_matrix.md",
+  "entry": {
+    "ticket_id": "TKT-0005",
+    "title": "BPM MEASURE DELAY OFFSET timeline",
+    "stage": "timeline",
+    "category": "timing_model",
+    "depends_on": [
+      "TKT-0060",
+      "GATE-0090"
+    ],
+    "primary_crates": [
+      "taiko_chart",
+      "taiko_timing",
+      "taiko_runtime",
+      "taiko_cli"
+    ],
+    "required_commands": [
+      "cargo test --workspace",
+      "taiko_cli headless autoplay --manifest fixtures/synthetic/phase1_synthetic_manifest.toml --mode perfect --format json",
+      "taiko_cli timing analyze --manifest fixtures/synthetic/phase1_synthetic_manifest.toml --threshold-ms 1.0 --format json",
+      "taiko_cli qa run --manifest fixtures/synthetic/phase1_synthetic_manifest.toml --threshold-ms 1.0 --format json",
+      "taiko_cli qa verdict --input reports/qa/phase1_loop.qa.json --format json"
+    ],
+    "acceptance_docs": [
+      "docs/24_phase1_normal_play_compatibility_contract.md",
+      "docs/coverage/phase1_acceptance_gate_matrix.md"
+    ],
+    "qa_required": true,
+    "failure_route_required": true
+  },
+  "ticket": {
+    "ticket_id": "TKT-0005",
+    "title": "BPM MEASURE DELAY OFFSET timeline",
+    "status": "Ready",
+    "owner_session": "Ticket Implementation Session",
+    "worktree": "worktrees/impl/TKT-0005",
+    "required_checks_block": "- `cargo test --workspace`\n- `taiko_cli headless autoplay --manifest fixtures/synthetic/phase1_synthetic_manifest.toml --mode perfect --format json`\n- `taiko_cli timing analyze --manifest fixtures/synthetic/phase1_synthetic_manifest.toml --threshold-ms 1.0 --format json`\n- `taiko_cli timing analyze --manifest fixtures/synthetic/phase1_synthetic_manifest.toml --golden fixtures/synthetic/goldens/phase1_timing_timestamp_golden.json --threshold-ms 1.0 --format json`\n- `taiko_cli qa run --manifest fixtures/synthetic/phase1_synthetic_manifest.toml --threshold-ms 1.0 --format json`\n\n- `taiko_cli qa verdict --input reports/qa/phase1_loop.qa.json --format json`",
+    "path": ".loop/tickets/TKT-0005.md"
+  },
+  "missing_prerequisites": [],
+  "issues": []
+}

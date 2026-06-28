@@ -1,0 +1,7 @@
+{
+  "verdict": "pass",
+  "route": "reject",
+  "repair_kind": "repair",
+  "materialized_ticket_id": "TKT-REPAIR-SMOKE-REJECT",
+  "original_ticket_should_remain": "Blocked"
+}

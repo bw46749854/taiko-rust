@@ -1,0 +1,51 @@
+# failure classification rules.
+# The loop distinguishes concrete implementation regressions from blockers that
+# must repair specification, environment, or tooling evidence before gameplay work continues.
+
+schema_version = 1
+
+[route.reject]
+meaning = "Concrete failing evidence against implementation or command contract. Materialize a REPAIR ticket."
+repair_kind = "REPAIR"
+categories = [
+  "parser_error",
+  "chart_time_error",
+  "scroll_time_error",
+  "judgement_window_error",
+  "autoplay_input_error",
+  "runtime_tick_error",
+  "branch_route_error",
+  "score_gauge_error",
+  "audio_offset_error",
+  "fixture_tja_structure_error",
+  "fixture_unknown_command",
+  "headless_fixture_load_error",
+  "headless_chart_verdict_error",
+  "headless_no_scheduled_notes",
+  "headless_autoplay_result_error",
+  "runtime_mvp_regression",
+  "timing_cli_contract_error",
+  "fixture_cli_contract_error",
+  "headless_cli_contract_error",
+]
+
+[route.block_spec]
+meaning = "Specification or source evidence is insufficient. Materialize a SPEC blocker ticket."
+repair_kind = "SPEC"
+categories = ["spec_ambiguity"]
+
+[route.block_tool]
+meaning = "Coverage, fixture, or loop tooling evidence is missing. Materialize a TOOL blocker ticket."
+repair_kind = "TOOL"
+categories = [
+  "opentaiko_evidence_gap",
+  "coverage_gap",
+  "fixture_manifest_error",
+  "fixture_file_missing",
+  "ci_tooling_error",
+]
+
+[route.block_env]
+meaning = "Execution environment is missing required tools such as cargo or rustc. Materialize an ENV blocker ticket."
+repair_kind = "ENV"
+trigger_terms = ["command not found", "cargo is required", "rustc", "toolchain"]

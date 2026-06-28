@@ -1,0 +1,8 @@
+{
+  "verdict": "block",
+  "source_verdict": "block",
+  "session_id": "qa-TKT-SMOKE-BLOCK-001",
+  "source_worktree": "worktrees/qa/TKT-SMOKE-BLOCK",
+  "next_action": "materialize_blocker_repair",
+  "failure_report_required": true
+}

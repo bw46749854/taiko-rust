@@ -1,0 +1,80 @@
+# Codex worker handoff policy.
+status = "canonical"
+policy_name = "opentaiko_worker_handoff_policy"
+ticket = "TKT-0005"
+emitter = "scripts/loop_emit_worker_handoff.py"
+static_check = "scripts/check_worker_handoff_static.py"
+schema = "schemas/worker_handoff_schema.md"
+report_dir = "reports/loop/worker_handoff"
+latest_json = "reports/loop/worker_handoff/latest.json"
+latest_markdown = "reports/loop/worker_handoff/latest.md"
+latest_issue = "reports/loop/worker_handoff/latest_issue.md"
+latest_comment = "reports/loop/worker_handoff/latest_comment.md"
+api_key_required = false
+ai_workers_in_github_actions = false
+openai_codex_action_allowed = false
+max_selected_tickets = 1
+current_ready_ticket = "TKT-0005"
+automation_armed = false
+workflow_run_handoff_requires_armed = true
+blocked_ticket_handoff_verdict = "block"
+disarmed_handoff_verdict = "block"
+disarmed_handoff_next_action = "wait_for_loop_automation_armed"
+no_ready_ticket_next_action = "wait_for_ready_ticket"
+stale_latest_handoff_must_fail = true
+
+required_reads = [
+  "AGENTS.md",
+  "README.md",
+  "docs/99_codex_worker_handoff_contract.md",
+  "docs/90_session_metadata_and_path_policy.md",
+  "docs/91_repair_materialization_and_retry_budget.md",
+  "operations/loop_policy.toml",
+  "operations/ticket_transition_policy.toml",
+]
+
+allowed_paths_ops = [
+  ".github/",
+  ".loop/",
+  "AGENTS.md",
+  "README.md",
+  "docs/",
+  "fixtures/loop_controller/",
+  "operations/",
+  "prompts/",
+  "reports/loop/",
+  "reports/assets/",
+  "schemas/",
+  "scripts/",
+]
+
+forbidden_paths = [
+  ".external_assets/",
+  "source_context/",
+  "STEP*.md",
+  "reports/qa/*.verdict.json",
+  "reports/regression/*.json",
+]
+
+required_outputs = [
+  "reports/loop/worker_handoff/latest.json",
+  "reports/loop/worker_handoff/latest.md",
+  "reports/loop/worker_handoff/latest_issue.md",
+  "reports/loop/worker_handoff/latest_comment.md",
+]
+
+allowed_paths_gameplay = [
+  ".loop/tickets/TKT-0005.md",
+  "AGENTS.md",
+  "README.md",
+  "crates/",
+  "docs/",
+  "fixtures/synthetic/",
+  "operations/phase1_feature_ticket_manifest.toml",
+  "prompts/72_phase1_gameplay_ticket_runner.md",
+  "reports/phase1_gameplay_loop/",
+  "reports/session_metadata/",
+  "reports/preflight/",
+  "reports/failures/",
+  "scripts/",
+]

@@ -1,0 +1,38 @@
+# ChatGPT-plan Codex automation Codex automation policy.
+status = "canonical"
+api_key_required = false
+openai_codex_action_allowed = false
+github_actions_may_call_ai = false
+primary_ai_surface = "codex_cloud_or_app_automation"
+fallback_ai_surface = "codex_cli_signed_in_with_chatgpt"
+
+[heartbeat]
+min_minutes = 30
+recommended_minutes = 60
+max_active_implementation_tickets = 1
+max_parallel_codex_workers = 1
+usage_limit_verdict = "block"
+usage_limit_category = "usage_wait"
+usage_limit_transition = "wait_for_next_codex_window"
+
+[github_actions]
+allowed_responsibilities = [
+  "static_checks",
+  "rust_preflight",
+  "qa_gate",
+  "session_metadata_gate",
+  "role_path_policy_gate",
+  "review_request_comment",
+  "future_auto_merge",
+  "future_ticket_advance",
+]
+forbidden_responsibilities = [
+  "openai_codex_action",
+  "api_key_ai_worker",
+  "metered_codex_invocation",
+]
+
+[prompt_outputs]
+controller_prompt = "reports/loop/<run_id>/next_codex_prompt.md"
+automation_prompt = "prompts/70_codex_automation_loop_runner.md"
+ticket_worker_prompt = "prompts/71_codex_cloud_ticket_worker.md"

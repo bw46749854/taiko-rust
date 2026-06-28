@@ -1,0 +1,1 @@
+dry-run command=gh pr merge 9999 --squash --delete-branch

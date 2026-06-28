@@ -1,0 +1,47 @@
+{
+  "schema": "schemas/ticket_transition_schema.md",
+  "verdict": "pass",
+  "mode": "plan",
+  "run_id": "RUN-MERGE-OPS-0009-FIXTURE",
+  "generated_at_utc": "2026-06-27T05:30:13.639172+00:00",
+  "api_key_required": false,
+  "ai_worker": "not_used",
+  "merge_history": {
+    "schema": "auto_merge_history/v1",
+    "run_id": "RUN-MERGE-OPS-0009-FIXTURE",
+    "ticket_id": "OPS-0009",
+    "pr_number": 1009,
+    "base_branch": "main",
+    "head_branch": "loop/OPS-0009-e2e-smoke-and-phase1-entry-unlock",
+    "head_sha": "OPS0009HEAD",
+    "merge_method": "squash",
+    "dry_run": true,
+    "merged_at_utc": "2026-06-27T00:00:00+00:00",
+    "api_key_required": false,
+    "ai_worker": "not_used"
+  },
+  "merged_ticket": "OPS-0009",
+  "next_ready_ticket": "TKT-0005",
+  "status_updates": [
+    {
+      "ticket_id": "OPS-0009",
+      "path": ".loop/tickets/OPS-0009.md",
+      "from": "Done",
+      "to": "Done",
+      "changed": false
+    },
+    {
+      "ticket_id": "TKT-0005",
+      "path": ".loop/tickets/TKT-0005.md",
+      "from": "Ready",
+      "to": "Ready",
+      "changed": false
+    }
+  ],
+  "ready_tickets_after": [
+    "TKT-0005"
+  ],
+  "reasons": [
+    "ticket transition policy satisfied"
+  ]
+}

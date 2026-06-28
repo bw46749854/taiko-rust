@@ -1,0 +1,34 @@
+# Rust build outputs
+target/
+
+# Local loop execution sandboxes
+worktrees/
+
+# Local session metadata that can contain non-durable session identifiers
+reports/session_metadata/*.local.toml
+
+# Local user-selected validation outputs may include machine-specific paths.
+fixtures/user_selected/reports/*.local.*
+
+# Common editor and OS noise
+.DS_Store
+*.swp
+
+# Generated Rust preflight evidence artifacts
+reports/preflight/latest/
+
+# External asset bundles and extracted content
+.external_assets/
+asset_bundles/
+*.asset.zip
+
+# Local credentials and secret material
+.env
+.env.*
+*.pem
+*.key
+*service-account*.json
+*credentials*.json
+
+# Generated asset bundle evidence
+reports/assets/asset_bundle_*.json

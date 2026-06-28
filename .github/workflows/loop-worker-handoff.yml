@@ -1,0 +1,69 @@
+name: loop-worker-handoff
+# No OPENAI_API_KEY or CODEX_API_KEY is required; this workflow emits handoff artifacts only.
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_id:
+        description: "Optional run id for deterministic handoff output"
+        required: false
+        type: string
+      create_issue:
+        description: "Create a GitHub Issue containing latest_issue.md"
+        required: false
+        default: false
+        type: boolean
+  workflow_run:
+    workflows:
+      - loop-controller
+    types:
+      - completed
+
+jobs:
+  loop-worker-handoff:
+    name: loop-worker-handoff
+# No OPENAI_API_KEY or CODEX_API_KEY is required; this workflow emits handoff artifacts only.
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'workflow_dispatch' || (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && vars.LOOP_AUTOMATION_ARMED == 'true') }}
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      issues: write
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Worker handoff static validation
+        run: scripts/check_worker_handoff_static.py
+
+      - name: Emit worker handoff artifacts
+        env:
+          HANDOFF_RUN_ID: ${{ inputs.run_id || github.run_id }}
+        run: scripts/loop_emit_worker_handoff.py --mode issue --run-id "RUN-HANDOFF-${HANDOFF_RUN_ID}"
+
+      - name: Optionally create Codex handoff issue
+        if: github.event_name == 'workflow_dispatch' && inputs.create_issue == true
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ github.token }}
+          script: |
+            const fs = require('fs');
+            const body = fs.readFileSync('reports/loop/worker_handoff/latest_issue.md', 'utf8');
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: 'Codex worker handoff',
+              body,
+              labels: ['loop:handoff']
+            });
+
+      - name: Upload worker handoff reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: loop-worker-handoff
+# No OPENAI_API_KEY or CODEX_API_KEY is required; this workflow emits handoff artifacts only.-reports
+          path: reports/loop/worker_handoff/

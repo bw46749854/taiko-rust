@@ -1,0 +1,9 @@
+{
+  "run_id": "RUN-OPS0009-SMOKE-revert",
+  "verdict": "regression",
+  "reason": "smoke-regression",
+  "target_commit": "SMOKECOMMIT",
+  "requested_action": "revert_pr",
+  "dry_run": true,
+  "created_at_utc": "2026-06-27T05:30:12.495995+00:00"
+}

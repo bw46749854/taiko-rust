@@ -1,0 +1,7 @@
+{
+  "verdict": "pass",
+  "route": "block_env",
+  "repair_kind": "env",
+  "materialized_ticket_id": "TKT-ENV-SMOKE-BLOCK",
+  "original_ticket_should_remain": "Blocked"
+}

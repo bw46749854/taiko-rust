@@ -1,0 +1,66 @@
+name: loop-pr-gate
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+  workflow_dispatch:
+
+jobs:
+  loop-pr-gate:
+    name: loop-pr-gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      pull-requests: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Step14 orchestration static validation
+        run: scripts/check_github_pr_orchestration_static.py
+      - name: Check GitHub Actions gate normalization
+        run: scripts/check_github_actions_gate_static.py
+      - name: Step15 Rust preflight static validation
+        run: scripts/check_rust_preflight_static.py
+      - name: Step16 Codex Cloud / CI environment static validation
+        run: scripts/check_codex_cloud_env_static.py
+      - name: Step18 session separation static validation
+        run: scripts/check_session_separation.py
+      - name: Step18 role path policy static validation
+        run: scripts/check_role_path_policy.py
+      - name: Step19 repair materialization static validation
+        run: scripts/check_repair_materialization_static.py
+      - name: OPS-0004 asset bundle manifest static validation
+        run: scripts/check_asset_bundle_manifest.py --manifest operations/dev_asset_bundle.example.toml
+      - name: Reference integrity
+        run: scripts/check_reference_integrity.py
+      - name: No user-selected assets
+        run: scripts/validate_no_user_assets.sh
+      - name: Session separation PR gate
+        if: github.event_name == 'pull_request'
+        run: scripts/check_session_separation.py --pr-gate
+      - name: Role path policy PR gate
+        if: github.event_name == 'pull_request'
+        env:
+          GITHUB_HEAD_REF: ${{ github.event.pull_request.head.ref }}
+          GITHUB_BASE_REF: ${{ github.event.pull_request.base.ref }}
+        run: |
+          CHANGED_FILES="$(git diff --name-only origin/${GITHUB_BASE_REF}...HEAD)"
+          export CHANGED_FILES
+          scripts/check_role_path_policy.py --pr-gate --branch "${GITHUB_HEAD_REF}"
+      - name: PR body floor
+        if: github.event_name == 'pull_request'
+        env:
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: |
+          python3 - <<'PY'
+          import os, sys
+          body = os.environ.get('PR_BODY', '')
+          required = ['Ticket ID', 'QA transition', 'Asset policy', 'Self-approval prevention']
+          missing = [term for term in required if term not in body]
+          if missing:
+              print('PR body missing required sections: ' + ', '.join(missing), file=sys.stderr)
+              sys.exit(1)
+          PY

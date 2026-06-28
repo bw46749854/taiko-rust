@@ -1,0 +1,8 @@
+{
+  "verdict": "reject",
+  "source_verdict": "reject",
+  "session_id": "qa-TKT-SMOKE-REJECT-001",
+  "source_worktree": "worktrees/qa/TKT-SMOKE-REJECT",
+  "next_action": "materialize_repair",
+  "failure_report_required": true
+}

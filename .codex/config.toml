@@ -1,0 +1,40 @@
+# Project-scoped Codex configuration for local CLI / IDE sessions.
+# Codex Cloud environment settings are configured in the Codex web UI;
+# see docs/86_codex_cloud_environment_setup.md.
+
+model = "gpt-5.5"
+approval_policy = "on-request"
+sandbox_mode = "workspace-write"
+default_permissions = "opentaiko-loop"
+
+[shell_environment_policy]
+inherit = "core"
+ignore_default_excludes = false
+exclude = [
+  "OPENAI_API_KEY",
+  "CODEX_API_KEY",
+  "GITHUB_TOKEN",
+  "GH_TOKEN",
+  "*_TOKEN",
+  "*_SECRET",
+  "*_KEY",
+]
+
+[permissions.opentaiko-loop]
+description = "OpenTaiko Phase1 loop editing with workspace writes, denied local assets/secrets, and no default network."
+extends = ":workspace"
+
+[permissions.opentaiko-loop.filesystem.":workspace_roots"]
+"**/.env" = "deny"
+"**/.env.*" = "deny"
+"**/*.pem" = "deny"
+"**/*.key" = "deny"
+"Songs/**" = "deny"
+"songs/**" = "deny"
+"Skins/**" = "deny"
+"skins/**" = "deny"
+"assets/user_selected/**" = "deny"
+"fixtures/user_selected/**" = "deny"
+
+[permissions.opentaiko-loop.network]
+enabled = false

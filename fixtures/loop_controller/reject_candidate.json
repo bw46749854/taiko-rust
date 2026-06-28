@@ -1,0 +1,18 @@
+[
+  {
+    "number": 201,
+    "title": "OPS-0006 rejected candidate",
+    "body": "Ticket ID: OPS-0006\nSession metadata: reports/session_metadata/OPS-0006.toml\nQA verdict JSON: reports/qa/OPS-0006.json\n",
+    "baseRefName": "feature",
+    "headRefName": "ops/OPS-0006-rejected",
+    "headRefOid": "3333333333333333333333333333333333333333",
+    "isDraft": false,
+    "labels": [{"name": "loop:automerge"}],
+    "statusCheckRollup": [
+      {"context": "loop-pr-gate / loop-pr-gate", "state": "SUCCESS"},
+      {"context": "rust-preflight / rust-preflight", "state": "FAILURE"},
+      {"context": "phase1-loop / phase1-loop", "state": "SUCCESS"},
+      {"context": "phase1-gameplay-entry / phase1-gameplay-entry", "state": "SUCCESS"}
+    ]
+  }
+]

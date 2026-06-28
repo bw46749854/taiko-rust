@@ -1,0 +1,360 @@
+# Concrete Phase1 synthetic fixture manifest. Generated and adopted during Step5 bootstrap repair.
+schema_version = "phase1-synthetic-manifest/v1"
+manifest_status = "canonical"
+fixture_count = 35
+source_traceability = "docs/coverage/phase1_fixture_to_feature_traceability.md"
+schema_document = "fixtures/synthetic/phase1_synthetic_manifest.schema.md"
+
+[asset_policy]
+committed_user_assets_allowed = false
+dummy_audio_reference = "__dummy__.ogg"
+
+[[fixtures]]
+fixture_id = "FX-CORE-001"
+path = "fixtures/synthetic/phase1_core/fx_core_001_basic_notes.tja"
+primary_target = "Don/Ka, default BPM, generated barline"
+primary_features = ["F011", "F021"]
+expected_event_types = ["fixture_loaded", "course_selected", "chart_parsed", "note_scheduled", "fixture_result", "judgement", "score_update", "gauge_update", "song_end"]
+headless_required = true
+expected_reports = []
+assertions = ["fixture_id_matches_manifest", "all_commands_classified", "scheduled_note_count_positive", "autoplay_reaches_song_end"]
+
+[[fixtures]]
+fixture_id = "FX-CORE-002"
+path = "fixtures/synthetic/phase1_core/fx_core_002_big_notes.tja"
+primary_target = "big Don/Ka and big input context"
+primary_features = ["F012", "F013"]
+expected_event_types = ["fixture_loaded", "course_selected", "chart_parsed", "note_scheduled", "fixture_result", "judgement", "score_update", "gauge_update", "song_end"]
+headless_required = true
+expected_reports = []
+assertions = ["fixture_id_matches_manifest", "all_commands_classified", "scheduled_note_count_positive", "autoplay_reaches_song_end"]
+
+[[fixtures]]
+fixture_id = "FX-CORE-003"
+path = "fixtures/synthetic/phase1_core/fx_core_003_gogo_score_context.tja"
+primary_target = "GOGO state with score context"
+primary_features = ["F020", "F044", "F045"]
+expected_event_types = ["fixture_loaded", "course_selected", "chart_parsed", "note_scheduled", "fixture_result", "judgement", "score_update", "gauge_update", "song_end"]
+headless_required = true
+expected_reports = []
+assertions = ["fixture_id_matches_manifest", "all_commands_classified", "scheduled_note_count_positive", "autoplay_reaches_song_end"]
+
+[[fixtures]]
+fixture_id = "FX-CORE-004"
+path = "fixtures/synthetic/phase1_core/fx_core_004_barline_controls.tja"
+primary_target = "BARLINEON/OFF and explicit #BARLINE"
+primary_features = ["F022", "F023"]
+expected_event_types = ["fixture_loaded", "course_selected", "chart_parsed", "note_scheduled", "fixture_result", "judgement", "score_update", "gauge_update", "song_end"]
+headless_required = true
+expected_reports = []
+assertions = ["fixture_id_matches_manifest", "all_commands_classified", "scheduled_note_count_positive", "autoplay_reaches_song_end"]
+
+[[fixtures]]
+fixture_id = "FX-CORE-005"
+path = "fixtures/synthetic/phase1_core/fx_core_005_special_notes_parse.tja"
+primary_target = "mine/adlib/special note parse/report"
+primary_features = ["F047"]
+expected_event_types = ["fixture_loaded", "course_selected", "chart_parsed", "note_scheduled", "fixture_result", "judgement", "score_update", "gauge_update", "song_end"]
+headless_required = true
+expected_reports = []
+assertions = ["fixture_id_matches_manifest", "all_commands_classified", "scheduled_note_count_positive", "autoplay_reaches_song_end"]
+
+[[fixtures]]
+fixture_id = "FX-TIME-001"
+path = "fixtures/synthetic/phase1_timing/fx_time_001_initial_bpm_offset_positive.tja"
+primary_target = "initial BPM and positive OFFSET"
+primary_features = ["F003", "F004"]
+expected_event_types = ["fixture_loaded", "course_selected", "chart_parsed", "note_scheduled", "fixture_result", "timeline_position", "timing_checkpoint", "song_end"]
+headless_required = true
+expected_reports = []
+assertions = ["fixture_id_matches_manifest", "all_commands_classified", "rational_positions_recorded", "note_order_is_monotonic"]
+
+[[fixtures]]
+fixture_id = "FX-TIME-002"
+path = "fixtures/synthetic/phase1_timing/fx_time_002_offset_negative.tja"
+primary_target = "negative OFFSET"
+primary_features = ["F003"]
+expected_event_types = ["fixture_loaded", "course_selected", "chart_parsed", "note_scheduled", "fixture_result", "timeline_position", "timing_checkpoint", "song_end"]
+headless_required = true
+expected_reports = []
+assertions = ["fixture_id_matches_manifest", "all_commands_classified", "rational_positions_recorded", "note_order_is_monotonic"]
+
+[[fixtures]]
+fixture_id = "FX-TIME-003"
+path = "fixtures/synthetic/phase1_timing/fx_time_003_bpmchange.tja"
+primary_target = "BPMCHANGE timeline"
+primary_features = ["F005"]
+expected_event_types = ["fixture_loaded", "course_selected", "chart_parsed", "note_scheduled", "fixture_result", "timeline_position", "timing_checkpoint", "song_end", "bpm_changed"]
+headless_required = true
+expected_reports = []
+assertions = ["fixture_id_matches_manifest", "all_commands_classified", "rational_positions_recorded", "note_order_is_monotonic"]
+
+[[fixtures]]
+fixture_id = "FX-TIME-004"
+path = "fixtures/synthetic/phase1_timing/fx_time_004_measure.tja"
+primary_target = "MEASURE ratios and barline schedule"
+primary_features = ["F006"]
+expected_event_types = ["fixture_loaded", "course_selected", "chart_parsed", "note_scheduled", "fixture_result", "timeline_position", "timing_checkpoint", "song_end", "measure_changed"]
+headless_required = true
+expected_reports = []
+assertions = ["fixture_id_matches_manifest", "all_commands_classified", "rational_positions_recorded", "note_order_is_monotonic"]
+
+[[fixtures]]
+fixture_id = "FX-TIME-005"
+path = "fixtures/synthetic/phase1_timing/fx_time_005_delay.tja"
+primary_target = "DELAY timeline shift"
+primary_features = ["F007"]
+expected_event_types = ["fixture_loaded", "course_selected", "chart_parsed", "note_scheduled", "fixture_result", "timeline_position", "timing_checkpoint", "song_end", "delay_applied"]
+headless_required = true
+expected_reports = []
+assertions = ["fixture_id_matches_manifest", "all_commands_classified", "rational_positions_recorded", "note_order_is_monotonic"]
+
+[[fixtures]]
+fixture_id = "FX-TIME-006"
+path = "fixtures/synthetic/phase1_timing/fx_time_006_standard_subdivisions.tja"
+primary_target = "4/8/12/16/24/36 token counts"
+primary_features = ["F008", "F009"]
+expected_event_types = ["fixture_loaded", "course_selected", "chart_parsed", "note_scheduled", "fixture_result", "timeline_position", "timing_checkpoint", "song_end"]
+headless_required = true
+expected_reports = []
+assertions = ["fixture_id_matches_manifest", "all_commands_classified", "rational_positions_recorded", "note_order_is_monotonic"]
+
+[[fixtures]]
+fixture_id = "FX-TIME-007"
+path = "fixtures/synthetic/phase1_timing/fx_time_007_mixed_subdivisions.tja"
+primary_target = "mixed subdivision measures"
+primary_features = ["F008", "F010"]
+expected_event_types = ["fixture_loaded", "course_selected", "chart_parsed", "note_scheduled", "fixture_result", "timeline_position", "timing_checkpoint", "song_end"]
+headless_required = true
+expected_reports = []
+assertions = ["fixture_id_matches_manifest", "all_commands_classified", "rational_positions_recorded", "note_order_is_monotonic"]
+
+[[fixtures]]
+fixture_id = "FX-TIME-008"
+path = "fixtures/synthetic/phase1_timing/fx_time_008_dense_32_48_like.tja"
+primary_target = "dense arbitrary token counts"
+primary_features = ["F008"]
+expected_event_types = ["fixture_loaded", "course_selected", "chart_parsed", "note_scheduled", "fixture_result", "timeline_position", "timing_checkpoint", "song_end"]
+headless_required = true
+expected_reports = []
+assertions = ["fixture_id_matches_manifest", "all_commands_classified", "rational_positions_recorded", "note_order_is_monotonic"]
+
+[[fixtures]]
+fixture_id = "FX-ROLL-001"
+path = "fixtures/synthetic/phase1_roll_balloon/fx_roll_001_normal_and_big_roll.tja"
+primary_target = "normal roll, big roll, roll end"
+primary_features = ["F014", "F015", "F019"]
+expected_event_types = ["fixture_loaded", "course_selected", "chart_parsed", "note_scheduled", "fixture_result", "roll_start", "roll_hit", "roll_end", "song_end"]
+headless_required = true
+expected_reports = []
+assertions = ["fixture_id_matches_manifest", "all_commands_classified", "roll_end_links_to_start"]
+
+[[fixtures]]
+fixture_id = "FX-ROLL-002"
+path = "fixtures/synthetic/phase1_roll_balloon/fx_roll_002_balloon.tja"
+primary_target = "BALLOON header and balloon event"
+primary_features = ["F016"]
+expected_event_types = ["fixture_loaded", "course_selected", "chart_parsed", "note_scheduled", "fixture_result", "roll_start", "roll_hit", "roll_end", "song_end", "balloon_start", "balloon_update"]
+headless_required = true
+expected_reports = []
+assertions = ["fixture_id_matches_manifest", "all_commands_classified", "roll_end_links_to_start", "balloon_required_count_logged"]
+
+[[fixtures]]
+fixture_id = "FX-ROLL-003"
+path = "fixtures/synthetic/phase1_roll_balloon/fx_roll_003_branch_balloon_arrays.tja"
+primary_target = "BALLOONNOR/EXP/MAS branch counts"
+primary_features = ["F017"]
+expected_event_types = ["fixture_loaded", "course_selected", "chart_parsed", "note_scheduled", "fixture_result", "roll_start", "roll_hit", "roll_end", "song_end", "balloon_start", "balloon_update"]
+headless_required = true
+expected_reports = []
+assertions = ["fixture_id_matches_manifest", "all_commands_classified", "roll_end_links_to_start", "balloon_required_count_logged"]
+
+[[fixtures]]
+fixture_id = "FX-ROLL-004"
+path = "fixtures/synthetic/phase1_roll_balloon/fx_roll_004_balloonex.tja"
+primary_target = "BalloonEx/kusudama classification"
+primary_features = ["F018"]
+expected_event_types = ["fixture_loaded", "course_selected", "chart_parsed", "note_scheduled", "fixture_result", "roll_start", "roll_hit", "roll_end", "song_end", "balloon_start", "balloon_update"]
+headless_required = true
+expected_reports = []
+assertions = ["fixture_id_matches_manifest", "all_commands_classified", "roll_end_links_to_start", "balloon_required_count_logged"]
+
+[[fixtures]]
+fixture_id = "FX-BRANCH-001"
+path = "fixtures/synthetic/phase1_branching/fx_branch_001_section_and_accuracy.tja"
+primary_target = "SECTION and p branch condition"
+primary_features = ["F024", "F025", "F029"]
+expected_event_types = ["fixture_loaded", "course_selected", "chart_parsed", "note_scheduled", "fixture_result", "branch_section", "branch_decision", "branch_route_selected", "song_end"]
+headless_required = true
+expected_reports = []
+assertions = ["fixture_id_matches_manifest", "all_commands_classified", "branch_route_observed", "branch_counters_logged"]
+
+[[fixtures]]
+fixture_id = "FX-BRANCH-002"
+path = "fixtures/synthetic/phase1_branching/fx_branch_002_nem_and_branchend.tja"
+primary_target = "N/E/M bodies and BRANCHEND merge"
+primary_features = ["F026", "F027"]
+expected_event_types = ["fixture_loaded", "course_selected", "chart_parsed", "note_scheduled", "fixture_result", "branch_section", "branch_decision", "branch_route_selected", "song_end"]
+headless_required = true
+expected_reports = []
+assertions = ["fixture_id_matches_manifest", "all_commands_classified", "branch_route_observed", "branch_counters_logged"]
+
+[[fixtures]]
+fixture_id = "FX-BRANCH-003"
+path = "fixtures/synthetic/phase1_branching/fx_branch_003_levelhold.tja"
+primary_target = "LEVELHOLD route lock"
+primary_features = ["F028"]
+expected_event_types = ["fixture_loaded", "course_selected", "chart_parsed", "note_scheduled", "fixture_result", "branch_section", "branch_decision", "branch_route_selected", "song_end"]
+headless_required = true
+expected_reports = []
+assertions = ["fixture_id_matches_manifest", "all_commands_classified", "branch_route_observed", "branch_counters_logged"]
+
+[[fixtures]]
+fixture_id = "FX-BRANCH-004"
+path = "fixtures/synthetic/phase1_branching/fx_branch_004_percent_perfect.tja"
+primary_target = "pp branch condition"
+primary_features = ["F029"]
+expected_event_types = ["fixture_loaded", "course_selected", "chart_parsed", "note_scheduled", "fixture_result", "branch_section", "branch_decision", "branch_route_selected", "song_end"]
+headless_required = true
+expected_reports = []
+assertions = ["fixture_id_matches_manifest", "all_commands_classified", "branch_route_observed", "branch_counters_logged"]
+
+[[fixtures]]
+fixture_id = "FX-BRANCH-005"
+path = "fixtures/synthetic/phase1_branching/fx_branch_005_judge_count_conditions.tja"
+primary_target = "jp/jg/jb counters"
+primary_features = ["F030"]
+expected_event_types = ["fixture_loaded", "course_selected", "chart_parsed", "note_scheduled", "fixture_result", "branch_section", "branch_decision", "branch_route_selected", "song_end"]
+headless_required = true
+expected_reports = []
+assertions = ["fixture_id_matches_manifest", "all_commands_classified", "branch_route_observed", "branch_counters_logged"]
+
+[[fixtures]]
+fixture_id = "FX-BRANCH-006"
+path = "fixtures/synthetic/phase1_branching/fx_branch_006_roll_score_conditions.tja"
+primary_target = "r/rb/s conditions"
+primary_features = ["F031", "F032"]
+expected_event_types = ["fixture_loaded", "course_selected", "chart_parsed", "note_scheduled", "fixture_result", "branch_section", "branch_decision", "branch_route_selected", "song_end"]
+headless_required = true
+expected_reports = []
+assertions = ["fixture_id_matches_manifest", "all_commands_classified", "branch_route_observed", "branch_counters_logged"]
+
+[[fixtures]]
+fixture_id = "FX-SCROLL-001"
+path = "fixtures/synthetic/phase1_scroll/fx_scroll_001_extreme_scroll_values.tja"
+primary_target = "positive/negative/zero/high SCROLL"
+primary_features = ["F033", "F034", "F035", "F036"]
+expected_event_types = ["fixture_loaded", "course_selected", "chart_parsed", "note_scheduled", "fixture_result", "scroll_changed", "visual_state_sample", "song_end"]
+headless_required = true
+expected_reports = []
+assertions = ["fixture_id_matches_manifest", "all_commands_classified", "scroll_multiplier_logged", "gameplay_timing_unaffected_by_scroll"]
+
+[[fixtures]]
+fixture_id = "FX-SCROLL-002"
+path = "fixtures/synthetic/phase1_scroll/fx_scroll_002_complex_scroll.tja"
+primary_target = "complex SCROLL x+yi"
+primary_features = ["F037"]
+expected_event_types = ["fixture_loaded", "course_selected", "chart_parsed", "note_scheduled", "fixture_result", "scroll_changed", "visual_state_sample", "song_end"]
+headless_required = true
+expected_reports = []
+assertions = ["fixture_id_matches_manifest", "all_commands_classified", "scroll_multiplier_logged", "gameplay_timing_unaffected_by_scroll"]
+
+[[fixtures]]
+fixture_id = "FX-SCROLL-003"
+path = "fixtures/synthetic/phase1_scroll/fx_scroll_003_scroll_modes.tja"
+primary_target = "NMSCROLL/BMSCROLL/HBSCROLL"
+primary_features = ["F038", "F039", "F040"]
+expected_event_types = ["fixture_loaded", "course_selected", "chart_parsed", "note_scheduled", "fixture_result", "scroll_changed", "visual_state_sample", "song_end"]
+headless_required = true
+expected_reports = []
+assertions = ["fixture_id_matches_manifest", "all_commands_classified", "scroll_multiplier_logged", "gameplay_timing_unaffected_by_scroll"]
+
+[[fixtures]]
+fixture_id = "FX-SCROLL-004"
+path = "fixtures/synthetic/phase1_scroll/fx_scroll_004_special_visual_parse.tja"
+primary_target = "SUDDEN/DIRECTION/JPOSSCROLL parse/report"
+primary_features = ["F041", "F042", "F043"]
+expected_event_types = ["fixture_loaded", "course_selected", "chart_parsed", "note_scheduled", "fixture_result", "scroll_changed", "visual_state_sample", "song_end"]
+headless_required = true
+expected_reports = ["parse_report_visual_command"]
+assertions = ["fixture_id_matches_manifest", "all_commands_classified", "scroll_multiplier_logged", "gameplay_timing_unaffected_by_scroll"]
+
+[[fixtures]]
+fixture_id = "FX-SCORE-001"
+path = "fixtures/synthetic/phase1_course_audio/fx_score_001_scoremode_init_diff.tja"
+primary_target = "SCOREMODE/SCOREINIT/SCOREDIFF"
+primary_features = ["F044", "F045"]
+expected_event_types = ["fixture_loaded", "course_selected", "chart_parsed", "note_scheduled", "fixture_result", "judgement", "score_update", "gauge_update", "result_summary", "song_end"]
+headless_required = true
+expected_reports = []
+assertions = ["fixture_id_matches_manifest", "all_commands_classified", "score_or_gauge_delta_logged"]
+
+[[fixtures]]
+fixture_id = "FX-SCORE-002"
+path = "fixtures/synthetic/phase1_course_audio/fx_score_002_gauge_clear.tja"
+primary_target = "gauge update and clear summary"
+primary_features = ["F046"]
+expected_event_types = ["fixture_loaded", "course_selected", "chart_parsed", "note_scheduled", "fixture_result", "judgement", "score_update", "gauge_update", "result_summary", "song_end"]
+headless_required = true
+expected_reports = []
+assertions = ["fixture_id_matches_manifest", "all_commands_classified", "score_or_gauge_delta_logged"]
+
+[[fixtures]]
+fixture_id = "FX-COURSE-001"
+path = "fixtures/synthetic/phase1_course_audio/fx_course_001_multi_course_selection.tja"
+primary_target = "multi-COURSE selection"
+primary_features = ["F001"]
+expected_event_types = ["fixture_loaded", "course_selected", "chart_parsed", "note_scheduled", "fixture_result", "song_end"]
+headless_required = true
+expected_reports = []
+assertions = ["fixture_id_matches_manifest", "all_commands_classified", "selected_course_only_loaded"]
+
+[[fixtures]]
+fixture_id = "FX-AUDIO-001"
+path = "fixtures/synthetic/phase1_course_audio/fx_audio_001_wave_path_offset.tja"
+primary_target = "WAVE/PATH_WAV/audio reference"
+primary_features = ["F002", "F003"]
+expected_event_types = ["fixture_loaded", "course_selected", "chart_parsed", "note_scheduled", "fixture_result", "audio_reference_resolved", "audio_offset_applied", "audio_start_scheduled", "song_end"]
+headless_required = true
+expected_reports = []
+assertions = ["fixture_id_matches_manifest", "all_commands_classified", "missing_dummy_audio_is_nonfatal_in_headless"]
+
+[[fixtures]]
+fixture_id = "FX-COMPAT-001"
+path = "fixtures/synthetic/phase1_course_audio/fx_compat_001_nextsong_report.tja"
+primary_target = "Dan/NEXTSONG report"
+primary_features = ["F048"]
+expected_event_types = ["fixture_loaded", "course_selected", "chart_parsed", "note_scheduled", "fixture_result", "compatibility_report"]
+headless_required = false
+expected_reports = ["non_scope_report"]
+assertions = ["fixture_id_matches_manifest", "all_commands_classified", "non_scope_is_explicit"]
+
+[[fixtures]]
+fixture_id = "FX-COMPAT-002"
+path = "fixtures/synthetic/phase1_course_audio/fx_compat_002_bga_camera_lyrics_report.tja"
+primary_target = "BGA/camera/object/lyrics report"
+primary_features = ["F049"]
+expected_event_types = ["fixture_loaded", "course_selected", "chart_parsed", "note_scheduled", "fixture_result", "compatibility_report"]
+headless_required = false
+expected_reports = ["non_scope_report"]
+assertions = ["fixture_id_matches_manifest", "all_commands_classified", "non_scope_is_explicit"]
+
+[[fixtures]]
+fixture_id = "FX-INTEGRATED-001"
+path = "fixtures/synthetic/phase1_course_audio/fx_integrated_001_mixed_gimmick_smoke.tja"
+primary_target = "integrated timing/scroll/roll/branch smoke"
+primary_features = ["F005", "F010", "F014", "F020", "F024", "F033"]
+expected_event_types = ["fixture_loaded", "course_selected", "chart_parsed", "note_scheduled", "fixture_result", "timing_checkpoint", "scroll_changed", "judgement", "score_update", "gauge_update", "result_summary", "song_end"]
+headless_required = true
+expected_reports = []
+assertions = ["fixture_id_matches_manifest", "all_commands_classified", "autoplay_reaches_song_end", "integrated_feature_set_observed"]
+
+[[fixtures]]
+fixture_id = "FX-INTEGRATED-002"
+path = "fixtures/synthetic/phase1_course_audio/fx_integrated_002_long_load_smoke.tja"
+primary_target = "long/high-load deterministic smoke"
+primary_features = ["F008", "F036", "F046"]
+expected_event_types = ["fixture_loaded", "course_selected", "chart_parsed", "note_scheduled", "fixture_result", "timing_checkpoint", "scroll_changed", "judgement", "score_update", "gauge_update", "result_summary", "song_end"]
+headless_required = true
+expected_reports = []
+assertions = ["fixture_id_matches_manifest", "all_commands_classified", "autoplay_reaches_song_end", "integrated_feature_set_observed"]

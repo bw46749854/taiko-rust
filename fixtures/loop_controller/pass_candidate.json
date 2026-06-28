@@ -1,0 +1,29 @@
+[
+  {
+    "number": 101,
+    "title": "OPS-0006 auto-merge candidate discovery",
+    "body": "Ticket ID: OPS-0006\nSession metadata: reports/session_metadata/OPS-0006.toml\nQA verdict JSON: reports/qa/OPS-0006.json\n",
+    "baseRefName": "main",
+    "headRefName": "ops/OPS-0006-auto-merge-candidate-discovery",
+    "headRefOid": "1111111111111111111111111111111111111111",
+    "isDraft": false,
+    "labels": [{"name": "loop:automerge"}],
+    "statusCheckRollup": [
+      {"context": "loop-pr-gate / loop-pr-gate", "state": "SUCCESS"},
+      {"context": "rust-preflight / rust-preflight", "state": "SUCCESS"},
+      {"context": "phase1-loop / phase1-loop", "state": "SUCCESS"},
+      {"context": "phase1-gameplay-entry / phase1-gameplay-entry", "state": "SUCCESS"}
+    ]
+  },
+  {
+    "number": 102,
+    "title": "docs typo",
+    "body": "Ticket ID: OPS-0006",
+    "baseRefName": "main",
+    "headRefName": "docs/typo",
+    "headRefOid": "2222222222222222222222222222222222222222",
+    "isDraft": false,
+    "labels": [],
+    "statusCheckRollup": []
+  }
+]

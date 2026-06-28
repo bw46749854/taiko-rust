@@ -1,0 +1,38 @@
+# session separation session metadata template for PR / QA / merge gating.
+# Copy this to reports/session_metadata/<ticket-id>.toml.
+
+schema_version = 1
+run_id = "RUN-YYYYMMDD-HHMMSS-TKT-0000"
+ticket_id = "TKT-0000"
+ticket_title = "Spec repair gate and bootstrap consistency check"
+
+implementation_session_id = "codex-cloud-impl-YYYYMMDDTHHMMSSZ"
+review_session_id = "codex-cloud-review-YYYYMMDDTHHMMSSZ"
+qa_session_id = "codex-cloud-qa-YYYYMMDDTHHMMSSZ"
+
+implementation_branch = "loop/TKT-0000-spec-repair-gate-and-bootstrap-consistency-check"
+implementation_worktree = "worktrees/impl/TKT-0000"
+review_worktree = "worktrees/review/TKT-0000"
+qa_worktree = "worktrees/qa/TKT-0000"
+base_branch = "main"
+pr_number = 0
+
+plan_path = "reports/plans/TKT-0000-plan.md"
+command_log_path = "reports/commands/TKT-0000-command-log.md"
+qa_verdict_path = "reports/qa/TKT-0000.verdict.json"
+preflight_report_path = "reports/preflight/TKT-0000/rust_preflight_report.json"
+gate_report_path = ".loop/session_logs/GATE-0000-report.md"
+
+implementation_may_write_code = true
+review_may_write_code = false
+qa_may_write_code = false
+control_may_merge = true
+
+implementation_approved_by = ""
+review_approved_by = ""
+qa_approved_by = ""
+
+no_user_assets_committed = true
+self_approval_check = "implementation_session_id != review_session_id and implementation_session_id != qa_session_id and review_session_id != qa_session_id"
+next_action = "start_worker"
+next_ticket_transition = "block until gate evidence is accepted"

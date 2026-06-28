@@ -1,0 +1,19 @@
+{
+  "run_id": "RUN-OPS0009-SMOKE",
+  "status": "pass",
+  "dry_run": true,
+  "api_key_required": false,
+  "ai_worker": "not_used",
+  "created_at_utc": "2026-06-27T05:30:09.066079+00:00",
+  "scenarios": {
+    "pass": "pass",
+    "reject": "pass",
+    "block": "pass",
+    "retry": "pass",
+    "revert": "pass",
+    "advance": "pass",
+    "handoff": "pass",
+    "publication": "pass"
+  },
+  "completed_at_utc": "2026-06-27T05:30:16.924771+00:00"
+}

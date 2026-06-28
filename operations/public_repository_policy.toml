@@ -1,0 +1,54 @@
+status = "canonical"
+policy_name = "public_repository_hardening"
+repository_visibility_target = "public_after_ops_migration"
+public_visibility_unlocked_by_gate = "GATE-OPS-0000"
+
+license_file_required = true
+notice_file_required = true
+third_party_notices_required = true
+security_policy_required = true
+dependabot_required = true
+
+openai_api_key_required = false
+codex_api_key_required = false
+github_actions_ai_worker_allowed = false
+openai_codex_action_allowed = false
+pull_request_target_allowed = false
+privileged_workflow_may_execute_pr_head = false
+
+required_static_check = "scripts/check_public_repository_static.py"
+
+forbidden_workflow_terms = [
+  "pull_request_target",
+  "openai/codex-action@v1",
+  "secrets.OPENAI_API_KEY",
+  "secrets.CODEX_API_KEY",
+  "OPENAI_API_KEY:",
+  "CODEX_API_KEY:",
+]
+
+forbidden_repository_paths = [
+  ".env",
+  ".env.local",
+  ".external_assets/",
+  "source_context/",
+]
+
+forbidden_asset_globs = [
+  "*.mp3",
+  "*.wav",
+  "*.ogg",
+  "*.flac",
+  "*.mp4",
+  "*.avi",
+  "*.png",
+  "*.jpg",
+  "*.jpeg",
+  "*.webp",
+  "*.tja",
+  "*.osz",
+]
+
+allowed_asset_paths = [
+  "fixtures/synthetic/",
+]

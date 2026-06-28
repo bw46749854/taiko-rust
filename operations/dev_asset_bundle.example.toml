@@ -1,0 +1,15 @@
+# Development asset bundle example for OPS-0004.
+# Copy this file to a private CI variable, repository environment file, or local path
+# with real values. Do not commit a private Drive URL, OAuth token, service account
+# JSON, signed URL, or user-selected asset payload.
+
+[dev_asset_bundle]
+mode = "zip"
+provider = "google_drive"
+file_id = "REPLACE_WITH_GOOGLE_DRIVE_FILE_ID"
+sha256 = "0000000000000000000000000000000000000000000000000000000000000000"
+layout = "opentaiko-compatible"
+extract_to = ".external_assets/opentaiko"
+content_root_env = "OPENTAIKO_CONTENT_ROOT"
+content_root_arg = "--content-root"
+allow_placeholder = true

@@ -1,0 +1,44 @@
+name: rust-preflight
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  rust-preflight:
+    name: rust-preflight
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Codex / CI environment setup
+        run: scripts/codex_cloud_setup.sh --skip-static
+      - name: OPS-0004 asset bundle manifest static validation
+        run: scripts/check_asset_bundle_manifest.py --manifest operations/dev_asset_bundle.example.toml
+      - name: Step16 environment static validation
+        run: scripts/check_codex_cloud_env_static.py
+      - name: Run Rust preflight
+        id: preflight
+        continue-on-error: true
+        run: scripts/run_rust_preflight.sh --scope current-package --out reports/preflight/latest
+      - name: Validate runtime evidence contract
+        if: always()
+        run: scripts/check_runtime_evidence_files.py --path reports/preflight/latest/rust_preflight_report.json --require-scope current-package
+      - name: Upload rust-preflight-report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rust-preflight-report
+          path: reports/preflight/latest
+          if-no-files-found: error
+      - name: Fail on non-passing preflight
+        if: steps.preflight.outcome == 'failure'
+        run: exit 1

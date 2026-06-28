@@ -1,0 +1,53 @@
+{
+  "schema": "schemas/worker_handoff_schema.md",
+  "run_id": "RUN-HANDOFF-DISARMED-SAFETY",
+  "mode": "controller",
+  "api_key_required": false,
+  "ai_worker_in_github_actions": false,
+  "github_actions_role": "preview_only_until_loop_automation_armed",
+  "loop_automation_armed": false,
+  "selected_ticket": null,
+  "required_reads": [
+    "AGENTS.md",
+    "README.md",
+    "docs/99_codex_worker_handoff_contract.md",
+    "docs/90_session_metadata_and_path_policy.md",
+    "docs/91_repair_materialization_and_retry_budget.md",
+    "operations/loop_policy.toml",
+    "operations/ticket_transition_policy.toml"
+  ],
+  "allowed_paths": [
+    ".github/",
+    ".loop/",
+    "AGENTS.md",
+    "README.md",
+    "docs/",
+    "fixtures/loop_controller/",
+    "operations/",
+    "prompts/",
+    "reports/loop/",
+    "reports/assets/",
+    "schemas/",
+    "scripts/"
+  ],
+  "forbidden_paths": [
+    ".external_assets/",
+    "source_context/",
+    "STEP*.md",
+    "reports/qa/*.verdict.json",
+    "reports/regression/*.json"
+  ],
+  "required_commands": [
+    "scripts/ci_local_equivalent.sh --static-only",
+    "scripts/check_worker_handoff_static.py"
+  ],
+  "latest_json_path": "reports/loop/worker_handoff/latest.json",
+  "next_prompt_path": "reports/loop/worker_handoff/latest.md",
+  "issue_body_path": "reports/loop/worker_handoff/latest_issue.md",
+  "comment_body_path": "reports/loop/worker_handoff/latest_comment.md",
+  "verdict": "block",
+  "reason": "No Ready ticket found; this is a preview-only blocker until a ticket file has Status: Ready.",
+  "blocked_ticket": "TKT-0005",
+  "blocked_ticket_path": ".loop/tickets/TKT-0005.md",
+  "blocked_ticket_status": "Blocked"
+}
