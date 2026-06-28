@@ -222,6 +222,12 @@ def build_start_packet(args: argparse.Namespace) -> dict[str, Any]:
         next_action = "wait_for_phase1_entry_evidence"
 
     branch = f"impl/{ticket_id}-{slugify(str(ticket.get('title') or entry.get('title') or ticket_id))}"
+    implementation_worktree = f"worktrees/impl/{ticket_id}"
+    review_worktree = f"worktrees/review/{ticket_id}"
+    qa_worktree = f"worktrees/qa/{ticket_id}"
+    worktrees = [implementation_worktree, review_worktree, qa_worktree]
+    if len(set(worktrees)) != len(worktrees):
+        issues.append("implementation, review, and QA worktrees must be distinct")
     return {
         "schema_version": "phase1-gameplay-start/v1",
         "status": "canonical",
@@ -235,9 +241,9 @@ def build_start_packet(args: argparse.Namespace) -> dict[str, Any]:
         "next_action": next_action,
         "force_preview": bool(args.force_preview),
         "branch": branch,
-        "implementation_worktree": f"worktrees/impl/{ticket_id}",
-        "review_worktree": f"worktrees/review/{ticket_id}",
-        "qa_worktree": f"worktrees/qa/{ticket_id}",
+        "implementation_worktree": implementation_worktree,
+        "review_worktree": review_worktree,
+        "qa_worktree": qa_worktree,
         "session_metadata_path": f"reports/session_metadata/{ticket_id}.toml",
         "report_dir": report_dir,
         "start_json": f"{report_dir}/phase1_gameplay_start.json",

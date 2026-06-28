@@ -145,6 +145,9 @@ def main() -> int:
         fail(f"renderer did not emit JSON: {exc}")
     if packet.get("ticket_id") != "TKT-0005":
         fail("renderer did not select TKT-0005")
+    worktrees = [packet.get("implementation_worktree"), packet.get("review_worktree"), packet.get("qa_worktree")]
+    if len(set(worktrees)) != 3:
+        fail(f"implementation, review, and QA worktrees must be distinct: {worktrees}")
     if packet.get("verdict") == "ready":
         if packet.get("next_action") != "start_phase1_gameplay_ticket_worker":
             fail("ready verdict must start the gameplay worker")
