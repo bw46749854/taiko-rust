@@ -137,7 +137,7 @@ def check_scripts() -> None:
         if "set -euo pipefail" not in text:
             fail(f"{rel} must use set -euo pipefail")
     setup = read_text("scripts/codex_cloud_setup.sh")
-    for term in ["rust-toolchain.toml", "rustup toolchain install", "scripts/check_bootstrap_consistency.sh"]:
+    for term in ["rust-toolchain.toml", "rustup toolchain install", "scripts/check_bootstrap_consistency.sh", "--post-bootstrap", "scripts/check_post_bootstrap_runtime_state.py"]:
         if term not in setup:
             fail(f"scripts/codex_cloud_setup.sh missing term: {term}")
     ci = read_text("scripts/ci_local_equivalent.sh")

@@ -186,17 +186,14 @@ def main() -> int:
     ci = read("scripts/ci_local_equivalent.sh")
     if "scripts/check_phase1_gameplay_start_static.py" not in ci:
         fail("ci_local_equivalent.sh must run check_phase1_gameplay_start_static.py")
-    bootstrap = read("scripts/check_bootstrap_consistency.sh")
+    post_bootstrap = read("scripts/check_post_bootstrap_runtime_state.py")
     for term in [
-        "docs/95_phase1_gameplay_loop_start.md",
-        "operations/phase1_gameplay_loop_policy.toml",
-        "prompts/72_phase1_gameplay_ticket_runner.md",
-        "scripts/render_phase1_gameplay_ticket_prompt.py",
-        "scripts/check_phase1_gameplay_start_static.py",
+        "scripts/check_ops_migration_readiness.py",
         "scripts/check_phase1_entry_state_consistency.py",
+        "scripts/check_phase1_gameplay_start_static.py",
     ]:
-        if term not in bootstrap:
-            fail(f"check_bootstrap_consistency.sh missing Phase1 gameplay start term: {term}")
+        if term not in post_bootstrap:
+            fail(f"check_post_bootstrap_runtime_state.py missing Phase1 gameplay start term: {term}")
 
     print("phase1 gameplay start static check passed")
     return 0

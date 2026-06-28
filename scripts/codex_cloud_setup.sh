@@ -4,18 +4,23 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 
 run_static=true
+run_post_bootstrap=false
 for arg in "$@"; do
   case "$arg" in
     --skip-static)
       run_static=false
       ;;
+    --post-bootstrap)
+      run_post_bootstrap=true
+      ;;
     -h|--help)
       cat <<'HELP'
-Usage: scripts/codex_cloud_setup.sh [--skip-static]
+Usage: scripts/codex_cloud_setup.sh [--skip-static] [--post-bootstrap]
 
 Provision a Codex Cloud / CI container for the OpenTaiko Phase1 loop package.
 The script intentionally performs setup-only network work, then leaves runtime
 verification to scripts/run_rust_preflight.sh.
+Use --post-bootstrap when validating a repository that has completed OPS migration.
 HELP
       exit 0
       ;;
@@ -70,6 +75,9 @@ section "Static environment validation"
 if [ "$run_static" = true ]; then
   scripts/check_codex_cloud_env_static.py
   scripts/check_bootstrap_consistency.sh
+  if [ "$run_post_bootstrap" = true ]; then
+    scripts/check_post_bootstrap_runtime_state.py --static-only
+  fi
 else
   echo "skipped by --skip-static"
 fi

@@ -67,6 +67,7 @@ required_files=(
   "docs/75_phase1_feature_ticket_manifest_schema.md"
   "docs/76_phase1_feature_acceptance_command_matrix.md"
   ".loop/gates/GATE-0090-phase1-feature-loop-ready.md"
+  ".loop/tickets/TKT-0005.md"
   ".loop/tickets/TKT-0060.md"
   "operations/phase1_feature_ticket_manifest.toml"
   "reports/phase1_feature_loop/README.md"
@@ -219,6 +220,7 @@ required_files=(
   "operations/ops_migration_readiness_policy.toml"
   "schemas/ops_migration_readiness_schema.md"
   "scripts/check_ops_migration_readiness.py"
+  "scripts/check_post_bootstrap_runtime_state.py"
   "fixtures/loop_controller/merge_history_ops0009.json"
   "reports/loop/publication_readiness_report.json"
   "reports/loop/publication_readiness_report.md"
@@ -231,32 +233,19 @@ for path in "${required_files[@]}"; do
   test -f "$path" || { echo "missing: $path" >&2; exit 1; }
 done
 
-ready_count=$(rg "^Status: Ready" .loop/tickets || true)
-ready_count=$(printf "%s\n" "$ready_count" | sed '/^$/d' | wc -l | tr -d ' ')
-ready_ticket=$(rg "^Status: Ready" .loop/tickets || true)
-
-if [ "$ready_count" != "0" ] && [ "$ready_count" != "1" ]; then
-  echo "expected zero Ready tickets before Phase1 entry evidence, or exactly TKT-0005 when all entry prerequisites pass; found $ready_count" >&2
-  echo "$ready_ticket" >&2
-  exit 1
-fi
-
-if [ "$ready_count" = "1" ]; then
-  echo "$ready_ticket" | rg -q "TKT-0005.md" || {
-    echo "expected TKT-0005 to be the only Ready ticket after entry prerequisites pass" >&2
-    echo "$ready_ticket" >&2
-    exit 1
-  }
-fi
+# Bootstrap-only invariant: this check validates package structure and static
+# bootstrap contracts. Runtime/post-OPS state (for example the current Ready
+# ticket) is intentionally validated by scripts/check_post_bootstrap_runtime_state.py
+# and the post-OPS/Phase1 entry checks it delegates to.
 
 # Deprecated crate names may appear only in explicit deprecation statements.
-suspicious_taiko_core=$(grep -R "taiko_core" docs prompts .loop AGENTS.md operations README.md 2>/dev/null \
-  | grep -v "Do not use" \
-  | grep -v "Deprecated" \
-  | grep -v "deprecated" \
-  | grep -v "旧文書" \
-  | grep -v "廃止" \
-  | grep -v "No stale" \
+suspicious_taiko_core=$(rg "taiko_core" docs prompts .loop AGENTS.md operations README.md 2>/dev/null \
+  | rg -v "Do not use" \
+  | rg -v "Deprecated" \
+  | rg -v "deprecated" \
+  | rg -v "旧文書" \
+  | rg -v "廃止" \
+  | rg -v "No stale" \
   || true)
 if [ -n "$suspicious_taiko_core" ]; then
   echo "found suspicious taiko_core reference" >&2
@@ -266,7 +255,7 @@ fi
 
 # These legacy crate names were folded into the canonical crates.
 for deprecated in taiko_input taiko_telemetry taiko_app taiko_tools taiko_headless taiko_analyzer; do
-  hit=$(grep -R "$deprecated" docs prompts .loop AGENTS.md operations README.md 2>/dev/null || true)
+  hit=$(rg "$deprecated" docs prompts .loop AGENTS.md operations README.md 2>/dev/null || true)
   if [ -n "$hit" ]; then
     echo "found deprecated crate name reference: $deprecated" >&2
     echo "$hit" >&2
@@ -282,7 +271,6 @@ scripts/check_headless_autoplay_static.py
 scripts/check_timing_analyzer_static.py
 scripts/check_failure_feedback_static.py
 scripts/check_qa_regression_static.py
-scripts/check_phase1_entry_state_consistency.py
 scripts/check_phase1_feature_loop_static.py
 scripts/validate_fixture_manifest.py
 scripts/validate_synthetic_fixture_structure.py
@@ -301,8 +289,4 @@ scripts/check_ticket_transition_static.py
 scripts/check_worker_handoff_static.py
 scripts/check_public_repository_static.py
 scripts/check_asset_bundle_manifest.py --manifest operations/dev_asset_bundle.example.toml
-scripts/check_ops_migration_readiness.py --static-only
-
-scripts/check_phase1_gameplay_start_static.py
-
 echo "bootstrap consistency check passed"
