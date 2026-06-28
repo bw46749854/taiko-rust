@@ -1,3 +1,5 @@
 fn main() {
-    eprintln!("taiko_play is a Rust workspace compile-time skeleton; gameplay starts in later tickets.");
+    eprintln!(
+        "taiko_play is a minimal smoke entrypoint; full gameplay behavior is tracked by the Phase1 feature tickets."
+    );
 }

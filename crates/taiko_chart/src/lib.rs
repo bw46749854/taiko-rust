@@ -2,7 +2,8 @@
 //!
 //! Fixture validation command surface intentionally implements only the parser surface needed for autonomous
 //! fixture validation. Full OpenTaiko-compatible scheduling, branch execution,
-//! scoring, judgement, rendering, and audio behavior remain later tickets.
+//! scoring, judgement, rendering, and audio behavior are tracked by the Phase1
+//! feature tickets and the Phase1 normal-play compatibility contract.
 
 use std::collections::{BTreeMap, BTreeSet};
 use std::fmt;
