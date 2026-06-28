@@ -14,6 +14,8 @@ import sys
 import tempfile
 from pathlib import Path
 
+import check_session_separation
+
 try:
     import tomllib  # type: ignore[attr-defined]
 except ModuleNotFoundError:  # pragma: no cover
@@ -31,6 +33,7 @@ REQUIRED_FILES = [
     "scripts/loop_auto_merge_pr.sh",
     "scripts/loop_revert_last_merge.sh",
     "schemas/auto_merge_candidate_schema.md",
+    "schemas/qa_verdict_schema.md",
     "fixtures/loop_controller/pass_candidate.json",
     "fixtures/loop_controller/reject_candidate.json",
     "fixtures/loop_controller/block_candidate.json",
@@ -211,6 +214,7 @@ def validate_static() -> None:
         "scripts/check_auto_merge_conditions.py",
         "scripts/select_auto_merge_candidate.py",
         "schemas/auto_merge_candidate_schema.md",
+    "schemas/qa_verdict_schema.md",
         "fixtures/loop_controller/pass_candidate.json",
         "reports/loop/candidates/README.md",
         "scripts/loop_controller_github.sh",
@@ -300,12 +304,11 @@ def validate_candidate(metadata: str | None, qa: str | None, ticket: str | None,
     if not qa_path.is_file():
         fail(f"missing QA verdict file: {qa_path.relative_to(ROOT)}")
     verdict = json.loads(qa_path.read_text(encoding="utf-8"))
+    qa_issues = check_session_separation.validate_qa_verdict_payload(verdict, meta)
+    if qa_issues:
+        fail("QA verdict schema validation failed: " + "; ".join(qa_issues))
     if verdict.get("verdict") != "pass":
         fail(f"refusing auto-merge for QA verdict: {verdict.get('verdict')}")
-    if verdict.get("session_id") and verdict.get("session_id") != meta["qa_session_id"]:
-        fail("QA verdict session_id does not match metadata qa_session_id")
-    if verdict.get("source_worktree") and verdict.get("source_worktree") != meta["qa_worktree"]:
-        fail("QA verdict source_worktree does not match metadata qa_worktree")
 
 
 def validate_candidate_fixtures() -> None:

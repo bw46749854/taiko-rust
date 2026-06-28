@@ -21,7 +21,10 @@ Required fields:
 - `review_worktree`
 - `qa_worktree`
 - `qa_verdict_path`
+- `plan_path`
+- `command_log_path`
 - `preflight_report_path`
+- `gate_report_path`
 - `implementation_may_write_code`
 - `review_may_write_code`
 - `qa_may_write_code`
@@ -33,3 +36,8 @@ Validation command:
 ```bash
 scripts/check_session_separation.py --metadata reports/session_metadata/TKT-0005.toml
 ```
+
+
+Artifact path fields (`plan_path`, `command_log_path`, `qa_verdict_path`, `preflight_report_path`, and `gate_report_path`) are required so implementation, review, QA, and gate evidence can be correlated without prose-only judgement.
+
+Implementation, review, and QA session IDs must be pairwise distinct. The QA verdict at `qa_verdict_path` must satisfy `schemas/qa_verdict_schema.md` whenever QA verdict evidence is required.

@@ -2117,8 +2117,16 @@ pub struct QaVerdictReport {
     pub verdict: String,
     pub source: String,
     pub source_verdict: String,
+    pub ticket_id: String,
+    pub run_id: String,
+    pub qa_session_id: String,
+    pub source_worktree: String,
     pub next_action: String,
+    pub evidence_inputs: Vec<String>,
+    pub failure_route: String,
     pub failure_report_required: bool,
+    pub missing_evidence: Vec<String>,
+    pub issues: Vec<String>,
 }
 
 fn run_qa(root: &Path, options: &CliOptions) -> CliResult<QaRunReport> {
@@ -2280,34 +2288,107 @@ fn compare_qa_reports(root: &Path, options: &CliOptions) -> CliResult<QaCompareR
 }
 
 fn normalize_qa_verdict(root: &Path, input_path: &Path) -> CliResult<QaVerdictReport> {
+    let source = relative(root, input_path);
     if !input_path.is_file() {
         return Ok(QaVerdictReport {
             verdict: "block".to_string(),
-            source: relative(root, input_path),
+            source,
             source_verdict: "missing".to_string(),
+            ticket_id: String::new(),
+            run_id: String::new(),
+            qa_session_id: String::new(),
+            source_worktree: String::new(),
             next_action: "produce QA input report before gate evaluation".to_string(),
+            evidence_inputs: Vec::new(),
+            failure_route: "{}".to_string(),
             failure_report_required: false,
+            missing_evidence: vec!["qa input report is missing".to_string()],
+            issues: vec!["qa input report is missing".to_string()],
         });
     }
     let text = read_file(input_path)?;
     let source_verdict =
         json_string_field(&text, "verdict").unwrap_or_else(|| "unknown".to_string());
-    let (verdict, next_action, failure_report_required) = match source_verdict.as_str() {
+    let ticket_id = json_string_field(&text, "ticket_id").unwrap_or_default();
+    let run_id = json_string_field(&text, "run_id").unwrap_or_default();
+    let qa_session_id = json_string_field(&text, "qa_session_id")
+        .or_else(|| json_string_field(&text, "session_id"))
+        .unwrap_or_default();
+    let source_worktree = json_string_field(&text, "source_worktree").unwrap_or_default();
+    let failure_route =
+        json_object_fragment(&text, "failure_route").unwrap_or_else(|| "{}".to_string());
+    let evidence_inputs = json_string_array_field(&text, "evidence_inputs");
+    let missing_evidence = json_string_array_field(&text, "missing_evidence");
+    let mut issues = Vec::new();
+    for (field, value) in [
+        ("ticket_id", &ticket_id),
+        ("run_id", &run_id),
+        ("qa_session_id", &qa_session_id),
+        ("source_worktree", &source_worktree),
+    ] {
+        if value.is_empty() {
+            issues.push(format!("missing required QA verdict field: {field}"));
+        }
+    }
+    if evidence_inputs.is_empty() {
+        issues.push("missing required QA verdict field: evidence_inputs".to_string());
+    }
+    if !text.contains("\"failure_route\"") {
+        issues.push("missing required QA verdict field: failure_route".to_string());
+    }
+
+    let (mut verdict, next_action, failure_report_required) = match source_verdict.as_str() {
         "pass" => ("pass", "advance to next eligible ticket", false),
         "reject" => (
             "reject",
-            "create or update failure report and proposed repair ticket",
+            "create or update failure report and materialized repair ticket",
             true,
         ),
-        "block" => ("block", "produce missing machine-readable evidence", false),
+        "block" => (
+            "block",
+            "produce missing evidence and route blocker ticket",
+            false,
+        ),
         _ => ("block", "repair QA report or CLI contract", false),
     };
+    if source_verdict == "reject" {
+        for field in [
+            "classification_path",
+            "materialization_path",
+            "repair_ticket_id",
+        ] {
+            if !failure_route.contains(&format!("\"{field}\"")) {
+                issues.push(format!("reject QA verdict requires failure_route.{field}"));
+            }
+        }
+    }
+    if source_verdict == "block" {
+        if missing_evidence.is_empty() {
+            issues.push("block QA verdict requires missing_evidence".to_string());
+        }
+        for field in ["blocker_ticket_id", "blocker_route"] {
+            if !failure_route.contains(&format!("\"{field}\"")) {
+                issues.push(format!("block QA verdict requires failure_route.{field}"));
+            }
+        }
+    }
+    if !issues.is_empty() && verdict == "pass" {
+        verdict = "block";
+    }
     Ok(QaVerdictReport {
         verdict: verdict.to_string(),
-        source: relative(root, input_path),
+        source,
         source_verdict,
+        ticket_id,
+        run_id,
+        qa_session_id,
+        source_worktree,
         next_action: next_action.to_string(),
+        evidence_inputs,
+        failure_route,
         failure_report_required,
+        missing_evidence,
+        issues,
     })
 }
 
@@ -2346,6 +2427,43 @@ fn json_string_field(text: &str, field: &str) -> Option<String> {
     let value = after_colon.strip_prefix('"')?;
     let end = value.find('"')?;
     Some(value[..end].to_string())
+}
+
+fn json_string_array_field(text: &str, field: &str) -> Vec<String> {
+    let needle = format!("\"{field}\"");
+    let Some(start) = text.find(&needle) else {
+        return Vec::new();
+    };
+    let rest = &text[start + needle.len()..];
+    let Some(colon) = rest.find(':') else {
+        return Vec::new();
+    };
+    let after_colon = rest[colon + 1..].trim_start();
+    let Some(array) = after_colon.strip_prefix('[') else {
+        return Vec::new();
+    };
+    let Some(end) = array.find(']') else {
+        return Vec::new();
+    };
+    array[..end]
+        .split(',')
+        .filter_map(|item| {
+            let item = item.trim();
+            let value = item.strip_prefix('"')?.strip_suffix('"')?;
+            Some(value.to_string())
+        })
+        .collect()
+}
+
+fn json_object_fragment(text: &str, field: &str) -> Option<String> {
+    let needle = format!("\"{field}\"");
+    let start = text.find(&needle)?;
+    let rest = &text[start + needle.len()..];
+    let colon = rest.find(':')?;
+    let after_colon = rest[colon + 1..].trim_start();
+    let object = after_colon.strip_prefix('{')?;
+    let end = object.find('}')?;
+    Some(format!("{{{}}}", &object[..end]))
 }
 
 fn render_qa_run(report: &QaRunReport, format: OutputFormat) -> String {
@@ -2404,20 +2522,36 @@ fn render_qa_compare(report: &QaCompareReport, format: OutputFormat) -> String {
 fn render_qa_verdict(report: &QaVerdictReport, format: OutputFormat) -> String {
     match format {
         OutputFormat::Json => format!(
-            "{{\"verdict\":\"{}\",\"source\":\"{}\",\"source_verdict\":\"{}\",\"next_action\":\"{}\",\"failure_report_required\":{}}}",
+            "{{\"verdict\":\"{}\",\"source\":\"{}\",\"source_verdict\":\"{}\",\"ticket_id\":\"{}\",\"run_id\":\"{}\",\"qa_session_id\":\"{}\",\"source_worktree\":\"{}\",\"next_action\":\"{}\",\"evidence_inputs\":{},\"failure_route\":{},\"failure_report_required\":{},\"missing_evidence\":{},\"issues\":{}}}",
             escape_json(&report.verdict),
             escape_json(&report.source),
             escape_json(&report.source_verdict),
+            escape_json(&report.ticket_id),
+            escape_json(&report.run_id),
+            escape_json(&report.qa_session_id),
+            escape_json(&report.source_worktree),
             escape_json(&report.next_action),
-            report.failure_report_required
+            string_array_json(&report.evidence_inputs),
+            report.failure_route,
+            report.failure_report_required,
+            string_array_json(&report.missing_evidence),
+            string_array_json(&report.issues)
         ),
         OutputFormat::Markdown => format!(
-            "verdict: {}\nsource: {}\nsource verdict: {}\nnext action: {}\nfailure report required: {}",
+            "verdict: {}\nsource: {}\nsource verdict: {}\nticket: {}\nrun: {}\nqa session: {}\nsource worktree: {}\nnext action: {}\nevidence inputs: {}\nfailure route: {}\nfailure report required: {}\nmissing evidence: {}\nissues: {}",
             report.verdict,
             report.source,
             report.source_verdict,
+            report.ticket_id,
+            report.run_id,
+            report.qa_session_id,
+            report.source_worktree,
             report.next_action,
-            report.failure_report_required
+            report.evidence_inputs.join(", "),
+            report.failure_route,
+            report.failure_report_required,
+            report.missing_evidence.join(", "),
+            report.issues.join(", ")
         ),
     }
 }
