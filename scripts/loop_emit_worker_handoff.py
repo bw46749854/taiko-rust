@@ -42,6 +42,11 @@ def policy_value(text: str, name: str, default: str = "") -> str:
     return m.group(1) if m else default
 
 
+def policy_bool(text: str, name: str, default: bool = False) -> bool:
+    m = re.search(rf"^{re.escape(name)}\s*=\s*(true|false)", text, re.M)
+    return (m.group(1) == "true") if m else default
+
+
 def load_policy() -> dict[str, object]:
     text = read(POLICY_PATH)
     return {
@@ -55,6 +60,8 @@ def load_policy() -> dict[str, object]:
         "allowed_paths_ops": parse_array(text, "allowed_paths_ops"),
         "allowed_paths_gameplay": parse_array(text, "allowed_paths_gameplay"),
         "forbidden_paths": parse_array(text, "forbidden_paths"),
+        "automation_armed": policy_bool(text, "automation_armed", False),
+        "blocked_ticket_handoff_verdict": policy_value(text, "blocked_ticket_handoff_verdict", "block"),
     }
 
 
@@ -130,39 +137,63 @@ def required_commands(ticket: dict[str, object] | None) -> list[str]:
     return commands
 
 
+def base_block_handoff(policy: dict[str, object], args: argparse.Namespace, run_id: str) -> dict[str, object]:
+    return {
+        "schema": SCHEMA,
+        "run_id": run_id,
+        "mode": args.mode,
+        "api_key_required": False,
+        "ai_worker_in_github_actions": False,
+        "github_actions_role": "preview_only_until_loop_automation_armed",
+        "loop_automation_armed": bool(policy.get("automation_armed")),
+        "selected_ticket": None,
+        "required_reads": list(policy["required_reads"]),
+        "allowed_paths": list(policy["allowed_paths_ops"]),
+        "forbidden_paths": list(policy["forbidden_paths"]),
+        "required_commands": required_commands(None),
+        "latest_json_path": args.latest_json or str(policy["latest_json"]),
+        "next_prompt_path": args.latest_markdown or str(policy["latest_markdown"]),
+        "issue_body_path": args.latest_issue or str(policy["latest_issue"]),
+        "comment_body_path": args.latest_comment or str(policy["latest_comment"]),
+    }
+
+
 def build_handoff(args: argparse.Namespace) -> dict[str, object]:
     policy = load_policy()
     run_id = args.run_id or os.environ.get("OPENTAIKO_LOOP_RUN_ID") or f"RUN-HANDOFF-{int(time.time())}"
     ticket_dir = ROOT / args.ticket_dir
+    block_base = base_block_handoff(policy, args, run_id)
     selected_ticket: dict[str, object] | None = None
     if args.ticket:
         selected_ticket = parse_ticket(ROOT / args.ticket)
         if selected_ticket["status"] != "Ready":
-            fail(f"selected ticket is not Ready: {args.ticket}")
+            return {
+                **block_base,
+                "verdict": str(policy["blocked_ticket_handoff_verdict"]),
+                "reason": f"Selected ticket is {selected_ticket['status']}; handoff requires Status: Ready.",
+                "blocked_ticket": selected_ticket["id"],
+                "blocked_ticket_path": selected_ticket["path"],
+                "blocked_ticket_status": selected_ticket["status"],
+            }
     else:
         ready = ready_tickets(ticket_dir)
         if len(ready) > 1:
             return {
-                "schema": SCHEMA,
-                "run_id": run_id,
-                "mode": args.mode,
+                **block_base,
                 "verdict": "block",
                 "reason": f"Expected one Ready ticket; found {[t['id'] for t in ready]}",
-                "selected_ticket": None,
-                "api_key_required": False,
-                "ai_worker_in_github_actions": False,
             }
         selected_ticket = ready[0] if ready else None
     if selected_ticket is None:
+        current_ticket = ROOT / ".loop/tickets" / f"{policy['current_ready_ticket']}.md"
+        blocked_ticket = parse_ticket(current_ticket) if current_ticket.is_file() else None
         return {
-            "schema": SCHEMA,
-            "run_id": run_id,
-            "mode": args.mode,
+            **block_base,
             "verdict": "block",
-            "reason": "No Ready ticket found.",
-            "selected_ticket": None,
-            "api_key_required": False,
-            "ai_worker_in_github_actions": False,
+            "reason": "No Ready ticket found; this is a preview-only blocker until a ticket file has Status: Ready.",
+            "blocked_ticket": blocked_ticket["id"] if blocked_ticket else None,
+            "blocked_ticket_path": blocked_ticket["path"] if blocked_ticket else None,
+            "blocked_ticket_status": blocked_ticket["status"] if blocked_ticket else None,
         }
     ticket_id = str(selected_ticket["id"])
     branch = f"{branch_prefix(str(selected_ticket['owner_session']))}/{ticket_id}-{slugify(str(selected_ticket['title']))}"
@@ -180,7 +211,10 @@ def build_handoff(args: argparse.Namespace) -> dict[str, object]:
         "run_id": run_id,
         "mode": args.mode,
         "verdict": "plan",
-        "reason": f"Ready ticket selected: {ticket_id}",
+        "reason": f"Preview plan for Ready ticket: {ticket_id}",
+        "loop_automation_armed": bool(policy.get("automation_armed")),
+        "execution_level": "plan_preview",
+        "ticket_status": selected_ticket["status"],
         "selected_ticket": ticket_id,
         "selected_ticket_path": selected_ticket["path"],
         "selected_ticket_title": selected_ticket["title"],
@@ -202,7 +236,7 @@ def build_handoff(args: argparse.Namespace) -> dict[str, object]:
         "comment_body_path": out_comment,
         "api_key_required": False,
         "ai_worker_in_github_actions": False,
-        "github_actions_role": "emit_handoff_artifacts_only",
+        "github_actions_role": "emit_preview_handoff_artifacts_only",
         "ticket_required_checks_block": selected_ticket.get("required_checks_block", ""),
     }
 
@@ -210,12 +244,23 @@ def build_handoff(args: argparse.Namespace) -> dict[str, object]:
 def render_prompt(h: dict[str, object]) -> str:
     ticket = h.get("selected_ticket") or "none"
     if h.get("verdict") != "plan":
-        return f"# Codex Worker Handoff\n\nVerdict: `{h.get('verdict')}`\n\nReason: {h.get('reason')}\n\nDo not implement. GitHub Actions emitted this blocker without calling an AI worker.\n"
+        return (
+            "# Codex Worker Handoff Preview\n\n"
+            f"Verdict: `{h.get('verdict')}`\n\n"
+            f"Reason: {h.get('reason')}\n\n"
+            f"Blocked ticket: `{h.get('blocked_ticket')}`\n\n"
+            f"Blocked ticket status: `{h.get('blocked_ticket_status')}`\n\n"
+            "Do not implement. This is a preview-only blocker until loop automation is armed and a ticket file has `Status: Ready`.\n\n"
+            "GitHub Actions emitted this blocker without calling an AI worker, `OPENAI_API_KEY`, or `CODEX_API_KEY`.\n"
+        )
     lines = [
         f"# Codex Worker Handoff for {ticket}",
         "",
         f"Run ID: `{h.get('run_id')}`",
         f"Verdict: `{h.get('verdict')}`",
+        f"Execution level: `{h.get('execution_level')}`",
+        f"Ticket status: `{h.get('ticket_status')}`",
+        f"Loop automation armed: `{h.get('loop_automation_armed')}`",
         f"Ticket: `{ticket}`",
         f"Ticket file: `{h.get('selected_ticket_path')}`",
         f"Branch: `{h.get('branch')}`",
@@ -257,6 +302,24 @@ def render_prompt(h: dict[str, object]) -> str:
 
 def render_issue(h: dict[str, object]) -> str:
     prompt_path = h.get("next_prompt_path", "reports/loop/worker_handoff/latest.md")
+    if h.get("verdict") != "plan":
+        return f"""# Codex worker handoff preview blocked
+
+Read `{prompt_path}` for the deterministic blocker.
+
+Do not start implementation from this issue. The selected ticket is not Ready or loop automation is not armed.
+
+## Deterministic boundary
+
+GitHub Actions generated this issue body from `scripts/loop_emit_worker_handoff.py`. It did not call Codex, GPT, `openai/codex-action@v1`, `OPENAI_API_KEY`, or `CODEX_API_KEY`.
+
+## Blocker
+
+- Verdict: `{h.get('verdict')}`
+- Reason: {h.get('reason')}
+- Blocked ticket: `{h.get('blocked_ticket')}`
+- Blocked ticket status: `{h.get('blocked_ticket_status')}`
+"""
     return f"""# Codex worker handoff: {h.get('selected_ticket') or 'blocked'}
 
 @codex read `{prompt_path}` and work only on the selected ticket described there.
@@ -280,6 +343,11 @@ GitHub Actions generated this issue body from `scripts/loop_emit_worker_handoff.
 
 
 def render_comment(h: dict[str, object]) -> str:
+    if h.get("verdict") != "plan":
+        return f"""Codex worker handoff preview blocked.
+
+Read `reports/loop/worker_handoff/latest.md` for the deterministic blocker. Do not implement until loop automation is armed and the selected ticket has `Status: Ready`. GitHub Actions only emitted this blocker; it did not call an AI worker or require `OPENAI_API_KEY` / `CODEX_API_KEY`.
+"""
     return f"""@codex detached worker request.
 
 Read `reports/loop/worker_handoff/latest.md` and implement only `{h.get('selected_ticket')}`. Do not self-approve, mark tickets Done, pass gates, or author QA verdict files. GitHub Actions only emitted this handoff; it did not call an AI worker or require `OPENAI_API_KEY` / `CODEX_API_KEY`.

@@ -49,6 +49,8 @@ REQUIRED_TERMS = {
         "latest_issue.md",
         "api_key_required: false",
         "ai_worker_in_github_actions: false",
+        "vars.LOOP_AUTOMATION_ARMED == 'true'",
+        "Blocked",
     ],
     "operations/worker_handoff_policy.toml": [
         "status = \"canonical\"",
@@ -59,6 +61,9 @@ REQUIRED_TERMS = {
         "api_key_required = false",
         "ai_workers_in_github_actions = false",
         "current_ready_ticket = \"TKT-0005\"",
+        "automation_armed = false",
+        "workflow_run_handoff_requires_armed = true",
+        "blocked_ticket_handoff_verdict = \"block\"",
     ],
     "schemas/worker_handoff_schema.md": [
         "Status: canonical",
@@ -79,6 +84,8 @@ REQUIRED_TERMS = {
         "allowed_paths",
         "forbidden_paths",
         "--expect",
+        "blocked_ticket_status",
+        "Preview plan for Ready ticket",
     ],
     "scripts/render_next_codex_prompt.py": [
         "OPS-0008 worker handoff",
@@ -94,11 +101,13 @@ REQUIRED_TERMS = {
         "scripts/check_worker_handoff_static.py",
         "scripts/loop_emit_worker_handoff.py --mode controller",
         "reports/loop/worker_handoff/",
+        "vars.LOOP_AUTOMATION_ARMED == 'true'",
     ],
     ".github/workflows/loop-worker-handoff.yml": [
         "name: loop-worker-handoff",
         "workflow_run:",
         "github.event.workflow_run.conclusion == 'success'",
+        "vars.LOOP_AUTOMATION_ARMED == 'true'",
         "scripts/check_worker_handoff_static.py",
         "scripts/loop_emit_worker_handoff.py --mode issue",
         "persist-credentials: false",
@@ -190,6 +199,12 @@ def validate_policy() -> None:
         fail("worker handoff current_ready_ticket must be TKT-0005 after OPS migration")
     if policy.get("max_selected_tickets") != 1:
         fail("worker handoff must select at most one ticket")
+    if policy.get("automation_armed") is not False:
+        fail("worker handoff automation must be disarmed by default")
+    if policy.get("workflow_run_handoff_requires_armed") is not True:
+        fail("workflow_run handoff must require the armed switch")
+    if policy.get("blocked_ticket_handoff_verdict") != "block":
+        fail("blocked ticket handoff must produce a block verdict")
 
 
 def validate_current_ready_ticket() -> None:
@@ -235,8 +250,6 @@ def validate_handoff_execution() -> None:
         result = subprocess.run(cmd, cwd=ROOT, text=True, capture_output=True)
         if result.returncode != 0:
             fail(f"worker handoff emitter failed: stdout={result.stdout} stderr={result.stderr}")
-        if expected == "block" and not (out_dir / "latest.json").exists():
-            return
         payload = json.loads((out_dir / "latest.json").read_text(encoding="utf-8"))
         if expected == "plan" and payload.get("selected_ticket") != "TKT-0005":
             fail(f"handoff selected wrong ticket: {payload.get('selected_ticket')}")
@@ -249,12 +262,23 @@ def validate_handoff_execution() -> None:
         for required in ["required_reads", "allowed_paths", "forbidden_paths", "required_commands"]:
             if not payload.get(required):
                 fail(f"handoff payload missing non-empty {required}")
+        if expected == "block":
+            if payload.get("verdict") != "block":
+                fail(f"blocked handoff must emit block verdict: {payload.get('verdict')}")
+            if payload.get("blocked_ticket") == payload.get("selected_ticket"):
+                fail("blocked handoff must not promote blocked_ticket to selected_ticket")
+            if "Ready ticket selected" in json.dumps(payload):
+                fail("blocked handoff must not use Ready-ticket selection wording")
         md = (out_dir / "latest.md").read_text(encoding="utf-8")
         issue = (out_dir / "latest_issue.md").read_text(encoding="utf-8")
         comment = (out_dir / "latest_comment.md").read_text(encoding="utf-8")
         for text, name in [(md, "latest.md"), (issue, "latest_issue.md"), (comment, "latest_comment.md")]:
             if expected == "plan" and "TKT-0005" not in text:
                 fail(f"{name} missing TKT-0005")
+            if expected == "block" and "@codex" in text:
+                fail(f"{name} must not request @codex on blocked preview")
+            if expected == "block" and "Do not implement" not in text and "Do not start implementation" not in text:
+                fail(f"{name} missing blocked preview stop instruction")
             if "OPENAI_API_KEY" not in text:
                 fail(f"{name} missing no-API-key boundary")
 

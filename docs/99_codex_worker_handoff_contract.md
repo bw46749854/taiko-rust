@@ -94,6 +94,12 @@ scripts/loop_emit_worker_handoff.py --mode controller --run-id <run_id>
 
 The controller uploads `reports/loop/worker_handoff/` as an artifact. It does not call an AI provider.
 
+## Disarmed pre-operation behavior
+
+Before explicit loop-operation start, repository automation is disarmed by default through `operations/loop_policy.toml` and `operations/worker_handoff_policy.toml`. Scheduled controller runs and workflow-run handoff chains require `vars.LOOP_AUTOMATION_ARMED == 'true'`; manual `workflow_dispatch` remains available for preview and validation.
+
+When no ticket file has `Status: Ready`, or when a requested ticket is still `Blocked`, the handoff generator must emit a `block` verdict and preview-only Markdown. Blocked previews must not mention `@codex`, must not instruct implementation, and must include the observed blocked ticket status so the Control Session can repair ticket state before any worker starts.
+
 ## Acceptance
 
 `OPS-0008` is accepted when:

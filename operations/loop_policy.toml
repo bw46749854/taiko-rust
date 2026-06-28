@@ -7,6 +7,9 @@ api_key_required = false
 openai_api_key_required = false
 codex_api_key_required = false
 plus_plan_primary_surface = "Codex Cloud / Codex App Automations"
+automation_armed = false
+schedule_runs_require_armed = true
+workflow_run_handoff_requires_armed = true
 
 auto_merge_target = true
 auto_merge_enabled_in_current_package = true
