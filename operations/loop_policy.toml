@@ -134,3 +134,8 @@ report_markdown = "reports/loop/publication_readiness_report.md"
 only_ready_ticket = "TKT-0005"
 api_key_required = false
 github_actions_ai_worker_allowed = false
+
+[controller_schema]
+required_fields = ["current_state", "next_action", "target_ticket", "required_evidence", "blocking_reason", "repair_route"]
+runnable_actions = ["start_worker", "classify_failure", "wait_for_ready_ticket", "merge", "materialize_repair", "materialize_blocker_repair", "stop_and_mark_blocked", "open_revert_pr", "wait_for_evidence"]
+forbidden_next_action_values = ["", "prose-only", "human judgement required", "human judgment required"]

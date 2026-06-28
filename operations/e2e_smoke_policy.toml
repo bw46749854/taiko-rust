@@ -21,13 +21,17 @@ description = "QA reject creates repair-ticket preview evidence"
 required = true
 description = "QA block creates blocker-ticket preview evidence"
 
-[scenarios.retry]
+[scenarios.retry_exhausted]
 required = true
-description = "retry budget stop evidence"
+description = "retry budget exhaustion routes to controller block evidence"
 
-[scenarios.revert]
+[scenarios.revert_required]
 required = true
-description = "regression and revert dry-run evidence"
+description = "regression detection routes to revert PR dry-run evidence"
+
+[scenarios.wait_for_evidence]
+required = true
+description = "missing evidence routes to a wait-for-evidence controller action"
 
 [scenarios.advance]
 required = true
@@ -58,3 +62,8 @@ extract_to = ".external_assets/opentaiko"
 missing_bundle_verdict = "block"
 sha256_mismatch_verdict = "block"
 folder_share_default_allowed = false
+
+[controller_schema]
+required_fields = ["current_state", "next_action", "target_ticket", "required_evidence", "blocking_reason", "repair_route"]
+terminal_routes = ["pass", "reject", "block", "retry_exhausted", "revert_required", "wait_for_evidence"]
+forbidden_next_action_values = ["", "prose-only", "human judgement required", "human judgment required"]

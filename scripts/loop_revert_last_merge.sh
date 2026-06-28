@@ -43,6 +43,13 @@ path, run_id, reason, commit, dry = sys.argv[1:6]
 report = {
     "run_id": run_id,
     "verdict": "regression",
+    "current_state": "revert_required",
+    "target_ticket": None,
+    "required_evidence": ["reports/regression/<run_id>.json"],
+    "blocking_reason": reason,
+    "repair_route": "open_revert_pr",
+    "next_action": "open_revert_pr",
+    "consumed_by_next_controller_run": True,
     "reason": reason,
     "target_commit": commit or None,
     "requested_action": "revert_pr",
