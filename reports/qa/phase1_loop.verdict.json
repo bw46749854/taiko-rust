@@ -1,0 +1,5 @@
+{"verdict":"pass","source":"reports/qa/phase1_loop.qa.json","source_verdict":"pass","ticket_id":"TKT-0050","run_id":"RUN-PHASE1-FEATURE-GATE","qa_session_id":"qa-regression-session-gate-0090","source_worktree":"worktrees/qa/TKT-0050","next_action":"advance to next eligible ticket","evidence_inputs":["reports/failure_feedback/FF-0001.ingest.json","reports/failure_feedback/FF-0001.proposed_ticket.json","reports/failure_feedback/TKT-0040.validate.json"],"failure_route":{
+    "classification_path": "reports/failure_feedback/FF-0001.ingest.json",
+    "materialization_path": "reports/failure_feedback/FF-0001.proposed_ticket.json",
+    "repair_ticket_id": "TKT-9001"
+  },"failure_report_required":false,"missing_evidence":[],"issues":[]}

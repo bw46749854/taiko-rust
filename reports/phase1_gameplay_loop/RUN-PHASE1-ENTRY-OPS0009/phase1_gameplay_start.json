@@ -4,11 +4,11 @@
   "run_id": "RUN-PHASE1-ENTRY-OPS0009",
   "ticket_id": "TKT-0005",
   "ticket_title": "BPM MEASURE DELAY OFFSET timeline",
-  "ticket_status": "Blocked",
+  "ticket_status": "Ready",
   "manifest": "operations/phase1_feature_ticket_manifest.toml",
   "manifest_first_feature_ticket": "TKT-0005",
-  "verdict": "block",
-  "next_action": "wait_for_phase1_entry_evidence",
+  "verdict": "ready",
+  "next_action": "start_phase1_gameplay_ticket_worker",
   "force_preview": false,
   "branch": "impl/TKT-0005-bpm-measure-delay-offset-timeline",
   "implementation_worktree": "worktrees/impl/TKT-0005",
@@ -52,16 +52,12 @@
   "ticket": {
     "ticket_id": "TKT-0005",
     "title": "BPM MEASURE DELAY OFFSET timeline",
-    "status": "Blocked",
+    "status": "Ready",
     "owner_session": "Ticket Implementation Session",
     "worktree": "worktrees/impl/TKT-0005",
-    "required_checks_block": "- `cargo test --workspace`\n- `taiko_cli headless autoplay --manifest fixtures/synthetic/phase1_synthetic_manifest.toml --mode perfect --format json`\n- `taiko_cli timing analyze --manifest fixtures/synthetic/phase1_synthetic_manifest.toml --threshold-ms 1.0 --format json`\n- `taiko_cli qa run --manifest fixtures/synthetic/phase1_synthetic_manifest.toml --threshold-ms 1.0 --format json`\n\n- `taiko_cli qa verdict --input reports/qa/phase1_loop.qa.json --format json`",
+    "required_checks_block": "- `cargo test --workspace`\n- `taiko_cli headless autoplay --manifest fixtures/synthetic/phase1_synthetic_manifest.toml --mode perfect --format json`\n- `taiko_cli timing analyze --manifest fixtures/synthetic/phase1_synthetic_manifest.toml --threshold-ms 1.0 --format json`\n- `taiko_cli timing analyze --manifest fixtures/synthetic/phase1_synthetic_manifest.toml --golden fixtures/synthetic/goldens/phase1_timing_timestamp_golden.json --threshold-ms 1.0 --format json`\n- `taiko_cli qa run --manifest fixtures/synthetic/phase1_synthetic_manifest.toml --threshold-ms 1.0 --format json`\n\n- `taiko_cli qa verdict --input reports/qa/phase1_loop.qa.json --format json`",
     "path": ".loop/tickets/TKT-0005.md"
   },
-  "missing_prerequisites": [
-    "TKT-0005: required Ready, actual Blocked",
-    "TKT-0060: required Done, actual Blocked",
-    "GATE-0090: required passed, actual active"
-  ],
+  "missing_prerequisites": [],
   "issues": []
 }

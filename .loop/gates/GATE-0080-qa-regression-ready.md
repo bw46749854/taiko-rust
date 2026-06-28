@@ -1,6 +1,6 @@
 # GATE-0080: QA regression ready
 
-Status: active
+Status: passed
 Owner: Control Session
 Reviewer: QA / Regression Session
 
