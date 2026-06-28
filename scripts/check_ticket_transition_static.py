@@ -219,7 +219,7 @@ def validate_transition_fixture() -> None:
         if parse_status(ticket_dir / "OPS-0007.md") != "Ready":
             fail("transition fixture did not mark OPS-0007 Ready")
 
-        # Final unlock fixture: OPS-0009 Done promotes TKT-0005 Ready after gate reports exist.
+        # Final unlock fixture: OPS-0009 Done keeps TKT-0005 Blocked until Phase1 entry gate reports exist.
         ticket_dir2 = tmpdir / "tickets_final"
         shutil.copytree(ROOT / ".loop/tickets", ticket_dir2)
         for ticket, status in [("OPS-0009", "Ready"), ("TKT-0005", "Blocked")]:

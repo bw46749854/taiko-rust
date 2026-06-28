@@ -1,7 +1,7 @@
 # OPS Migration Readiness Check
 
 - verdict: `pass`
-- only_ready_ticket: `TKT-0005`
+- only_ready_ticket: none until Phase1 entry prerequisites pass
 - GitHub Actions AI worker: `not_used`
 - API key required: `false`
 

@@ -59,9 +59,9 @@ The OPS rail is the active migration backlog. Gameplay implementation remains fr
 
 ## OPS-0008 migration note
 
-During `OPS-0008`, the only Ready ticket is `TKT-0005`. The handoff generator may emit worker prompts, but Phase1 gameplay implementation tickets remain Blocked until `OPS-0009` and `GATE-OPS-0000` pass.
+During `OPS-0008`, gameplay implementation tickets remain Blocked. The handoff generator may emit preview worker prompts, but Phase1 gameplay implementation tickets remain Blocked until `OPS-0009`, `GATE-OPS-0000`, `TKT-0060`, and `GATE-0090` pass.
 
 
 ## OPS-0009 migration completion note
 
-After `OPS-0009`, `GATE-OPS-0000`, and `GATE-0090` pass, the only Ready ticket is `TKT-0005`. Downstream gameplay tickets remain Blocked until `TKT-0005` and their manifest dependencies are completed.
+After `OPS-0009`, `GATE-OPS-0000`, `TKT-0060`, and `GATE-0090` pass, the only Ready ticket is `TKT-0005`. Downstream gameplay tickets remain Blocked until `TKT-0005` and their manifest dependencies are completed.

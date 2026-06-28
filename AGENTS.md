@@ -360,7 +360,7 @@ scripts/render_phase1_gameplay_ticket_prompt.py --ticket TKT-0005 --force-previe
 scripts/check_phase1_gameplay_start_static.py
 ```
 
-`TKT-0005` is the first gameplay ticket. Do not start implementation unless the rendered start packet says `verdict = ready`. The post-OPS package returns `ready` because `TKT-0060`, `GATE-0090`, and `GATE-OPS-0000` entry evidence exists.
+`TKT-0005` is the first gameplay ticket. Do not start implementation unless the rendered start packet says `verdict = ready`. In the current post-OPS state, the start packet remains `block` until `TKT-0060`, `GATE-0090`, and the required entry evidence are complete.
 
 Implementation sessions must not write QA verdict files, mark tickets Done, pass gates, or use `OPENAI_API_KEY`, `CODEX_API_KEY`, or `openai/codex-action@v1`. Codex Cloud/App/CLI remains the worker surface under the ChatGPT plan; GitHub Actions remains deterministic.
 
@@ -392,11 +392,11 @@ Required PR check contexts are `loop-pr-gate / loop-pr-gate`, `rust-preflight / 
 
 ## OPS-0006 Auto-merge candidate discovery
 
-Auto-merge candidate discovery is active. Keep exactly one Ready ticket: `TKT-0005`. Use `scripts/select_auto_merge_candidate.py` to classify `loop:automerge` PRs from GitHub PR metadata. The controller must not checkout untrusted PR head code and must not call AI providers. Candidate reports are written under `reports/loop/candidates/`; the canonical schema is `schemas/auto_merge_candidate_schema.md`. Run `scripts/check_auto_merge_conditions.py` with the standard static checks.
+Auto-merge candidate discovery is active. Keep no gameplay Ready ticket until the Phase1 entry prerequisite chain passes; after that, keep exactly one Ready ticket: `TKT-0005`. Use `scripts/select_auto_merge_candidate.py` to classify `loop:automerge` PRs from GitHub PR metadata. The controller must not checkout untrusted PR head code and must not call AI providers. Candidate reports are written under `reports/loop/candidates/`; the canonical schema is `schemas/auto_merge_candidate_schema.md`. Run `scripts/check_auto_merge_conditions.py` with the standard static checks.
 
 ## OPS-0007 Ticket advance engine
 
-Ticket advance is active. Keep exactly one Ready ticket: `TKT-0005`. The merge controller must use `scripts/loop_advance_ticket.py` after merge history exists, write `reports/loop/ticket_transitions/<run_id>.json`, and preserve the OPS migration guard that prevents `TKT-*` gameplay tickets from becoming Ready before `OPS-0009` and `GATE-OPS-0000` pass.
+Ticket advance is active. Keep no gameplay Ready ticket until the Phase1 entry prerequisite chain passes; after that, keep exactly one Ready ticket: `TKT-0005`. The merge controller must use `scripts/loop_advance_ticket.py` after merge history exists, write `reports/loop/ticket_transitions/<run_id>.json`, and preserve the OPS migration guard that prevents `TKT-*` gameplay tickets from becoming Ready before `OPS-0009` and `GATE-OPS-0000` pass.
 
 Actions must not call AI providers. GitHub Actions remains the verifier/gate/controller and does not require `OPENAI_API_KEY` or `CODEX_API_KEY`.
 
@@ -408,4 +408,4 @@ Actions must not call AI providers. During `OPS-0008`, GitHub Actions emits dete
 
 ## OPS-0009 final migration state
 
-`OPS-0009` is complete. The only Ready ticket is now `TKT-0005`. Actions must not call AI providers. They may verify, gate, merge, advance tickets, and emit handoff artifacts. Use `scripts/check_ops_migration_readiness.py`, `scripts/check_e2e_smoke_static.py --static-only`, and `scripts/check_phase1_gameplay_start_static.py` before starting the Phase1 gameplay worker.
+`OPS-0009` is complete, but `TKT-0005` remains Blocked until `TKT-0060` is Done and `GATE-0090` passes. Actions must not call AI providers. They may verify, gate, merge, advance tickets, and emit handoff artifacts. Use `scripts/check_ops_migration_readiness.py`, `scripts/check_e2e_smoke_static.py --static-only`, and `scripts/check_phase1_gameplay_start_static.py` before starting the Phase1 gameplay worker.
