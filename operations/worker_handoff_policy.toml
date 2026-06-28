@@ -18,6 +18,10 @@ current_ready_ticket = "TKT-0005"
 automation_armed = false
 workflow_run_handoff_requires_armed = true
 blocked_ticket_handoff_verdict = "block"
+disarmed_handoff_verdict = "block"
+disarmed_handoff_next_action = "wait_for_loop_automation_armed"
+no_ready_ticket_next_action = "wait_for_ready_ticket"
+stale_latest_handoff_must_fail = true
 
 required_reads = [
   "AGENTS.md",
