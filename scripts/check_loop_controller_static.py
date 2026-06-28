@@ -69,12 +69,12 @@ REQUIRED_TERMS = {
         "cargo run -p taiko_cli --bin taiko_cli",
     ],
     "README.md": [
-        "loop run-once controller",
+        "loop run-once",
         "loop run-once",
         "scripts/loop_run_once.sh --mode plan",
     ],
     "AGENTS.md": [
-        "Loop run-once controller operational note",
+        "Loop CLI command surface",
         "loop run-once",
         "OPENAI_API_KEY",
     ],

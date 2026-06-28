@@ -215,114 +215,16 @@ Required axes:
 A completed ticket must state its axis deltas, evidence, and next-ticket consequence.
 
 
-## Step7 Loop CLI MVP
+
+## Loop CLI command surface
 
 The repository contains the canonical Rust workspace skeleton and `taiko_cli` Loop CLI MVP. The canonical crates are `taiko_domain`, `taiko_chart`, `taiko_timing`, `taiko_runtime`, `taiko_audio`, `taiko_render`, `taiko_test_support`, and `taiko_cli`.
 
 The first Rust implementation goal is not gameplay. It is machine-readable loop orchestration. `taiko_cli loop inspect`, `taiko_cli loop next`, `taiko_cli loop gate --dry-run`, and `taiko_cli loop report status` exist to let Control, Ticket Implementation, Design Review, and QA Sessions move tickets without extra human design judgement.
 
-`taiko_play` remains a compile-time skeleton. `headless_autoplay` is implemented by the Step9 MVP, and `timing_log_analyzer` is implemented by the Step10 MVP as a JSON evidence alias over `taiko_cli`.
+`taiko_play` remains a compile-time skeleton. `headless_autoplay` provides the headless autoplay evidence surface, and `timing_log_analyzer` is a JSON evidence alias over `taiko_cli timing analyze`.
 
-### Fixture validation command evidence
-
-Parser, fixture, and QA tickets must use the Step8 command surface when fixture readability is relevant:
-
-```bash
-taiko_cli fixture validate --manifest fixtures/synthetic/phase1_synthetic_manifest.toml --format json
-taiko_cli fixture inspect fixtures/synthetic/phase1_core/fx_core_001_basic_notes.tja --format json
-```
-
-Passing these commands proves only committed fixture readability and basic TJA structure. It does not prove Phase1 timing, judgement, branch, score, gauge, audio, render, or autoplay behavior.
-
-## Step9 operational note
-
-Headless autoplay evidence is now part of the autonomous-loop evidence surface. Ticket Implementation Session must not rely on screenshots, audible playback, or subjective rhythm feel to pass `TKT-0003`. QA / Regression Session must use the JSON contract in `docs/46_headless_autoplay_contract.md` and the gate rules in `.loop/gates/GATE-0050-headless-autoplay-ready.md`.
-
-The Step9 MVP is intentionally limited to render-free, audio-free `perfect` mode. It is a runtime evidence path for later timing analyzer work, not a certification of OpenTaiko-compatible timing precision.
-
-## Step10 operational note
-
-The `timing_log_analyzer` binary is no longer a placeholder in the Step10 package. It is an alias for `taiko_cli timing analyze` and must produce the JSON contract defined in `docs/47_timing_log_analyzer_contract.md`.
-
-Step10 timing analysis is an MVP over Step9 perfect-autoplay evidence. Passing Step10 proves that timing evidence has a machine-readable pass/reject surface with `max_error_ms`, `mean_error_ms`, `p95_error_ms`, `threshold_ms`, and failure categories. It does not prove final OpenTaiko-compatible audio latency, visual scroll timing, or judgement-window precision.
-
-Any ticket touching parser timing, scheduler, scroll, judgement, runtime ticks, or audio sync must preserve the Step10 analyzer contract and add stronger evidence rather than replacing it with manual inspection.
-
-## Failure feedback route operational note
-
-The failure feedback loop is now part of the executable autonomous-loop substrate. `taiko_cli` must expose:
-
-```bash
-taiko_cli loop failure ingest reports/failures/*.md --format json
-taiko_cli loop ticket propose --from-failure reports/failures/FF-0001-sample-timing-cli-contract-error.md --format json
-taiko_cli loop ticket validate .loop/tickets/TKT-0040.md --format json
-```
-
-No gameplay feature ticket may use manual QA judgement as the only repair route after `GATE-0060`. Phase1 feature work beginning with `TKT-0005` remains Blocked until `TKT-0040` is Done and `GATE-0070` passes.
-
-
-## QA verdict route gate command surface
-
-The QA / Regression Session must prefer the following machine-readable commands over prose judgement:
-
-```bash
-taiko_cli qa run --manifest fixtures/synthetic/phase1_synthetic_manifest.toml --threshold-ms 1.0 --format json
-taiko_cli qa compare --baseline reports/baseline --current reports/current --format json
-taiko_cli qa verdict --input reports/qa/phase1_loop.qa.json --format json
-```
-
-`pass` advances to the next eligible ticket, `reject` routes to failure feedback and repair-ticket proposal, and `block` requires missing evidence to be produced before implementation continues.
-
-## Phase1 gameplay entry gate rule
-
-The first Phase1 gameplay feature ticket is `TKT-0005`. It must not be selected until `TKT-0060` is Done and `GATE-0090` has passed.
-
-Control Session must use `operations/phase1_feature_ticket_manifest.toml` plus `taiko_cli phase1 feature plan --format json` to identify the next gameplay feature ticket. Manual ordering from prose is not allowed.
-
-Every Phase1 gameplay feature ticket must include QA run evidence, QA verdict evidence, failure-route evidence, and next-ticket transition evidence. A QA `reject` must be routed through failure feedback route before downstream tickets proceed.
-
-
-## Step14 operational note
-
-GitHub is now the durable loop-control surface for ticket branches, PRs, CI status, Codex review, QA verdict application, merge, and next-ticket transition. Use:
-
-```bash
-scripts/loop_create_worktree.sh <ticket-id>
-scripts/loop_open_pr.sh <ticket-id>
-scripts/loop_apply_qa_verdict.py --ticket <ticket-id> --verdict <path>
-scripts/loop_merge_and_advance.sh <ticket-id> --pr <number> --verdict <path>
-```
-
-PR cannot merge when implementation, review, and QA are not separated, when no machine-readable QA verdict exists for implementation/runtime changes, or when user-selected assets are committed. Native `@codex review`, automatic Codex review, or `.github/workflows/codex-review.yml` supplies the detached design/diff review surface; it does not replace QA / Regression Session evidence.
-
-## Step15 operational note
-
-Rust preflight is now mandatory for the first dynamic acceptance of the Rust workspace and `taiko_cli` command surface. Use:
-
-```bash
-scripts/run_rust_preflight.sh --scope current-package --out reports/preflight/latest
-scripts/check_runtime_evidence_files.py --path reports/preflight/latest/rust_preflight_report.json --require-scope current-package --require-pass
-```
-
-`TKT-0001` may not become Done and `GATE-0030` may not pass without valid `reports/preflight/latest/rust_preflight_report.json` evidence. A `block` verdict repairs the Rust-enabled Codex Cloud or CI environment. A `reject` verdict routes to failure feedback and a repair ticket. Static scripts are fallback evidence only in environments where Rust cannot be executed; they are not acceptance evidence for the Rust substrate.
-
-
-## Step16 operational note
-
-Codex Cloud / CI environment setup is now a governed loop surface. Use:
-
-```bash
-scripts/codex_cloud_setup.sh
-scripts/ci_local_equivalent.sh --static-only
-scripts/ci_local_equivalent.sh --out reports/preflight/latest
-```
-
-`rust-toolchain.toml` is the canonical Rust version contract. Do not rely on floating `stable` as ticket acceptance evidence. Codex Cloud agent internet access remains off by default; setup-script internet is only for installing the pinned Rust toolchain and dependencies. No implementation ticket may introduce job-level `OPENAI_API_KEY` or `CODEX_API_KEY` in workflows that check out or run repository-controlled code.
-
-
-## Loop run-once controller operational note
-
-`loop run-once` is now the canonical controller preview command:
+`loop run-once` is the canonical controller preview command:
 
 ```bash
 taiko_cli loop run-once --mode plan --format json
@@ -335,13 +237,54 @@ The controller emits exactly one next action: `start_worker`, `classify_failure`
 
 The loop run-once controller does not require `OPENAI_API_KEY` or `CODEX_API_KEY`. GitHub Actions may run deterministic validation and future auto-merge logic, but AI implementation remains on the ChatGPT-plan Codex Cloud / Codex App / CLI / Automations surface.
 
+## Fixture validation evidence
 
-## Session separation operational note
+Parser, fixture, and QA tickets must use the fixture validation command surface when fixture readability is relevant:
 
-Session separation is now a machine-readable gate. Any PR that advances a ticket must provide `reports/session_metadata/<ticket-id>.toml`. Implementation, Review, and QA session IDs must be distinct. Implementation Sessions must not write QA verdict files. QA Sessions must not modify `crates/`. Use role-specific worktrees through `scripts/loop_create_worktree.sh <ticket-id> --role <role>`.
+```bash
+taiko_cli fixture validate --manifest fixtures/synthetic/phase1_synthetic_manifest.toml --format json
+taiko_cli fixture inspect fixtures/synthetic/phase1_core/fx_core_001_basic_notes.tja --format json
+```
 
+Passing these commands proves only committed fixture readability and basic TJA structure. It does not prove Phase1 timing, judgement, branch, score, gauge, audio, render, or autoplay behavior.
 
-## Repair materialization and retry-budget route rules
+## Headless autoplay evidence
+
+Headless autoplay evidence is part of the autonomous-loop evidence surface. Ticket Implementation Session must not rely on screenshots, audible playback, or subjective rhythm feel to pass `TKT-0003`. QA / Regression Session must use the JSON contract in `docs/46_headless_autoplay_contract.md` and the gate rules in `.loop/gates/GATE-0050-headless-autoplay-ready.md`.
+
+The current MVP is intentionally limited to render-free, audio-free `perfect` mode. It is a runtime evidence path for later timing analyzer work, not a certification of OpenTaiko-compatible timing precision.
+
+## Timing analyzer evidence
+
+The `timing_log_analyzer` binary is an alias for `taiko_cli timing analyze` and must produce the JSON contract defined in `docs/47_timing_log_analyzer_contract.md`.
+
+The current timing analysis is an MVP over perfect-autoplay evidence. Passing timing analysis proves that timing evidence has a machine-readable pass/reject surface with `max_error_ms`, `mean_error_ms`, `p95_error_ms`, `threshold_ms`, and failure categories. It does not prove final OpenTaiko-compatible audio latency, visual scroll timing, or judgement-window precision.
+
+Any ticket touching parser timing, scheduler, scroll, judgement, runtime ticks, or audio sync must preserve the analyzer contract and add stronger evidence rather than replacing it with manual inspection.
+
+## QA verdict route
+
+The QA / Regression Session must prefer the following machine-readable commands over prose judgement:
+
+```bash
+taiko_cli qa run --manifest fixtures/synthetic/phase1_synthetic_manifest.toml --threshold-ms 1.0 --format json
+taiko_cli qa compare --baseline reports/baseline --current reports/current --format json
+taiko_cli qa verdict --input reports/qa/phase1_loop.qa.json --format json
+```
+
+`pass` advances to the next eligible ticket, `reject` routes to failure feedback and repair-ticket proposal, and `block` requires missing evidence to be produced before implementation continues.
+
+## Failure feedback and repair route
+
+The failure feedback loop is part of the executable autonomous-loop substrate. `taiko_cli` must expose:
+
+```bash
+taiko_cli loop failure ingest reports/failures/*.md --format json
+taiko_cli loop ticket propose --from-failure reports/failures/FF-0001-sample-timing-cli-contract-error.md --format json
+taiko_cli loop ticket validate .loop/tickets/TKT-0040.md --format json
+```
+
+No gameplay feature ticket may use manual QA judgement as the only repair route after `GATE-0060`. Phase1 feature work beginning with `TKT-0005` remains Blocked until `TKT-0040` is Done and `GATE-0070` passes.
 
 Failure reports must be classified before downstream work continues. Use `taiko_cli loop failure classify --input <failure-report> --format json` to decide `reject` versus `block`.
 
@@ -351,13 +294,43 @@ Use `taiko_cli loop retry-budget check --ticket <ticket-id> --format json` befor
 
 The repair materialization and retry-budget route does not require API-key based Codex execution. AI work remains on Codex Cloud/App/CLI/Automations under the ChatGPT plan, while GitHub Actions handles gate checks and transitions.
 
+## Rust preflight and CI evidence
 
-## ChatGPT-plan Codex operation operational note
+Rust preflight is mandatory for the first dynamic acceptance of the Rust workspace and `taiko_cli` command surface. Use:
+
+```bash
+scripts/run_rust_preflight.sh --scope current-package --out reports/preflight/latest
+scripts/check_runtime_evidence_files.py --path reports/preflight/latest/rust_preflight_report.json --require-scope current-package --require-pass
+```
+
+`TKT-0001` may not become Done and `GATE-0030` may not pass without valid `reports/preflight/latest/rust_preflight_report.json` evidence. A `block` verdict repairs the Rust-enabled Codex Cloud or CI environment. A `reject` verdict routes to failure feedback and a repair ticket. Static scripts are fallback evidence only in environments where Rust cannot be executed; they are not acceptance evidence for the Rust substrate.
+
+Codex Cloud / CI environment setup is a governed loop surface. Use:
+
+```bash
+scripts/codex_cloud_setup.sh
+scripts/ci_local_equivalent.sh --static-only
+scripts/ci_local_equivalent.sh --out reports/preflight/latest
+```
+
+`rust-toolchain.toml` is the canonical Rust version contract. Do not rely on floating `stable` as ticket acceptance evidence. Codex Cloud agent internet access remains off by default; setup-script internet is only for installing the pinned Rust toolchain and dependencies. No implementation ticket may introduce job-level `OPENAI_API_KEY` or `CODEX_API_KEY` in workflows that check out or run repository-controlled code.
 
 ChatGPT-plan Codex operation uses ChatGPT-plan Codex surfaces. Codex Cloud, Codex App Automations, or Codex CLI signed in with ChatGPT are the AI execution surfaces. GitHub Actions must not invoke `openai/codex-action@v1`, must not require `OPENAI_API_KEY` or `CODEX_API_KEY`, and must remain deterministic. Use `prompts/70_codex_automation_loop_runner.md`, `prompts/71_codex_cloud_ticket_worker.md`, and `scripts/render_next_codex_prompt.py` for automation handoff.
 
+## GitHub PR / auto-merge / ticket advancement
 
-## auto-merge controller operational note
+GitHub is the durable loop-control surface for ticket branches, PRs, CI status, Codex review, QA verdict application, merge, and next-ticket transition. Use:
+
+```bash
+scripts/loop_create_worktree.sh <ticket-id>
+scripts/loop_open_pr.sh <ticket-id>
+scripts/loop_apply_qa_verdict.py --ticket <ticket-id> --verdict <path>
+scripts/loop_merge_and_advance.sh <ticket-id> --pr <number> --verdict <path>
+```
+
+PR cannot merge when implementation, review, and QA are not separated, when no machine-readable QA verdict exists for implementation/runtime changes, or when user-selected assets are committed. Native `@codex review`, automatic Codex review, or `.github/workflows/codex-review.yml` supplies the detached design/diff review surface; it does not replace QA / Regression Session evidence.
+
+Session separation is a machine-readable gate. Any PR that advances a ticket must provide `reports/session_metadata/<ticket-id>.toml`. Implementation, Review, and QA session IDs must be distinct. Implementation Sessions must not write QA verdict files. QA Sessions must not modify `crates/`. Use role-specific worktrees through `scripts/loop_create_worktree.sh <ticket-id> --role <role>`.
 
 GitHub Actions auto-merge controller is the only automated merge surface for the autonomous loop. Actions must not call AI providers, must not require `OPENAI_API_KEY`, and must not use `openai/codex-action@v1`.
 
@@ -365,13 +338,15 @@ The controller may merge only when `scripts/check_auto_merge_conditions.py` pass
 
 Autonomous merge records belong in `reports/loop/merge_history/<run_id>.json`. Regression evidence belongs in `reports/regression/<run_id>.json` and is handled through a revert PR, not by direct force-push or manual history rewrite.
 
-
-## E2E smoke loop operational note
-
 The E2E smoke loop verifies the autonomous controller substrate. The smoke loop must cover pass, reject, block, retry, and revert routes in dry-run mode before Phase1 gameplay tickets begin. Actions must not call AI providers; Codex Cloud/App/CLI remains the worker surface, and GitHub Actions remains the gate, merge, advance, and smoke-verification surface.
 
+## Phase1 gameplay worker handoff
 
-## Phase1 gameplay worker handoff operational note
+The first Phase1 gameplay feature ticket is `TKT-0005`. It must not be selected until `TKT-0060` is Done and `GATE-0090` has passed.
+
+Control Session must use `operations/phase1_feature_ticket_manifest.toml` plus `taiko_cli phase1 feature plan --format json` to identify the next gameplay feature ticket. Manual ordering from prose is not allowed.
+
+Every Phase1 gameplay feature ticket must include QA run evidence, QA verdict evidence, failure-route evidence, and next-ticket transition evidence. A QA `reject` must be routed through failure feedback route before downstream tickets proceed.
 
 The Phase1 gameplay worker handoff opens the Phase1 gameplay lane through a deterministic start packet. Use:
 
