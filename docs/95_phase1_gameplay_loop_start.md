@@ -6,7 +6,7 @@ Status: canonical
 
 The Phase1 gameplay worker handoff opens the Phase1 gameplay implementation lane without bypassing the established autonomous-loop gates.
 
-The package now has enough loop substrate to prepare the first gameplay ticket handoff. OPS-0009 marks `TKT-0005` Ready after migration evidence is present. It defines the machine contract that makes `TKT-0005` the first selectable gameplay ticket after `TKT-0060`, `GATE-0090`, and `GATE-OPS-0000` have passed.
+The package now has enough loop substrate to prepare the first gameplay ticket handoff. OPS-0009 does not by itself mark `TKT-0005` Ready; `TKT-0005` remains Blocked until `TKT-0060`, `GATE-0090`, and `GATE-OPS-0000` entry evidence have passed. This document defines the machine contract that makes `TKT-0005` the first selectable gameplay ticket after those prerequisites pass.
 
 ## 2. Scope
 

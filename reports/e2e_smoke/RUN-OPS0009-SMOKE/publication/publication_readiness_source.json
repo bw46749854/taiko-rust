@@ -4,7 +4,7 @@
   "run_id": "RUN-OPS-0009-PUBLICATION-READINESS",
   "api_key_required": false,
   "ai_worker_in_github_actions": false,
-  "only_ready_ticket": "TKT-0005",
+  "only_ready_ticket": null,
   "ops_tickets_done": [
     "OPS-0001",
     "OPS-0002",

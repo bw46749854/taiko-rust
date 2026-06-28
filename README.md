@@ -146,7 +146,7 @@ The operations migration rail is recorded as complete through `OPS-0001` through
 5. Read `docs/86_codex_cloud_environment_setup.md` and `docs/87_secret_and_network_policy.md`.
 6. Read `docs/88_auto_merge_loop_policy.md`, `docs/89_loop_controller_state_machine.md`, `docs/90_session_metadata_and_path_policy.md`, `docs/91_repair_materialization_and_retry_budget.md`, `docs/92_codex_plus_automation_operation.md`, `docs/93_github_actions_auto_merge_controller.md`, `docs/94_e2e_smoke_loop_verification.md`, and `docs/95_phase1_gameplay_loop_start.md`.
 7. Inspect current machine state with `taiko_cli loop inspect tickets --format json`, `taiko_cli loop inspect gates --format json`, and `taiko_cli loop next --format json`.
-8. Before starting gameplay work, render and validate the `TKT-0005` start packet with the Phase1 gameplay entry commands above and confirm the ticket/gate state is not Blocked.
+8. Before starting gameplay work, render and validate the `TKT-0005` start packet with the Phase1 gameplay entry commands above. Do not start while the packet reports `block` or the ticket remains Blocked.
 9. Keep implementation, review, and QA evidence separated by role worktree and session metadata.
 
 ## Initial ticket state

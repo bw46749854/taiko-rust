@@ -28,4 +28,4 @@ scripts/list_ready_tickets.sh
 
 ## Next-ticket transition
 
-`TKT-0005` is the first Phase1 gameplay ticket and may now be selected by the next Codex worker handoff. Downstream gameplay tickets remain Blocked until their manifest dependencies are satisfied.
+`TKT-0005` is the first Phase1 gameplay ticket, but it remains Blocked until `TKT-0060` is Done and `GATE-0090` passes. Downstream gameplay tickets remain Blocked until their manifest dependencies are satisfied.

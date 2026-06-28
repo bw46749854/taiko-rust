@@ -74,4 +74,4 @@ During `OPS-0008`, GitHub Actions emits deterministic Codex worker handoff artif
 
 ## OPS-0009 note
 
-After OPS migration, the human operator does not manually pick a gameplay ticket. The only Ready ticket is `TKT-0005`, selected by the manifest and verified by `scripts/check_ops_migration_readiness.py`. GitHub Actions still does not call AI providers or require OpenAI API keys.
+After OPS migration, the human operator does not manually pick a gameplay ticket. No gameplay ticket is Ready until the Phase1 entry prerequisite chain passes; then `TKT-0005` is selected by the manifest and verified by `scripts/check_ops_migration_readiness.py`. GitHub Actions still does not call AI providers or require OpenAI API keys.

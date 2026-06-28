@@ -40,11 +40,11 @@ Historical context has been compacted into `docs/history/bootstrap_milestones.md
 | OPS-0007 | Done | Ticket advance engine |
 | OPS-0008 | Done | Next Codex worker handoff |
 | OPS-0009 | Done | E2E smoke and Phase1 entry unlock |
-| TKT-0005 | Ready | BPM MEASURE DELAY OFFSET timeline |
+| TKT-0005 | Blocked | BPM MEASURE DELAY OFFSET timeline |
 
 ## Initial execution state
 
-- Ready ticket: `TKT-0005`
+- Ready ticket: none until `TKT-0060` is Done and `GATE-0090` passes; then `TKT-0005` becomes the only Ready gameplay ticket
 - Done migration tickets: `OPS-0001`, `OPS-0002`, `OPS-0003`, `OPS-0004`, `OPS-0005`, `OPS-0006`
 - Blocked tickets: `TKT-0000` and downstream gameplay tickets whose dependencies are not yet satisfied
 - First migration gate: `GATE-OPS-0000`

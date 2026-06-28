@@ -13,7 +13,7 @@ This report confirms that the package is ready for public-repository operation a
 
 ## Evidence
 
-- Only Ready ticket: `TKT-0005`
+- Only Ready ticket: none until Phase1 entry prerequisites pass
 - OPS migration tickets: `OPS-0001` ... `OPS-0009` are `Done`
 - Public repository static check: pass
 - Asset bundle example manifest static check: pass
