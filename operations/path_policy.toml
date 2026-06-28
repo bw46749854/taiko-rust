@@ -33,7 +33,7 @@ may_write_qa_verdict = false
 may_merge = false
 
 [roles.control]
-branch_prefixes = ["loop/"]
+branch_prefixes = ["control/"]
 required_worktree_prefix = "worktrees/control/"
 allow_prefixes = [".loop/tickets/", ".loop/gates/", ".loop/session_logs/", "reports/loop/", "reports/session_metadata/", "operations/", "docs/", "prompts/", "scripts/", ".github/", "README.md", "AGENTS.md", "STEP"]
 deny_prefixes = ["crates/"]
@@ -43,7 +43,7 @@ may_write_qa_verdict = false
 may_merge = true
 
 [roles.test-infra]
-branch_prefixes = ["test/"]
+branch_prefixes = ["test-infra/"]
 required_worktree_prefix = "worktrees/test-infra/"
 allow_prefixes = ["crates/taiko_test_support/", "crates/taiko_cli/", "scripts/", "fixtures/synthetic/", "reports/test/", "reports/session_metadata/", "docs/", "operations/"]
 deny_prefixes = ["reports/qa/"]

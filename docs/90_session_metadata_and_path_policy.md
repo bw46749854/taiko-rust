@@ -26,6 +26,9 @@ implementation_session_id = "codex-cloud-impl-..."
 review_session_id = "codex-cloud-review-..."
 qa_session_id = "codex-cloud-qa-..."
 implementation_branch = "impl/TKT-0005-..."
+review_branch = "review/TKT-0005-..."
+qa_branch = "qa/TKT-0005-..."
+control_branch = "control/TKT-0005-..."
 implementation_worktree = "worktrees/impl/TKT-0005"
 review_worktree = "worktrees/review/TKT-0005"
 qa_worktree = "worktrees/qa/TKT-0005"
@@ -59,22 +62,22 @@ The gate blocks when any of these are true:
 
 ## Role path policy
 
-Role path policy is defined in `operations/path_policy.toml` and checked by:
+Role path policy is defined in `operations/path_policy.toml` and checked by the commands below. The policy file is the canonical allowlist/denylist source for each role, including fixed branch prefixes and required worktree prefixes:
 
 ```bash
-scripts/check_role_path_policy.py --role impl --changed-file crates/taiko_runtime/src/lib.rs
-scripts/check_role_path_policy.py --role qa --changed-file reports/qa/TKT-0005.verdict.json
+scripts/check_role_path_policy.py --role impl --branch impl/TKT-0005-example --worktree worktrees/impl/TKT-0005 --changed-file crates/taiko_runtime/src/lib.rs
+scripts/check_role_path_policy.py --role qa --branch qa/TKT-0005-example --worktree worktrees/qa/TKT-0005 --changed-file reports/qa/TKT-0005.verdict.json
 ```
 
 The default policy is:
 
-| Role | Write focus | Code writes |
-|---|---|---|
-| `impl` | `crates/`, `docs/`, `fixtures/synthetic/`, `reports/commands/`, metadata | allowed |
-| `qa` | `reports/qa/`, `reports/regression/`, `reports/failures/` | denied |
-| `review` | `reports/reviews/` | denied |
-| `control` | `.loop/tickets/`, `.loop/session_logs/`, `reports/loop/`, `operations/` | denied |
-| `test-infra` | `crates/taiko_test_support/`, `scripts/`, `fixtures/synthetic/`, QA/test docs | allowed |
+| Role | Branch prefix | Write focus | Code writes | Deny focus |
+|---|---|---|---|---|
+| `impl` | `impl/<ticket-id>-...` | `crates/`, `docs/`, `fixtures/synthetic/`, `reports/commands/`, metadata | allowed | `reports/qa/`, `.loop/session_logs/*GATE*.md`, and gate status mutation |
+| `qa` | `qa/<ticket-id>-...` | `reports/qa/`, `reports/regression/`, `reports/failures/` | denied | `crates/`, implementation source, gameplay implementation files |
+| `review` | `review/<ticket-id>-...` | `reports/reviews/`, review metadata | denied | implementation files |
+| `control` | `control/<ticket-id>-...` | `.loop/tickets/`, `.loop/session_logs/`, `reports/loop/`, `operations/` | denied | `crates/` |
+| `test-infra` | `test-infra/<ticket-id>-...` | `crates/taiko_test_support/`, `scripts/`, `fixtures/synthetic/`, QA/test docs | allowed | `reports/qa/` |
 
 ## PR gate
 
@@ -82,7 +85,7 @@ The default policy is:
 
 ```bash
 scripts/check_session_separation.py --pr-gate
-scripts/check_role_path_policy.py --pr-gate
+scripts/check_role_path_policy.py --pr-gate --branch "$GITHUB_HEAD_REF"
 ```
 
 The scripts are intentionally Python-only so the separation gate can run even before Rust dynamic preflight succeeds.
@@ -95,3 +98,5 @@ Session separation does not auto-merge, does not materialize repair tickets, and
 ## QA verdict coupling
 
 `qa_verdict_path` points to a JSON file governed by `schemas/qa_verdict_schema.md`. Auto-merge validation treats that schema as mandatory mergeability evidence. A `pass` verdict may merge only when the verdict `ticket_id`, `run_id`, `qa_session_id`, and `source_worktree` match this metadata file. A `reject` verdict must include failure classification and repair materialization evidence. A `block` verdict must include missing evidence and a blocker-ticket route.
+
+Auto-merge requires both `role_path_policy_required = true` and `branch_prefix_policy_required = true` in `operations/auto_merge_policy.toml`; `scripts/check_auto_merge_conditions.py` refuses mergeability when the implementation branch/worktree metadata does not pass `scripts/check_role_path_policy.py`.
