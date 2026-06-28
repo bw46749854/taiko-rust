@@ -50,6 +50,7 @@ pub struct TimingFixtureResult {
     pub verdict: String,
     pub expected_event_count: usize,
     pub actual_event_count: usize,
+    pub timestamp_golden_event_count: usize,
     pub max_error_ms: f64,
     pub mean_error_ms: f64,
     pub p95_error_ms: f64,
@@ -64,6 +65,7 @@ pub struct TimingAnalysisReport {
     pub source: String,
     pub verdict: String,
     pub threshold_ms: f64,
+    pub golden_source: Option<String>,
     pub fixture_count: usize,
     pub passed_count: usize,
     pub failed_count: usize,
@@ -118,6 +120,91 @@ pub fn analyze_headless_input(
         .map(|fixture| analyze_fixture(fixture, threshold_ms))
         .collect::<Vec<_>>();
     report_from_fixtures(&input.scope, &input.source, input, threshold_ms, fixtures)
+}
+
+/// Compares a timestamp golden JSON document against embedded actual timing
+/// samples. This is the TKT-0005 bridge between the Step10 aggregate analyzer
+/// and later event-level timing logs.
+pub fn compare_timestamp_golden_json(
+    golden_source: &str,
+    text: &str,
+    default_threshold_ms: f64,
+) -> Result<TimingAnalysisReport, TimingError> {
+    let mut fixtures = Vec::new();
+    for object in json_objects(text) {
+        let fixture_id = string_field(object, "fixture_id")
+            .ok_or_else(|| TimingError::InvalidInput("golden row lacks fixture_id".to_string()))?;
+        let event_index = usize_field(object, "event_index")
+            .ok_or_else(|| TimingError::InvalidInput("golden row lacks event_index".to_string()))?;
+        let event_type = string_field(object, "event_type")
+            .ok_or_else(|| TimingError::InvalidInput("golden row lacks event_type".to_string()))?;
+        let expected_ms = f64_field(object, "expected_ms")
+            .ok_or_else(|| TimingError::InvalidInput("golden row lacks expected_ms".to_string()))?;
+        let actual_ms = f64_field(object, "actual_ms")
+            .ok_or_else(|| TimingError::InvalidInput("golden row lacks actual_ms".to_string()))?;
+        let tolerance_ms = f64_field(object, "tolerance_ms").unwrap_or(default_threshold_ms);
+        let error_ms = (actual_ms - expected_ms).abs();
+        let declared_error_ms = f64_field(object, "error_ms").unwrap_or(error_ms);
+        let mut issues = Vec::new();
+        let mut failure_category = None;
+        if (declared_error_ms - error_ms).abs() > 0.001 {
+            issues.push(format!(
+                "event {event_index} {event_type} declared error_ms {} does not match computed {}",
+                float_json(declared_error_ms),
+                float_json(error_ms)
+            ));
+            failure_category = Some("timing_cli_contract_error".to_string());
+        }
+        if error_ms > tolerance_ms {
+            issues.push(format!(
+                "event {event_index} {event_type} error_ms {} exceeds tolerance_ms {}",
+                float_json(error_ms),
+                float_json(tolerance_ms)
+            ));
+            failure_category.get_or_insert_with(|| "chart_time_error".to_string());
+        }
+        fixtures.push(TimingFixtureResult {
+            fixture_id: Some(fixture_id),
+            path: golden_source.to_string(),
+            verdict: if issues.is_empty() { "pass" } else { "fail" }.to_string(),
+            expected_event_count: 1,
+            actual_event_count: 1,
+            timestamp_golden_event_count: 1,
+            max_error_ms: error_ms,
+            mean_error_ms: error_ms,
+            p95_error_ms: error_ms,
+            failure_category,
+            issues,
+        });
+    }
+
+    if fixtures.is_empty() {
+        return Err(TimingError::InvalidInput(
+            "golden document has no event objects".to_string(),
+        ));
+    }
+
+    let input = HeadlessTimingInput {
+        scope: "timestamp_golden".to_string(),
+        source: golden_source.to_string(),
+        verdict: "pass".to_string(),
+        fixture_count: fixtures.len(),
+        total_note_count: fixtures.len(),
+        total_scheduled_event_count: fixtures.len(),
+        total_hit_count: fixtures.len(),
+        total_miss_count: 0,
+        fixtures: Vec::new(),
+        issues: Vec::new(),
+    };
+    let mut report = report_from_fixtures(
+        "timestamp_golden",
+        golden_source,
+        &input,
+        default_threshold_ms,
+        fixtures,
+    );
+    report.golden_source = Some(golden_source.to_string());
+    Ok(report)
 }
 
 /// Parses the deterministic JSON emitted by Step9 headless autoplay into the
@@ -220,6 +307,7 @@ fn analyze_fixture(fixture: &HeadlessTimingFixtureInput, threshold_ms: f64) -> T
         verdict: verdict.to_string(),
         expected_event_count,
         actual_event_count,
+        timestamp_golden_event_count: 0,
         max_error_ms,
         mean_error_ms,
         p95_error_ms,
@@ -295,6 +383,7 @@ fn report_from_fixtures(
         source: source.to_string(),
         verdict: verdict.to_string(),
         threshold_ms,
+        golden_source: None,
         fixture_count: input.fixture_count,
         passed_count,
         failed_count,
@@ -341,6 +430,46 @@ fn usize_field(text: &str, name: &str) -> Option<usize> {
     digits.parse().ok()
 }
 
+fn f64_field(text: &str, name: &str) -> Option<f64> {
+    let needle = format!("\"{name}\":");
+    let start = text.find(&needle)? + needle.len();
+    let rest = text[start..].trim_start();
+    let number = rest
+        .chars()
+        .take_while(|ch| ch.is_ascii_digit() || matches!(*ch, '-' | '+' | '.'))
+        .collect::<String>();
+    number.parse().ok()
+}
+
+fn json_objects(text: &str) -> Vec<&str> {
+    let mut objects = Vec::new();
+    let mut search_start = 0usize;
+    let needle = "{\"fixture_id\"";
+    while let Some(relative_start) = text[search_start..].find(needle) {
+        let start = search_start + relative_start;
+        let mut depth = 0usize;
+        for (relative_index, ch) in text[start..].char_indices() {
+            match ch {
+                '{' => depth += 1,
+                '}' if depth > 0 => {
+                    depth -= 1;
+                    if depth == 0 {
+                        let end = start + relative_index;
+                        objects.push(&text[start..=end]);
+                        search_start = end + 1;
+                        break;
+                    }
+                }
+                _ => {}
+            }
+        }
+        if search_start <= start {
+            break;
+        }
+    }
+    objects
+}
+
 impl TimingAnalysisReport {
     /// Serializes the report as deterministic JSON without external crates.
     #[must_use]
@@ -352,11 +481,12 @@ impl TimingAnalysisReport {
             .collect::<Vec<_>>()
             .join(",");
         format!(
-            "{{\"scope\":\"{}\",\"source\":\"{}\",\"verdict\":\"{}\",\"threshold_ms\":{},\"fixture_count\":{},\"passed_count\":{},\"failed_count\":{},\"analyzed_event_count\":{},\"max_error_ms\":{},\"mean_error_ms\":{},\"p95_error_ms\":{},\"failure_categories\":{},\"fixtures\":[{}],\"issues\":{}}}",
+            "{{\"scope\":\"{}\",\"source\":\"{}\",\"verdict\":\"{}\",\"threshold_ms\":{},\"golden_source\":{},\"fixture_count\":{},\"passed_count\":{},\"failed_count\":{},\"analyzed_event_count\":{},\"max_error_ms\":{},\"mean_error_ms\":{},\"p95_error_ms\":{},\"failure_categories\":{},\"fixtures\":[{}],\"issues\":{}}}",
             escape_json(&self.scope),
             escape_json(&self.source),
             escape_json(&self.verdict),
             float_json(self.threshold_ms),
+            optional_string_json(self.golden_source.as_deref()),
             self.fixture_count,
             self.passed_count,
             self.failed_count,
@@ -374,11 +504,12 @@ impl TimingAnalysisReport {
     #[must_use]
     pub fn to_markdown(&self) -> String {
         format!(
-            "scope: {}\nsource: {}\nverdict: {}\nthreshold_ms: {}\nfixtures: {}\npassed: {}\nfailed: {}\nevents: {}\nmax_error_ms: {}\nmean_error_ms: {}\np95_error_ms: {}\nfailure_categories: {}\nissues: {}",
+            "scope: {}\nsource: {}\nverdict: {}\nthreshold_ms: {}\ngolden_source: {}\nfixtures: {}\npassed: {}\nfailed: {}\nevents: {}\nmax_error_ms: {}\nmean_error_ms: {}\np95_error_ms: {}\nfailure_categories: {}\nissues: {}",
             self.scope,
             self.source,
             self.verdict,
             float_json(self.threshold_ms),
+            optional_string_json(self.golden_source.as_deref()),
             self.fixture_count,
             self.passed_count,
             self.failed_count,
@@ -395,12 +526,13 @@ impl TimingAnalysisReport {
 impl TimingFixtureResult {
     fn to_json(&self) -> String {
         format!(
-            "{{\"fixture_id\":{},\"path\":\"{}\",\"verdict\":\"{}\",\"expected_event_count\":{},\"actual_event_count\":{},\"max_error_ms\":{},\"mean_error_ms\":{},\"p95_error_ms\":{},\"failure_category\":{},\"issues\":{}}}",
+            "{{\"fixture_id\":{},\"path\":\"{}\",\"verdict\":\"{}\",\"expected_event_count\":{},\"actual_event_count\":{},\"timestamp_golden_event_count\":{},\"max_error_ms\":{},\"mean_error_ms\":{},\"p95_error_ms\":{},\"failure_category\":{},\"issues\":{}}}",
             optional_string_json(self.fixture_id.as_deref()),
             escape_json(&self.path),
             escape_json(&self.verdict),
             self.expected_event_count,
             self.actual_event_count,
+            self.timestamp_golden_event_count,
             float_json(self.max_error_ms),
             float_json(self.mean_error_ms),
             float_json(self.p95_error_ms),

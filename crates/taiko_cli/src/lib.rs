@@ -12,8 +12,8 @@ use taiko_chart::{inspect_tja_file, validate_fixture_manifest};
 use taiko_runtime::{autoplay_chart, autoplay_manifest, HeadlessAutoplayReport, HeadlessMode};
 use taiko_test_support::{list_markdown_files, read_utf8};
 use taiko_timing::{
-    analyze_headless_input, parse_headless_autoplay_json, HeadlessTimingFixtureInput,
-    HeadlessTimingInput, TimingAnalysisReport,
+    analyze_headless_input, compare_timestamp_golden_json, parse_headless_autoplay_json,
+    HeadlessTimingFixtureInput, HeadlessTimingInput, TimingAnalysisReport,
 };
 
 /// CLI result type.
@@ -173,6 +173,7 @@ pub const SUPPORTED_COMMAND_SURFACE: &[&str] = &[
     "headless autoplay --manifest",
     "timing analyze --input",
     "timing analyze --manifest",
+    "timing analyze --golden",
     "timing_log_analyzer --input",
     "loop failure ingest",
     "loop failure classify",
@@ -290,7 +291,12 @@ pub fn run_cli(args: &[String]) -> CliResult<String> {
         }
         [timing_word, analyze_word] if timing_word == "timing" && analyze_word == "analyze" => {
             let threshold_ms = options.threshold_ms.unwrap_or(1.0);
-            if let Some(input) = options.input.as_deref() {
+            if let Some(golden) = options.golden.as_deref() {
+                let golden_path = resolve_project_path(&root, golden);
+                let text = read_file(&golden_path)?;
+                let report = compare_timestamp_golden_json(golden, &text, threshold_ms)?;
+                Ok(render_timing_analysis(&report, options.format))
+            } else if let Some(input) = options.input.as_deref() {
                 let input_path = resolve_project_path(&root, input);
                 let text = read_file(&input_path)?;
                 let timing_input = parse_headless_autoplay_json(&text)?;
@@ -433,6 +439,7 @@ struct CliOptions {
     ticket: Option<String>,
     baseline: Option<String>,
     current: Option<String>,
+    golden: Option<String>,
 }
 
 fn parse_options(args: &[String]) -> CliResult<CliOptions> {
@@ -448,6 +455,7 @@ fn parse_options(args: &[String]) -> CliResult<CliOptions> {
     let mut ticket = None;
     let mut baseline = None;
     let mut current = None;
+    let mut golden = None;
     let mut index = 1;
 
     while index < args.len() {
@@ -540,6 +548,13 @@ fn parse_options(args: &[String]) -> CliResult<CliOptions> {
                 current = Some(value.to_string());
                 index += 2;
             }
+            "--golden" => {
+                let Some(value) = args.get(index + 1) else {
+                    return Err(CliError::Usage("--golden requires a value".to_string()));
+                };
+                golden = Some(value.to_string());
+                index += 2;
+            }
             "--help" | "-h" => return Err(CliError::Usage(usage())),
             value => {
                 words.push(value.to_string());
@@ -561,11 +576,12 @@ fn parse_options(args: &[String]) -> CliResult<CliOptions> {
         ticket,
         baseline,
         current,
+        golden,
     })
 }
 
 fn usage() -> String {
-    "usage: taiko_cli <loop inspect tickets|loop inspect gates|loop next|loop run-once --mode plan|loop run-once --mode apply|loop gate GATE-0000 --dry-run|loop report status|fixture validate --manifest PATH|fixture inspect PATH|headless autoplay --chart PATH --mode perfect|headless autoplay --manifest PATH --mode perfect|timing analyze --input PATH|timing analyze --manifest PATH|loop failure ingest PATH...|loop failure classify --input PATH|loop ticket propose --from-failure PATH|loop ticket materialize --from-failure PATH|loop ticket validate PATH|loop retry-budget check --ticket TKT-xxxx|qa run --manifest PATH|qa compare --baseline DIR --current DIR|qa verdict --input PATH|phase1 feature validate --manifest PATH|phase1 feature plan --manifest PATH> [--threshold-ms N] [--format json]".to_string()
+    "usage: taiko_cli <loop inspect tickets|loop inspect gates|loop next|loop run-once --mode plan|loop run-once --mode apply|loop gate GATE-0000 --dry-run|loop report status|fixture validate --manifest PATH|fixture inspect PATH|headless autoplay --chart PATH --mode perfect|headless autoplay --manifest PATH --mode perfect|timing analyze --input PATH|timing analyze --manifest PATH [--golden PATH]|loop failure ingest PATH...|loop failure classify --input PATH|loop ticket propose --from-failure PATH|loop ticket materialize --from-failure PATH|loop ticket validate PATH|loop retry-budget check --ticket TKT-xxxx|qa run --manifest PATH|qa compare --baseline DIR --current DIR|qa verdict --input PATH|phase1 feature validate --manifest PATH|phase1 feature plan --manifest PATH> [--threshold-ms N] [--format json]".to_string()
 }
 
 fn locate_project_root(start: PathBuf) -> CliResult<PathBuf> {
