@@ -98,8 +98,8 @@ normalize_role() {
 role="$(normalize_role "${custom_role:-$owner}")"
 
 case "$role" in
-  control) prefix="loop"; default_root="worktrees/control/${ticket_id}" ;;
-  test-infra) prefix="test"; default_root="worktrees/test-infra/${ticket_id}" ;;
+  control) prefix="control"; default_root="worktrees/control/${ticket_id}" ;;
+  test-infra) prefix="test-infra"; default_root="worktrees/test-infra/${ticket_id}" ;;
   review) prefix="review"; default_root="worktrees/review/${ticket_id}" ;;
   qa) prefix="qa"; default_root="worktrees/qa/${ticket_id}" ;;
   spec) prefix="spec"; default_root="worktrees/spec/${ticket_id}" ;;
@@ -109,6 +109,15 @@ esac
 
 branch="${custom_branch:-${prefix}/${ticket_id}-${slug}}"
 worktree_path="${custom_path:-${default_root}}"
+
+case "$branch" in
+  ${prefix}/${ticket_id}-*) ;;
+  *) echo "branch must match ${prefix}/${ticket_id}-... for role ${role}: ${branch}" >&2; exit 2 ;;
+esac
+case "$worktree_path" in
+  ${default_root}|${default_root}/*) ;;
+  *) echo "worktree path must be under ${default_root} for role ${role}: ${worktree_path}" >&2; exit 2 ;;
+esac
 
 if [ -e "$worktree_path" ]; then
   echo "worktree path already exists: ${worktree_path}" >&2

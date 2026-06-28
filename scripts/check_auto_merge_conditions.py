@@ -15,6 +15,7 @@ import tempfile
 from pathlib import Path
 
 import check_session_separation
+import check_role_path_policy
 
 try:
     import tomllib  # type: ignore[attr-defined]
@@ -28,6 +29,9 @@ REQUIRED_FILES = [
     "operations/auto_merge_policy.toml",
     ".github/workflows/loop-controller.yml",
     "scripts/check_auto_merge_conditions.py",
+    "scripts/check_role_path_policy.py",
+    "operations/path_policy.toml",
+    ".github/workflows/loop-pr-gate.yml",
     "scripts/select_auto_merge_candidate.py",
     "scripts/loop_controller_github.sh",
     "scripts/loop_auto_merge_pr.sh",
@@ -80,6 +84,10 @@ REQUIRED_TERMS = {
         "workflow_run_success_guard_required = true",
         "privileged_workflow_may_checkout_pr_head = false",
         "loop-pr-gate / loop-pr-gate",
+        "role_path_policy_required = true",
+        "branch_prefix_policy_required = true",
+        "role_path_policy = \"operations/path_policy.toml\"",
+        "role_path_policy_checker = \"scripts/check_role_path_policy.py\"",
         "rust-preflight / rust-preflight",
         "phase1-loop / phase1-loop",
         "phase1-gameplay-entry / phase1-gameplay-entry",
@@ -99,6 +107,11 @@ REQUIRED_TERMS = {
         "github.event.workflow_run.conclusion == 'success'",
         "scripts/check_github_actions_gate_static.py",
         "scripts/check_ticket_transition_static.py",
+    ],
+    ".github/workflows/loop-pr-gate.yml": [
+        "scripts/check_role_path_policy.py --pr-gate",
+        "GITHUB_HEAD_REF",
+        "CHANGED_FILES",
     ],
     "scripts/select_auto_merge_candidate.py": [
         "loop:automerge",
@@ -242,6 +255,12 @@ def validate_static() -> None:
             fail("auto_merge_policy.toml must set candidate_plan_path")
         if policy.get("ticket_transition_engine") != "scripts/loop_advance_ticket.py":
             fail("auto_merge_policy.toml must set ticket_transition_engine")
+        if policy.get("role_path_policy_required") is not True:
+            fail("auto_merge_policy.toml must set role_path_policy_required = true")
+        if policy.get("branch_prefix_policy_required") is not True:
+            fail("auto_merge_policy.toml must set branch_prefix_policy_required = true")
+        if policy.get("role_path_policy_checker") != "scripts/check_role_path_policy.py":
+            fail("auto_merge_policy.toml must set role_path_policy_checker")
         required = {"loop-pr-gate / loop-pr-gate", "rust-preflight / rust-preflight", "phase1-loop / phase1-loop", "phase1-gameplay-entry / phase1-gameplay-entry"}
         found = set(policy.get("required_checks") or [])
         missing = sorted(required - found)
@@ -299,6 +318,27 @@ def validate_candidate(metadata: str | None, qa: str | None, ticket: str | None,
         fail("qa_worktree must be under worktrees/qa/<ticket>")
     if head_sha and meta.get("head_sha") and meta["head_sha"] != head_sha:
         fail("metadata head_sha does not match PR head SHA")
+
+    # Auto-merge requires the same branch/worktree role policy enforced by the PR gate.
+    role_args = argparse.Namespace(
+        role="impl",
+        changed_file=[str(metadata_path.relative_to(ROOT))],
+        branch=meta.get("implementation_branch", ""),
+        worktree=meta.get("implementation_worktree", ""),
+        metadata=str(metadata_path.relative_to(ROOT)),
+        pr_gate=False,
+    )
+    roles = check_role_path_policy.load_policy()
+    role = check_role_path_policy.infer_role(role_args.role)
+    for r, role_policy in roles.items():
+        role_policy["name"] = r
+    role_issues = check_role_path_policy.validate_context(roles, role, role_args.branch, role_args.worktree, meta)
+    for file_path in role_args.changed_file:
+        reason = check_role_path_policy.violates(roles[role], file_path)
+        if reason:
+            role_issues.append(f"{file_path}: {reason}")
+    if role_issues:
+        fail("role path policy validation failed: " + "; ".join(role_issues))
 
     qa_path = ROOT / (qa or meta["qa_verdict_path"])
     if not qa_path.is_file():

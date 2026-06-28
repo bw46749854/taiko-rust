@@ -43,7 +43,13 @@ jobs:
         run: scripts/check_session_separation.py --pr-gate
       - name: Role path policy PR gate
         if: github.event_name == 'pull_request'
-        run: scripts/check_role_path_policy.py --pr-gate
+        env:
+          GITHUB_HEAD_REF: ${{ github.event.pull_request.head.ref }}
+          GITHUB_BASE_REF: ${{ github.event.pull_request.base.ref }}
+        run: |
+          CHANGED_FILES="$(git diff --name-only origin/${GITHUB_BASE_REF}...HEAD)"
+          export CHANGED_FILES
+          scripts/check_role_path_policy.py --pr-gate --branch "${GITHUB_HEAD_REF}"
       - name: PR body floor
         if: github.event_name == 'pull_request'
         env:

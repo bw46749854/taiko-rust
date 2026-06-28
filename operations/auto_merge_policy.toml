@@ -16,6 +16,11 @@ privileged_workflow_may_checkout_pr_head = false
 privileged_workflow = ".github/workflows/loop-controller.yml"
 controller_concurrency_group = "loop-controller-main"
 
+role_path_policy_required = true
+branch_prefix_policy_required = true
+role_path_policy = "operations/path_policy.toml"
+role_path_policy_checker = "scripts/check_role_path_policy.py"
+
 # Branch protection must require these GitHub status check contexts for PRs that can advance tickets.
 required_checks = [
   "loop-pr-gate / loop-pr-gate",
