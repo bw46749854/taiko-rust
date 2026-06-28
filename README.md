@@ -11,6 +11,10 @@ The controlling objective is autonomous loop operation: separated AI sessions mu
 
 Phase1 means normal-play completion for OpenTaiko-supported TJA charts, including the gameplay features classified in `docs/25_phase1_feature_classification.md` and the adoption decisions in `research/opentaiko/10_phase1_adoption_decisions.md`.
 
+## Documentation language policy
+
+Canonical operational docs, prompts, tickets, scripts, schemas, and code comments are English. Japanese explanatory documents may exist only as explicitly marked translations or non-canonical explanations, such as `*.ja.md`, and must point to the English canonical source. Machine-readable keys, command names, gate IDs, ticket IDs, crate names, schema fields, and other identifiers remain English in all files. If a Japanese document is canonical today, create the English canonical version first, then mark the Japanese document as a translation, non-canonical explanation, or archive. See `docs/02_documentation_language_policy.md`.
+
 ## Current capabilities
 
 | Surface | Current capability |
