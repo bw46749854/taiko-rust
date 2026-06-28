@@ -61,7 +61,7 @@ jobs:
             });
 
       - name: Upload worker handoff reports
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: loop-worker-handoff

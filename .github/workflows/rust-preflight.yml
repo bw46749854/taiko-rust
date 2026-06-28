@@ -34,7 +34,7 @@ jobs:
         run: scripts/check_runtime_evidence_files.py --path reports/preflight/latest/rust_preflight_report.json --require-scope current-package
       - name: Upload rust-preflight-report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: rust-preflight-report
           path: reports/preflight/latest
