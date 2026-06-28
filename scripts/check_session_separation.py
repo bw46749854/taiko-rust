@@ -27,6 +27,66 @@ REQUIRED_FILES = [
     "templates/session_run_metadata_template.toml",
     "reports/session_metadata/README.md",
 ]
+
+QA_REQUIRED_FIELDS = [
+    "ticket_id",
+    "run_id",
+    "qa_session_id",
+    "source_worktree",
+    "verdict",
+    "next_action",
+    "evidence_inputs",
+    "failure_route",
+]
+VALID_QA_VERDICTS = {"pass", "reject", "block"}
+
+
+def qa_field_present(data: dict, field: str) -> bool:
+    value = data.get(field)
+    if value in (None, ""):
+        return False
+    if isinstance(value, list) and not value:
+        return False
+    return True
+
+
+def validate_qa_verdict_payload(qa: dict, meta: dict | None = None) -> list[str]:
+    issues: list[str] = []
+    missing = [field for field in QA_REQUIRED_FIELDS if not qa_field_present(qa, field)]
+    issues.extend(f"qa verdict missing or empty field: {field}" for field in missing)
+
+    verdict = str(qa.get("verdict", ""))
+    if verdict and verdict not in VALID_QA_VERDICTS:
+        issues.append(f"qa verdict must be one of pass/reject/block, got {verdict}")
+
+    if meta is not None:
+        comparisons = [
+            ("ticket_id", "ticket_id", "qa verdict ticket_id differs from metadata ticket_id"),
+            ("run_id", "run_id", "qa verdict run_id differs from metadata run_id"),
+            ("qa_session_id", "qa_session_id", "qa verdict qa_session_id differs from metadata qa_session_id"),
+            ("source_worktree", "qa_worktree", "qa verdict source_worktree differs from metadata qa_worktree"),
+        ]
+        for qa_key, meta_key, message in comparisons:
+            if qa.get(qa_key) and meta.get(meta_key) and str(qa.get(qa_key)) != str(meta.get(meta_key)):
+                issues.append(message)
+        legacy_session = qa.get("session_id")
+        if legacy_session and meta.get("qa_session_id") and str(legacy_session) != str(meta.get("qa_session_id")):
+            issues.append("qa verdict session_id differs from metadata qa_session_id")
+
+    failure_route = qa.get("failure_route") if isinstance(qa.get("failure_route"), dict) else {}
+    if verdict == "reject":
+        for field in ["classification_path", "materialization_path", "repair_ticket_id"]:
+            if not failure_route.get(field):
+                issues.append(f"reject qa verdict requires failure_route.{field}")
+    if verdict == "block":
+        missing_evidence = qa.get("missing_evidence")
+        if not isinstance(missing_evidence, list) or not missing_evidence:
+            issues.append("block qa verdict requires non-empty missing_evidence list")
+        for field in ["blocker_ticket_id", "blocker_route"]:
+            if not failure_route.get(field):
+                issues.append(f"block qa verdict requires failure_route.{field}")
+    return issues
+
 REQUIRED_FIELDS = [
     "schema_version",
     "run_id",
@@ -39,7 +99,10 @@ REQUIRED_FIELDS = [
     "review_worktree",
     "qa_worktree",
     "qa_verdict_path",
+    "plan_path",
+    "command_log_path",
     "preflight_report_path",
+    "gate_report_path",
     "implementation_may_write_code",
     "review_may_write_code",
     "qa_may_write_code",
@@ -105,10 +168,7 @@ def validate_metadata(path: Path, require_qa_verdict: bool = False) -> list[str]
         except Exception as exc:
             issues.append(f"qa verdict JSON is invalid: {exc}")
         else:
-            if qa.get("session_id") and qa.get("session_id") != qa_session:
-                issues.append("qa verdict session_id differs from metadata qa_session_id")
-            if qa.get("source_worktree") and qa.get("source_worktree") != str(data.get("qa_worktree", "")):
-                issues.append("qa verdict source_worktree differs from metadata qa_worktree")
+            issues.extend(validate_qa_verdict_payload(qa, data))
     return issues
 
 
@@ -181,7 +241,8 @@ def main() -> int:
 
     all_issues: list[str] = []
     for path in sorted(set(paths)):
-        all_issues.extend(f"{path.relative_to(ROOT)}: {issue}" for issue in validate_metadata(path, args.require_qa_verdict))
+        display_path = path.relative_to(ROOT) if path.is_absolute() and path.is_relative_to(ROOT) else path
+        all_issues.extend(f"{display_path}: {issue}" for issue in validate_metadata(path, args.require_qa_verdict))
     if all_issues:
         fail("session separation check failed:\n" + "\n".join(f"- {issue}" for issue in all_issues))
 

@@ -162,6 +162,7 @@ required_files=(
 
   "scripts/select_auto_merge_candidate.py"
   "schemas/auto_merge_candidate_schema.md"
+  "schemas/qa_verdict_schema.md"
   "fixtures/loop_controller/pass_candidate.json"
   "fixtures/loop_controller/reject_candidate.json"
   "fixtures/loop_controller/block_candidate.json"
