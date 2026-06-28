@@ -128,7 +128,7 @@ def main() -> int:
     tkt5 = (ROOT / '.loop/tickets/TKT-0005.md').read_text(encoding='utf-8')
     for term in ['TKT-0060', 'GATE-0090', 'docs/74_phase1_feature_loop_entry_contract.md']:
         if term not in tkt5:
-            fail(f'TKT-0005 missing Step13 prerequisite term: {term}')
+            fail(f'TKT-0005 missing Phase1 gameplay entry gate prerequisite term: {term}')
 
     tkt60 = (ROOT / '.loop/tickets/TKT-0060.md').read_text(encoding='utf-8')
     for term in ['TKT-0050', 'GATE-0080', 'GATE-0090', 'taiko_cli phase1 feature validate', 'taiko_cli phase1 feature plan']:
@@ -148,7 +148,7 @@ def main() -> int:
     workflow = (ROOT / '.github/workflows/phase1-loop.yml').read_text(encoding='utf-8')
     for term in ['check_phase1_feature_loop_static.py', 'phase1 feature validate', 'phase1 feature plan']:
         if term not in workflow:
-            fail(f'workflow missing Step13 term: {term}')
+            fail(f'workflow missing Phase1 gameplay entry gate term: {term}')
 
     result = subprocess.run([sys.executable, str(ROOT / 'scripts/check_phase1_entry_state_consistency.py')], cwd=ROOT, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False)
     if result.returncode != 0:

@@ -1,4 +1,4 @@
-# Step18 role path policy for autonomous loop PR gating.
+# session separation role path policy for autonomous loop PR gating.
 status = "canonical"
 version = 1
 

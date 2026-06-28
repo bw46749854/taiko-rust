@@ -4,7 +4,7 @@ Status: canonical
 
 ## Purpose
 
-Step21 adds the GitHub Actions side of the autonomous loop. Codex Cloud, Codex App Automations, or Codex CLI remain responsible for implementation and repair work under the ChatGPT plan. GitHub Actions does not call OpenAI APIs, does not require `OPENAI_API_KEY`, and does not run `openai/codex-action@v1`.
+The auto-merge controller adds the GitHub Actions side of the autonomous loop. Codex Cloud, Codex App Automations, or Codex CLI remain responsible for implementation and repair work under the ChatGPT plan. GitHub Actions does not call OpenAI APIs, does not require `OPENAI_API_KEY`, and does not run `openai/codex-action@v1`.
 
 The controller's responsibility is mechanical:
 
@@ -103,9 +103,9 @@ reports/regression/<run_id>.json
 
 `loop_revert_last_merge.sh` creates a revert branch and opens a revert PR when not in dry-run mode. The revert PR goes through the same gate path as normal changes.
 
-## Step21 non-goals
+## auto-merge controller non-goals
 
-Step21 does not implement gameplay features. Step21 does not start Codex workers. Step21 does not require API billing. Step21 only makes auto-merge and revert mechanically controllable.
+The auto-merge controller does not implement gameplay features. The auto-merge controller does not start Codex workers. The auto-merge controller does not require API billing. The auto-merge controller only makes auto-merge and revert mechanically controllable.
 
 
 ## OPS-0005 controller guard normalization

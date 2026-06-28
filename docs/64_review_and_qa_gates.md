@@ -54,7 +54,7 @@ The following block acceptance:
 - implementation session self-approves.
 
 
-## Step12 QA regression gate
+## QA verdict route gate
 
 QA / Regression Session must produce machine-readable verdicts through:
 

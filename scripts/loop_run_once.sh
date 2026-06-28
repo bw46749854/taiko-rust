@@ -20,7 +20,7 @@ while [ "$#" -gt 0 ]; do
       cat <<'HELP'
 Usage: scripts/loop_run_once.sh [--mode plan|apply] [--format json|markdown]
 
-Runs the Step17 controller once. plan mode has no side effects. apply mode
+Runs the loop run-once controller once. plan mode has no side effects. apply mode
 writes controller artifacts under reports/loop/<run_id>/.
 HELP
       exit 0

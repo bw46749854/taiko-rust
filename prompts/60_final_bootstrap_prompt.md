@@ -4,7 +4,7 @@ Status: canonical
 
 ## Mission
 
-Canonical prompt for starting Codex loop from the Step23 package after the operations migration rail has been added.
+Canonical prompt for starting Codex loop from the Phase1 gameplay worker handoff package after the operations migration rail has been added.
 
 The controlling objective is autonomous loop operation: separated AI sessions must read tickets, implement work, verify evidence, detect failure, route failure into repair tickets, and advance to the next ticket without extra human judgement.
 
@@ -61,11 +61,11 @@ The active start ticket in this package is `OPS-0008`. Do not start Phase1 gamep
 - Every ticket handoff must include next-ticket transition evidence.
 - Every gate report must include autonomy scorecard axis delta.
 - Treat parser crash, timing anomaly, branch route mismatch, score/gauge mismatch, and unclassified command report as blocking unless the ticket explicitly limits scope.
-- Do not require `OPENAI_API_KEY` or `CODEX_API_KEY` for Step17 loop-controller operation.
-- Do not require `OPENAI_API_KEY`, `CODEX_API_KEY`, or `openai/codex-action@v1` for Step20 Plus-plan automation operation.
-- Run Step22 E2E smoke verification before starting Phase1 gameplay tickets.
+- Do not require `OPENAI_API_KEY` or `CODEX_API_KEY` for loop run-once controller operation.
+- Do not require `OPENAI_API_KEY`, `CODEX_API_KEY`, or `openai/codex-action@v1` for ChatGPT-plan Codex automation operation.
+- Run E2E smoke verification before starting Phase1 gameplay tickets.
 
-## Step17 controller check
+## loop run-once controller check
 
 Run the no-Rust static checks first:
 
@@ -129,7 +129,7 @@ Then read:
 
 Do not start Phase1 gameplay implementation.
 Do not mark TKT-0001 or GATE-0030 as passed from static inspection alone.
-Do not introduce OPENAI_API_KEY, CODEX_API_KEY, or openai/codex-action@v1 as a Step20 requirement.
+Do not introduce OPENAI_API_KEY, CODEX_API_KEY, or openai/codex-action@v1 as a ChatGPT-plan Codex operation requirement.
 
 Task:
 1. Confirm that only OPS-0008 is Ready.
@@ -147,7 +147,7 @@ After writing the report, hand off to the Design Review Session for review. Keep
 ```
 
 
-## Step18 required read additions
+## session separation required read additions
 
 - `docs/90_session_metadata_and_path_policy.md`
 - `operations/path_policy.toml`
@@ -164,7 +164,7 @@ scripts/loop_create_worktree.sh TKT-0050 --role test-infra --dry-run
 ```
 
 
-## Step19 required read additions
+## repair materialization and retry-budget route required read additions
 
 - `docs/91_repair_materialization_and_retry_budget.md`
 - `docs/92_codex_plus_automation_operation.md`
@@ -187,7 +187,7 @@ scripts/check_repair_materialization_static.py
 ```
 
 
-## Step20 required read additions
+## ChatGPT-plan Codex operation required read additions
 
 - `docs/92_codex_plus_automation_operation.md`
 - `operations/codex_automation_policy.toml`
@@ -208,10 +208,10 @@ scripts/check_codex_automation_static.py
 scripts/render_next_codex_prompt.py --mode automation --dry-run
 ```
 
-Step20 is Plus-plan operation only. GitHub Actions must not call `openai/codex-action@v1`.
+ChatGPT-plan Codex operation stays on ChatGPT-plan surfaces. GitHub Actions must not call `openai/codex-action@v1`.
 
 
-## Step21 auto-merge controller read set
+## auto-merge controller read set
 
 Before starting gameplay implementation, read:
 
@@ -233,7 +233,7 @@ scripts/loop_controller_github.sh --mode plan
 Do not add `OPENAI_API_KEY` or GitHub Actions AI worker usage. GitHub Actions may gate, merge, advance, and revert only.
 
 
-## Step22 smoke verification
+## E2E smoke verification
 
 Before starting Phase1 gameplay implementation, run:
 
@@ -245,7 +245,7 @@ scripts/run_e2e_smoke_loop.sh --scenario all --dry-run
 The smoke loop must pass pass/reject/block/retry/revert routes without live GitHub mutation and without API-key AI workers.
 
 
-## Step23 note
+## Phase1 gameplay worker handoff note
 
 Do not start Phase1 gameplay implementation from prose. Use `scripts/render_phase1_gameplay_ticket_prompt.py --ticket TKT-0005 --dry-run` and proceed only from a machine-readable `verdict = ready` start packet.
 

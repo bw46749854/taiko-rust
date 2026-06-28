@@ -59,7 +59,7 @@ scripts/check_github_pr_orchestration_static.py
 `worktrees/` is ignored by Git. Any evidence produced inside a worktree must be copied to tracked text or JSON files before PR creation.
 
 
-## Step18 role-specific worktree commands
+## session separation role-specific worktree commands
 
 The worktree script now accepts an explicit role:
 

@@ -1,4 +1,4 @@
-# Step18 session metadata template for PR / QA / merge gating.
+# session separation session metadata template for PR / QA / merge gating.
 # Copy this to reports/session_metadata/<ticket-id>.toml.
 
 schema_version = 1

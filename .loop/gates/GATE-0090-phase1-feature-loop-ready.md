@@ -65,7 +65,7 @@ taiko_cli loop next --format json
 
 ## Failure handling
 
-- `reject`: create a failure report with category `phase1_feature_manifest_error` or `feature_ticket_transition_error`, then propose a repair ticket through Step11 failure feedback.
+- `reject`: create a failure report with category `phase1_feature_manifest_error` or `feature_ticket_transition_error`, then propose a repair ticket through failure feedback route.
 - `block`: list missing gate reports or missing generated JSON reports and keep gameplay tickets Blocked.
 - `pass`: allow `TKT-0005` to become eligible according to dependency checks.
 
@@ -80,5 +80,5 @@ taiko_cli loop next --format json
 ## Next-ticket transition
 
 - `pass`: `TKT-0005` may become eligible as the first Phase1 gameplay feature ticket.
-- `reject`: route to Step11 failure feedback and proposed repair ticket.
+- `reject`: route to failure feedback route and proposed repair ticket.
 - `block`: keep all gameplay feature tickets Blocked until missing evidence exists.

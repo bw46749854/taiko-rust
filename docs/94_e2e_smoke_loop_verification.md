@@ -4,7 +4,7 @@ Status: canonical
 
 ## Purpose
 
-Step22 verifies that the autonomous loop substrate can be exercised end-to-end without starting Phase1 gameplay implementation and without calling AI providers from GitHub Actions.
+The E2E smoke loop verifies that the autonomous loop substrate can be exercised end-to-end without starting Phase1 gameplay implementation and without calling AI providers from GitHub Actions.
 
 This is a smoke verification layer, not the final Phase1 gameplay acceptance test. It proves that the controller surfaces added in Steps17-21 can be composed into deterministic pass, reject, block, retry-budget, and revert evidence.
 
@@ -22,7 +22,7 @@ The smoke loop covers these routes:
 
 ## Non-scope
 
-Step22 does not:
+The E2E smoke loop does not:
 
 - run Codex workers,
 - require `OPENAI_API_KEY`,
@@ -65,7 +65,7 @@ reports/e2e_smoke/<run_id>/revert/regression/<run_id>-revert.json
 
 ## Acceptance criteria
 
-Step22 passes when:
+The E2E smoke loop passes when:
 
 1. `scripts/check_e2e_smoke_static.py` passes.
 2. `scripts/run_e2e_smoke_loop.sh --scenario all --dry-run --out /tmp/...` produces all required scenario evidence.
@@ -76,9 +76,9 @@ Step22 passes when:
 7. The revert scenario produces regression/revert evidence through `scripts/loop_revert_last_merge.sh --dry-run`.
 8. No workflow contains `openai/codex-action@v1` or `secrets.OPENAI_API_KEY` as an executable dependency.
 
-## Relationship to Step23
+## Relationship to Phase1 gameplay worker handoff
 
-Step23 may start Phase1 gameplay tickets only after Step22 smoke evidence passes in GitHub Actions or an equivalent local static environment. This prevents gameplay implementation from starting on an unproven controller/merge/repair substrate.
+Phase1 gameplay worker handoff may start Phase1 gameplay tickets only after E2E smoke evidence passes in GitHub Actions or an equivalent local static environment. This prevents gameplay implementation from starting on an unproven controller/merge/repair substrate.
 
 ## OPS-0009 final smoke extension
 

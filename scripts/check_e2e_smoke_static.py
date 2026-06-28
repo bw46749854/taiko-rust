@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Static and dry-run validation for Step22 E2E smoke loop."""
+"""Static and dry-run validation for E2E smoke loop loop."""
 from __future__ import annotations
 
 import argparse
@@ -63,12 +63,12 @@ REQUIRED_TERMS = {
         "TKT-ENV-SMOKE-BLOCK",
     ],
     "README.md": [
-        "Step22",
+        "E2E smoke loop",
         "E2E smoke loop",
         "scripts/run_e2e_smoke_loop.sh --scenario all --dry-run",
     ],
     "AGENTS.md": [
-        "Step22 operational note",
+        "E2E smoke loop operational note",
         "E2E smoke loop",
         "Actions must not call AI providers",
     ],
@@ -104,7 +104,7 @@ def read(rel: str) -> str:
 def validate_static() -> None:
     for rel in REQUIRED_FILES:
         if not (ROOT / rel).is_file():
-            fail(f"missing required Step22 file: {rel}")
+            fail(f"missing required E2E smoke loop file: {rel}")
     for rel, terms in REQUIRED_TERMS.items():
         text = read(rel)
         for term in terms:
@@ -163,7 +163,7 @@ def validate_smoke_run() -> None:
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--static-only", action="store_true", help="Validate Step22 wiring without executing the temporary smoke run")
+    parser.add_argument("--static-only", action="store_true", help="Validate E2E smoke loop wiring without executing the temporary smoke run")
     args = parser.parse_args()
     validate_static()
     if not args.static_only:

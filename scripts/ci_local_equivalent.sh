@@ -77,6 +77,7 @@ run scripts/check_asset_bundle_manifest.py --manifest operations/dev_asset_bundl
 run scripts/fetch_dev_asset_bundle.py --manifest operations/dev_asset_bundle.example.toml --dry-run --emit-json reports/assets/asset_bundle_fetch_dry_run.json
 run scripts/check_e2e_smoke_static.py --static-only
 run scripts/check_phase1_gameplay_start_static.py
+run scripts/check_runtime_step_terms_static.py
 run scripts/validate_fixture_manifest.py
 run scripts/validate_synthetic_fixture_structure.py
 run scripts/validate_no_user_assets.sh

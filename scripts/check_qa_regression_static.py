@@ -52,7 +52,7 @@ for term in ['TKT-0040', 'GATE-0070', 'GATE-0080', 'taiko_cli qa run', 'taiko_cl
 tkt5 = (ROOT / '.loop/tickets/TKT-0005.md').read_text(encoding='utf-8')
 for term in ['TKT-0060', 'GATE-0090']:
     if term not in tkt5:
-        print(f'TKT-0005 does not depend on Step13 feature-loop prerequisite {term}', file=sys.stderr)
+        print(f'TKT-0005 does not depend on Phase1 gameplay entry gate prerequisite {term}', file=sys.stderr)
         sys.exit(1)
 
 workflow = (ROOT / '.github/workflows/phase1-loop.yml').read_text(encoding='utf-8')

@@ -216,6 +216,7 @@ required_files=(
   "reports/phase1_gameplay_loop/README.md"
   "scripts/render_phase1_gameplay_ticket_prompt.py"
   "scripts/check_phase1_gameplay_start_static.py"
+  "scripts/check_runtime_step_terms_static.py"
   ".github/workflows/phase1-gameplay-entry.yml"
   "operations/ops_migration_readiness_policy.toml"
   "schemas/ops_migration_readiness_schema.md"

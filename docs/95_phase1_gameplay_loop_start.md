@@ -4,13 +4,13 @@ Status: canonical
 
 ## 1. Purpose
 
-Step23 opens the Phase1 gameplay implementation lane without bypassing the established autonomous-loop gates.
+The Phase1 gameplay worker handoff opens the Phase1 gameplay implementation lane without bypassing the established autonomous-loop gates.
 
 The package now has enough loop substrate to prepare the first gameplay ticket handoff. OPS-0009 marks `TKT-0005` Ready after migration evidence is present. It defines the machine contract that makes `TKT-0005` the first selectable gameplay ticket after `TKT-0060`, `GATE-0090`, and `GATE-OPS-0000` have passed.
 
 ## 2. Scope
 
-Step23 adds:
+The Phase1 gameplay worker handoff adds:
 
 - a Phase1 gameplay start policy;
 - a deterministic ticket-prompt renderer for the first gameplay ticket;
@@ -18,7 +18,7 @@ Step23 adds:
 - a reports directory for generated gameplay-loop start packets;
 - static validation that the gameplay loop cannot start from prose or manual ordering.
 
-Step23 does not add gameplay implementation logic. It does not implement BPM, MEASURE, DELAY, OFFSET, roll, branch, score, gauge, scroll, rendering, audio, or input.
+The Phase1 gameplay worker handoff does not add gameplay implementation logic. It does not implement BPM, MEASURE, DELAY, OFFSET, roll, branch, score, gauge, scroll, rendering, audio, or input.
 
 ## 3. Start rule
 
@@ -91,4 +91,4 @@ A Phase1 gameplay worker must:
 
 ## 8. Transition to Phase1 implementation
 
-After Step23, the loop may enter Phase1 gameplay implementation only through the controller and the manifest. The first implementation PR generated from this lane must be for `TKT-0005`, and its auto-merge eligibility remains governed by Step18 session metadata, Step19 repair/retry, Step21 auto-merge, and Step22 smoke-loop evidence.
+After Phase1 gameplay worker handoff, the loop may enter Phase1 gameplay implementation only through the controller and the manifest. The first implementation PR generated from this lane must be for `TKT-0005`, and its auto-merge eligibility remains governed by session separation metadata, repair materialization and retry-budget route repair/retry, auto-merge controller, and E2E smoke-loop evidence.

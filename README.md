@@ -25,19 +25,19 @@ Phase1 means normal-play completion for OpenTaiko-supported TJA charts, includin
 | Step8 | Fixture Validation MVP added: manifest and TJA structural inspection through `taiko_cli fixture` |
 | Step9 | Headless Autoplay MVP added: render-free/audio-free perfect autoplay evidence |
 | Step10 | Timing Analyzer MVP added: max/mean/p95 error and failure-category JSON evidence |
-| Step11 | Failure Feedback Loop MVP added: failure ingest, repair-ticket proposal, and ticket validation JSON |
-| Step12 | QA / Regression Gate MVP added: machine-readable pass/reject/block verdicts |
-| Step13 | Phase1 feature-loop entry manifest and planner added |
+| failure feedback route | Failure Feedback Loop MVP added: failure ingest, repair-ticket proposal, and ticket validation JSON |
+| QA verdict route | QA / Regression Gate MVP added: machine-readable pass/reject/block verdicts |
+| Phase1 gameplay entry gate | Phase1 feature-loop entry manifest and planner added |
 | Step14 | GitHub PR Loop Orchestration added: branch/worktree/PR/review/QA verdict/merge/advance scripts |
 | Step15 | Rust-enabled Preflight Gate added: cargo / `taiko_cli` runtime evidence JSON, CI artifact upload, and evidence validation |
 | Step16 | Codex Cloud environment and CI hardening added: pinned Rust toolchain, setup script, local CI equivalent, secret/network policy, and static environment validation |
-| Step17 | Loop run-once controller foundation added: auto-merge policy, state machine, controller plan/apply command, and next Codex prompt artifact generation |
-| Step18 | Session metadata and path policy gate added: role worktrees, machine-readable metadata, and PR gate checks |
-| Step19 | Repair materialization and retry budget added: failure classification, actual repair/blocker ticket creation, and retry-loop stop conditions |
-| Step20 | Plus-plan Codex Automation operation added: no-API-key heartbeat prompts and detached review request workflow |
-| Step21 | GitHub Actions auto-merge controller added: guarded squash merge, merge history, and revert evidence workflow |
-| Step22 | E2E smoke loop verification added: pass/reject/block/retry/revert dry-run evidence and CI smoke workflow |
-| Step23 | Phase1 gameplay loop start added: first gameplay ticket start packet renderer and `TKT-0005` worker handoff prompt |
+| loop run-once controller | Loop run-once controller foundation added: auto-merge policy, state machine, controller plan/apply command, and next Codex prompt artifact generation |
+| session separation | Session metadata and path policy gate added: role worktrees, machine-readable metadata, and PR gate checks |
+| repair materialization and retry-budget route | Repair materialization and retry budget added: failure classification, actual repair/blocker ticket creation, and retry-loop stop conditions |
+| ChatGPT-plan Codex operation | Plus-plan Codex Automation operation added: no-API-key heartbeat prompts and detached review request workflow |
+| auto-merge controller | GitHub Actions auto-merge controller added: guarded squash merge, merge history, and revert evidence workflow |
+| E2E smoke loop | E2E smoke loop verification added: pass/reject/block/retry/revert dry-run evidence and CI smoke workflow |
+| Phase1 gameplay worker handoff | Phase1 gameplay loop start added: first gameplay ticket start packet renderer and `TKT-0005` worker handoff prompt |
 
 
 ## Operations migration rail
@@ -160,9 +160,9 @@ timing_log_analyzer --input reports/headless_autoplay/phase1_synthetic.perfect.j
 
 The contract is `docs/47_timing_log_analyzer_contract.md`. The Step10 MVP reports deterministic `max_error_ms`, `mean_error_ms`, `p95_error_ms`, threshold, and failure-category evidence from perfect-autoplay results. It does not yet certify final OpenTaiko-compatible audio sync, visual scroll timing, or judgement-window precision.
 
-## Step11 addition: Failure Feedback Loop MVP
+## failure feedback route addition: Failure Feedback Loop MVP
 
-Step11 adds the first executable self-repair route for the autonomous loop:
+failure feedback route adds the first executable self-repair route for the autonomous loop:
 
 ```bash
 taiko_cli loop failure ingest reports/failures/FF-0001-sample-timing-cli-contract-error.md --format json
@@ -170,12 +170,12 @@ taiko_cli loop ticket propose --from-failure reports/failures/FF-0001-sample-tim
 taiko_cli loop ticket validate .loop/tickets/TKT-0040.md --format json
 ```
 
-The contract is `docs/48_failure_feedback_loop_contract.md`. Step11 does not implement automatic branch creation, PR creation, or CI mutation. It makes failure ingestion, duplicate prevention, repair-ticket proposal, and repair-ticket validation machine-readable so Control Session and QA / Regression Session can route rejects without additional human design judgement.
+The contract is `docs/48_failure_feedback_loop_contract.md`. failure feedback route does not implement automatic branch creation, PR creation, or CI mutation. It makes failure ingestion, duplicate prevention, repair-ticket proposal, and repair-ticket validation machine-readable so Control Session and QA / Regression Session can route rejects without additional human design judgement.
 
 
-## Step12 QA / Regression Gate MVP
+## QA verdict route QA / Regression Gate MVP
 
-Step12 adds the first machine-readable QA verdict layer. The package now defines and statically checks:
+QA verdict route adds the first machine-readable QA verdict layer. The package now defines and statically checks:
 
 ```bash
 taiko_cli qa run --manifest fixtures/synthetic/phase1_synthetic_manifest.toml --threshold-ms 1.0 --format json
@@ -183,15 +183,15 @@ taiko_cli qa compare --baseline reports/baseline --current reports/current --for
 taiko_cli qa verdict --input reports/qa/phase1_loop.qa.json --format json
 ```
 
-The goal is to let the QA / Regression Session return `pass`, `reject`, or `block` without manual log interpretation. `reject` must route to Step11 failure feedback. `block` must name missing machine evidence.
+The goal is to let the QA / Regression Session return `pass`, `reject`, or `block` without manual log interpretation. `reject` must route to failure feedback route failure feedback. `block` must name missing machine evidence.
 
-## Step13 phase1 feature-loop entry
+## Phase1 gameplay entry gate phase1 feature-loop entry
 
-Step13 adds the Phase1 gameplay feature-loop entry layer. The package now treats `operations/phase1_feature_ticket_manifest.toml` as the machine-readable source for gameplay ticket order, command evidence, QA evidence, and failure routing.
+Phase1 gameplay entry gate adds the Phase1 gameplay feature-loop entry layer. The package now treats `operations/phase1_feature_ticket_manifest.toml` as the machine-readable source for gameplay ticket order, command evidence, QA evidence, and failure routing.
 
 Gameplay tickets beginning with `TKT-0005` must remain Blocked until `TKT-0060` is Done and `GATE-0090` has passed. This prevents Control Session from starting Phase1 feature implementation by prose interpretation.
 
-Required Step13 checks:
+Required Phase1 gameplay entry gate checks:
 
 ```bash
 scripts/check_phase1_feature_loop_static.py
@@ -228,9 +228,9 @@ scripts/check_rust_preflight_static.py
 The contract is `docs/85_rust_enabled_preflight_gate.md`. The generated evidence path is `reports/preflight/latest/`, uploaded by `.github/workflows/rust-preflight.yml` as the `rust-preflight-report` artifact. This gate converts the first cargo / `taiko_cli` execution into a `pass`, `reject`, or `block` verdict so `TKT-0001` and `GATE-0030` cannot be accepted from static inspection alone.
 
 
-## Step17 addition: Loop run-once controller foundation
+## loop run-once controller addition: Loop run-once controller foundation
 
-Step17 adds the first controller command that turns repository state into one machine-readable next action:
+The loop run-once controller adds the first controller command that turns repository state into one machine-readable next action:
 
 ```bash
 taiko_cli loop run-once --mode plan --format json
@@ -239,14 +239,14 @@ scripts/loop_run_once.sh --mode plan
 scripts/loop_run_once.sh --mode apply
 ```
 
-`--mode plan` is side-effect free. `--mode apply` writes controller artifacts under `reports/loop/<run_id>/`, including `controller_plan.json`, `controller_plan.md`, and `next_codex_prompt.md`. Step17 does not require `OPENAI_API_KEY` or any API-metered Codex worker. Codex Cloud, Codex App, CLI, or Automations may consume the generated prompt using the ChatGPT plan surface.
+`--mode plan` is side-effect free. `--mode apply` writes controller artifacts under `reports/loop/<run_id>/`, including `controller_plan.json`, `controller_plan.md`, and `next_codex_prompt.md`. The loop run-once controller does not require `OPENAI_API_KEY` or any API-metered Codex worker. Codex Cloud, Codex App, CLI, or Automations may consume the generated prompt using the ChatGPT plan surface.
 
-Auto-merge is now the target policy for this repository, but Step17 does not enable automatic merge. It only establishes the state-machine and controller evidence surface required by later metadata, repair, and merge-controller steps.
+Auto-merge is now the target policy for this repository, but The loop run-once controller does not enable automatic merge. It only establishes the state-machine and controller evidence surface required by later metadata, repair, and merge-controller steps.
 
 
-## Step18: session metadata and path policy
+## session separation: session metadata and path policy
 
-Step18 adds machine-readable session separation and role path policy. The new static checks are:
+session separation adds machine-readable session separation and role path policy. The new static checks are:
 
 ```bash
 scripts/check_session_separation.py
@@ -257,9 +257,9 @@ scripts/loop_create_worktree.sh TKT-0050 --role test-infra --dry-run
 `taiko_cli loop run-once --mode apply` writes `reports/session_metadata/<ticket-id>.toml` alongside controller artifacts.
 
 
-## Step19 addition: Repair Materialization and Retry Budget
+## repair materialization and retry-budget route addition: Repair Materialization and Retry Budget
 
-Step19 closes the gap between failure reports and executable repair work. `loop ticket propose` remains a preview command, while `loop ticket materialize --from-failure` creates a real Ready ticket under `.loop/tickets/`.
+repair materialization and retry-budget route closes the gap between failure reports and executable repair work. `loop ticket propose` remains a preview command, while `loop ticket materialize --from-failure` creates a real Ready ticket under `.loop/tickets/`.
 
 ```bash
 taiko_cli loop failure classify --input reports/failures/FF-0001-sample-timing-cli-contract-error.md --format json
@@ -267,14 +267,14 @@ taiko_cli loop ticket materialize --from-failure reports/failures/FF-0001-sample
 taiko_cli loop retry-budget check --ticket TKT-9001 --format json
 ```
 
-Step19 distinguishes `reject` from `block`. Rejects become repair tickets. Blocks become ENV/SPEC/TOOL blocker tickets. Retry limits live in `operations/retry_budget.toml`.
+repair materialization and retry-budget route distinguishes `reject` from `block`. Rejects become repair tickets. Blocks become ENV/SPEC/TOOL blocker tickets. Retry limits live in `operations/retry_budget.toml`.
 
 This step still does not require `OPENAI_API_KEY` or `CODEX_API_KEY`, and it does not start Phase1 gameplay implementation.
 
 
-## Step20 Plus-plan Codex Automation
+## ChatGPT-plan Codex operation Plus-plan Codex Automation
 
-Step20 keeps normal operation inside the ChatGPT-plan Codex surface. GitHub Actions do not call `openai/codex-action@v1`, do not require `OPENAI_API_KEY`, and do not run metered AI workers. Codex Cloud, Codex App Automations, or Codex CLI signed in with ChatGPT read `prompts/70_codex_automation_loop_runner.md` and the generated `reports/loop/<run_id>/next_codex_prompt.md`.
+ChatGPT-plan Codex operation keeps normal operation inside the ChatGPT-plan Codex surface. GitHub Actions do not call `openai/codex-action@v1`, do not require `OPENAI_API_KEY`, and do not run metered AI workers. Codex Cloud, Codex App Automations, or Codex CLI signed in with ChatGPT read `prompts/70_codex_automation_loop_runner.md` and the generated `reports/loop/<run_id>/next_codex_prompt.md`.
 
 Useful commands:
 
@@ -284,12 +284,12 @@ scripts/render_next_codex_prompt.py --mode automation --dry-run
 scripts/render_next_codex_prompt.py --mode automation
 ```
 
-Step20 still does not enable auto-merge and does not start Phase1 gameplay implementation.
+ChatGPT-plan Codex operation still does not enable auto-merge and does not start Phase1 gameplay implementation.
 
 
-## Step21 Auto-Merge Controller
+## auto-merge controller Auto-Merge Controller
 
-Step21 adds the GitHub Actions auto-merge controller. GitHub Actions remains a mechanical gate/merge/advance surface; it does not call AI providers and does not require `OPENAI_API_KEY`.
+auto-merge controller adds the GitHub Actions auto-merge controller. GitHub Actions remains a mechanical gate/merge/advance surface; it does not call AI providers and does not require `OPENAI_API_KEY`.
 
 Primary files:
 
@@ -312,12 +312,12 @@ scripts/loop_auto_merge_pr.sh --ticket TKT-0005 --pr 12 --metadata reports/sessi
 scripts/loop_revert_last_merge.sh --run-id RUN-20260626-0001 --reason regression --dry-run
 ```
 
-Step21 does not implement gameplay features. It prepares automatic squash merge, merge history, and revert evidence for PRs that already passed the loop gates.
+auto-merge controller does not implement gameplay features. It prepares automatic squash merge, merge history, and revert evidence for PRs that already passed the loop gates.
 
 
-## Step22 E2E smoke loop verification
+## E2E smoke loop E2E smoke loop verification
 
-Step22 adds a no-AI, no-API-key smoke verification layer for the controller substrate:
+E2E smoke loop adds a no-AI, no-API-key smoke verification layer for the controller substrate:
 
 ```bash
 scripts/check_e2e_smoke_static.py
@@ -327,9 +327,9 @@ scripts/run_e2e_smoke_loop.sh --scenario all --dry-run
 The smoke loop exercises pass, reject, block, retry-budget, and revert routes without committing smoke-only Ready tickets and without starting Phase1 gameplay implementation. Evidence is generated under `reports/e2e_smoke/<run_id>/` or a caller-provided `--out` directory.
 
 
-## Step23 Phase1 gameplay loop start
+## Phase1 gameplay worker handoff Phase1 gameplay loop start
 
-Step23 opens the Phase1 gameplay implementation lane through a machine-readable start packet. It does not mark `TKT-0005` Ready in the bootstrap package and does not implement gameplay features.
+The Phase1 gameplay worker handoff opens the Phase1 gameplay implementation lane through a machine-readable start packet. It does not mark `TKT-0005` Ready in the bootstrap package and does not implement gameplay features.
 
 Use:
 

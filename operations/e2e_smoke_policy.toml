@@ -1,4 +1,4 @@
-# Step22 E2E smoke loop policy.
+# E2E smoke loop loop policy.
 status = "canonical"
 api_key_required = false
 ai_workers_in_github_actions = false

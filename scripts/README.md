@@ -27,18 +27,18 @@ These scripts are lightweight bootstrap helpers. They do not replace the Rust CL
 | `codex_cloud_setup.sh` | Provisions the pinned Rust toolchain and checks Codex Cloud / CI setup. |
 | `ci_local_equivalent.sh` | Runs static checks and, in runtime mode, the Rust preflight evidence path. |
 | `check_codex_cloud_env_static.py` | Validates Step16 Codex Cloud, toolchain, secret/network, and CI wiring without requiring Rust. |
-| `loop_run_once.sh` | Runs the Step17 controller once through `taiko_cli loop run-once`. |
-| `check_loop_controller_static.py` | Validates Step17 loop-controller wiring without requiring Rust. |
-| `check_repair_materialization_static.py` | Validates Step19 repair materialization, failure classification, and retry-budget wiring without requiring Rust. |
-| `render_next_codex_prompt.py` | Renders a Step20 Plus-plan Codex Automation prompt without requiring Rust or API keys. |
-| `check_codex_automation_static.py` | Validates Step20 Codex Cloud/App Automation wiring and forbids API-key AI workers in workflows. |
+| `loop_run_once.sh` | Runs the loop run-once controller once through `taiko_cli loop run-once`. |
+| `check_loop_controller_static.py` | Validates loop run-once controller wiring without requiring Rust. |
+| `check_repair_materialization_static.py` | Validates repair materialization and retry-budget route, failure classification, and retry-budget wiring without requiring Rust. |
+| `render_next_codex_prompt.py` | Renders a ChatGPT-plan Codex automation Codex Automation prompt without requiring Rust or API keys. |
+| `check_codex_automation_static.py` | Validates ChatGPT-plan Codex operation Codex Cloud/App Automation wiring and forbids API-key AI workers in workflows. |
 | `check_auto_merge_conditions.py` | Validates auto-merge controller wiring, candidate evidence, and OPS-0006 candidate fixtures. |
 | `select_auto_merge_candidate.py` | Selects one `loop:automerge` PR candidate from GitHub PR JSON and emits pass/reject/block plans. |
 | `loop_controller_github.sh` | Plans or applies the GitHub Actions loop-controller step without AI API calls. |
 | `loop_auto_merge_pr.sh` | Validates candidate evidence, writes merge history, and squash-merges a PR. |
 | `loop_revert_last_merge.sh` | Writes regression evidence and creates a revert PR outside dry-run mode. |
-| `run_e2e_smoke_loop.sh` | Runs the Step22 pass/reject/block/retry/revert smoke loop without AI API calls. |
-| `check_e2e_smoke_static.py` | Validates Step22 E2E smoke wiring and runs a temporary dry-run smoke scenario. |
+| `run_e2e_smoke_loop.sh` | Runs the E2E smoke loop pass/reject/block/retry/revert smoke loop without AI API calls. |
+| `check_e2e_smoke_static.py` | Validates E2E smoke loop wiring and runs a temporary dry-run smoke scenario. |
 
 ## Policy
 
@@ -71,9 +71,9 @@ Generated reports remain under `reports/preflight/latest/` and are normally CI a
 `ci_local_equivalent.sh --static-only` is the no-Rust operator check. Running `ci_local_equivalent.sh` without `--static-only` requires Rust and invokes the Step15 runtime preflight.
 
 
-## Step17 loop-controller scripts
+## loop run-once controller scripts
 
-`loop_run_once.sh` is the shell wrapper for the Step17 controller command. Plan mode is read-only. Apply mode writes controller artifacts only under `reports/loop/<run_id>/`.
+`loop_run_once.sh` is the shell wrapper for the loop run-once controller command. Plan mode is read-only. Apply mode writes controller artifacts only under `reports/loop/<run_id>/`.
 
 ```bash
 scripts/loop_run_once.sh --mode plan
@@ -83,7 +83,7 @@ scripts/loop_run_once.sh --mode apply
 `check_loop_controller_static.py` is included in `ci_local_equivalent.sh --static-only` so bootstrap validation can confirm the controller surface without requiring Rust.
 
 
-## Step18 session checks
+## session separation checks
 
 ```bash
 scripts/check_session_separation.py
@@ -94,16 +94,16 @@ scripts/loop_create_worktree.sh TKT-0005 --role qa --dry-run
 ```
 
 
-## Step19 repair materialization scripts
+## repair materialization and retry-budget route scripts
 
 ```bash
 scripts/check_repair_materialization_static.py
 ```
 
-The Step19 static check validates that `taiko_cli` exposes `loop failure classify`, `loop ticket materialize --from-failure`, and `loop retry-budget check`, and that the supporting policy files and templates are committed.
+The repair materialization and retry-budget route static check validates that `taiko_cli` exposes `loop failure classify`, `loop ticket materialize --from-failure`, and `loop retry-budget check`, and that the supporting policy files and templates are committed.
 
 
-## Step20 Codex Automation scripts
+## ChatGPT-plan Codex automation scripts
 
 ```bash
 scripts/check_codex_automation_static.py
@@ -114,7 +114,7 @@ scripts/render_next_codex_prompt.py --mode automation
 `render_next_codex_prompt.py` is the no-Rust fallback for generating `reports/loop/<run_id>/next_codex_prompt.md`. It does not call OpenAI APIs and does not require `OPENAI_API_KEY` or `CODEX_API_KEY`.
 
 
-## Step21 auto-merge controller scripts
+## auto-merge controller controller scripts
 
 ```bash
 scripts/check_auto_merge_conditions.py
@@ -126,7 +126,7 @@ scripts/loop_revert_last_merge.sh --run-id RUN-20260626-0001 --reason regression
 These scripts do not call OpenAI APIs. They only validate gates, record merge history, merge passing PRs, and create revert evidence.
 
 
-## Step22 E2E smoke scripts
+## E2E smoke loop scripts
 
 ```bash
 scripts/check_e2e_smoke_static.py
@@ -135,12 +135,13 @@ scripts/run_e2e_smoke_loop.sh --scenario all --dry-run
 
 The smoke script composes controller, metadata, repair, retry-budget, auto-merge dry-run, and revert dry-run surfaces. It does not call OpenAI APIs and does not require Rust.
 
-## Step23 Phase1 gameplay loop start
+## Phase1 gameplay worker handoff
 
 | Script | Purpose |
 |---|---|
 | `render_phase1_gameplay_ticket_prompt.py` | Renders the first Phase1 gameplay ticket start packet for `TKT-0005` without calling OpenAI APIs. Defaults to `block` until `TKT-0060` and `GATE-0090` evidence exists. |
-| `check_phase1_gameplay_start_static.py` | Validates Step23 docs, policy, prompt, renderer, and bootstrap/CI integration. |
+| `check_phase1_gameplay_start_static.py` | Validates Phase1 gameplay worker handoff docs, policy, prompt, renderer, and bootstrap/CI integration. |
+| `check_runtime_step_terms_static.py` | Validates runtime-facing loop files use feature names instead of historical `StepXX` labels. |
 
 Example:
 

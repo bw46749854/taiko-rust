@@ -17,7 +17,7 @@ This document removes ambiguity between Codex Cloud, Codex CLI, Codex App, GitHu
 | Design Review Session | Codex GitHub review or separate Codex Cloud review task | Review must be detached from implementation worktree and implementation thread. |
 | QA / Regression Session | GitHub Actions plus separate Codex Cloud/CLI QA worktree | QA must run machine-readable gates and produce pass/reject/block evidence. |
 | Local user-song validation | Codex CLI or Codex App on operator machine | User-selected assets are not committed and remain local manifest paths only. |
-| Codex App Automations | Primary heartbeat surface after Step20 | Recurring low-frequency task reads the generated controller prompt and advances one ticket without `OPENAI_API_KEY`. |
+| Codex App Automations | Primary heartbeat surface after ChatGPT-plan Codex operation | Recurring low-frequency task reads the generated controller prompt and advances one ticket without `OPENAI_API_KEY`. |
 
 ## Source-of-truth rule
 
@@ -60,7 +60,7 @@ Every implementation PR requires either:
 
 The Codex review is not the same as QA. It is a design/diff risk review. QA must still produce machine-readable `taiko_cli qa ...` evidence.
 
-## Step20 Plus-plan update
+## ChatGPT-plan Codex automation update
 
 The API-key GitHub Action worker is not the primary surface for this project. GitHub Actions must not invoke `openai/codex-action@v1` for normal implementation or review. AI execution remains on Codex Cloud, Codex App Automations, or Codex CLI signed in with ChatGPT. GitHub Actions remain deterministic: static checks, Rust preflight, QA gates, metadata/path-policy gates, review-request comments, and later auto-merge.
 

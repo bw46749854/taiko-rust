@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate Step18 role-based path policy.
+"""Validate session separation role-based path policy.
 
 The policy is intentionally conservative and Python-only. It can run in static
 mode without git, or in PR mode using CHANGED_FILES / git diff.

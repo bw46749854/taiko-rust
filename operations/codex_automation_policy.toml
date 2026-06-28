@@ -1,4 +1,4 @@
-# Step20 Plus-plan Codex automation policy.
+# ChatGPT-plan Codex automation Codex automation policy.
 status = "canonical"
 api_key_required = false
 openai_codex_action_allowed = false

@@ -4,11 +4,11 @@ Status: canonical
 
 ## Purpose
 
-This document defines the Step17 `run-once` controller state machine. The state machine converts repository state into one next action so Codex Cloud, Codex Automations, CLI, or a future GitHub workflow can drive the loop repeatedly without ad hoc human judgement.
+This document defines the loop run-once controller `run-once` controller state machine. The state machine converts repository state into one next action so Codex Cloud, Codex Automations, CLI, or a future GitHub workflow can drive the loop repeatedly without ad hoc human judgement.
 
-## Step17 state set
+## loop run-once controller state set
 
-| State | Meaning | Step17 next action |
+| State | Meaning | controller next action |
 |---|---|---|
 | `ready_ticket` | At least one `Status: Ready` ticket has satisfied dependencies. | `start_worker` |
 | `open_failures` | Failure reports exist and no eligible Ready ticket can be selected. | `classify_failure` |
@@ -16,7 +16,7 @@ This document defines the Step17 `run-once` controller state machine. The state 
 
 ## Future states reserved by policy
 
-The Step17 output schema reserves room for later steps:
+The controller output schema reserves room for later steps:
 
 - `claimed`
 - `implementation_running`
@@ -30,7 +30,7 @@ The Step17 output schema reserves room for later steps:
 - `blocked`
 - `repair_ready`
 
-Step17 does not implement these transitions. They are introduced after session metadata, role worktree enforcement, repair materialization, and auto-merge workflows exist.
+loop run-once controller does not implement these transitions. They are introduced after session metadata, role worktree enforcement, repair materialization, and auto-merge workflows exist.
 
 ## Command contract
 
@@ -66,7 +66,7 @@ The JSON output must include:
 
 ## Branch and worktree preview
 
-The controller previews deterministic branch and worktree names. These names are planning evidence in Step17 and become enforcement targets in Step18.
+The controller previews deterministic branch and worktree names. These names are planning evidence in loop run-once controller and become enforcement targets in session separation.
 
 | Role | Path |
 |---|---|
@@ -75,21 +75,21 @@ The controller previews deterministic branch and worktree names. These names are
 | QA | `worktrees/qa/<ticket-id>` |
 | Test Infrastructure | `worktrees/test-infra/<ticket-id>` |
 
-Step17 fixes the controller's owner-session normalization so `Test Infrastructure Session` resolves to the `test/` branch prefix.
+The loop run-once controller fixes the controller's owner-session normalization so `Test Infrastructure Session` resolves to the `test/` branch prefix.
 
 ## Apply-mode artifact rule
 
 The Rust `taiko_cli loop run-once --mode apply` command writes planning artifacts only under `reports/loop/<run_id>/`. GitHub Actions controller apply mode is separate: after OPS-0006/OPS-0007 it may merge a passing PR, write merge history, and advance tickets through `scripts/loop_advance_ticket.py`.
 
 
-## Step20 prompt fallback
+## Codex prompt fallback
 
 When Rust is unavailable, `scripts/render_next_codex_prompt.py --mode automation` may generate the same class of `reports/loop/<run_id>/next_codex_prompt.md` handoff artifact. This fallback is deterministic, does not call an OpenAI API, and exists only to keep Codex Cloud/App Automation setup usable before Rust runtime validation is available.
 
 
-## Step21 update
+## auto-merge controller update
 
-Step21 adds `.github/workflows/loop-controller.yml`, `scripts/check_auto_merge_conditions.py`, `scripts/loop_auto_merge_pr.sh`, and `scripts/loop_revert_last_merge.sh`. GitHub Actions may perform gate/merge/advance mechanics but must not call AI providers or require `OPENAI_API_KEY`.
+The auto-merge controller adds `.github/workflows/loop-controller.yml`, `scripts/check_auto_merge_conditions.py`, `scripts/loop_auto_merge_pr.sh`, and `scripts/loop_revert_last_merge.sh`. GitHub Actions may perform gate/merge/advance mechanics but must not call AI providers or require `OPENAI_API_KEY`.
 
 ## OPS-0006 candidate discovery states
 

@@ -172,7 +172,7 @@ scripts/check_runtime_evidence_files.py --path reports/preflight/latest/rust_pre
 A failing `rust-preflight` workflow is not bypassed by prose review. A `block` verdict repairs the CI or Codex Cloud environment. A `reject` verdict routes to failure feedback and repair-ticket selection.
 
 
-## Step18 machine-readable gate
+## session separation machine-readable gate
 
 PR prose remains useful for humans, but machine control must use tracked metadata. Implementation PRs that can advance a ticket must include:
 
@@ -190,9 +190,9 @@ scripts/check_role_path_policy.py --pr-gate
 The gate blocks self-approval by requiring distinct implementation, review, and QA session IDs. It also blocks role/path violations such as an Implementation Session writing `reports/qa/*.verdict.json` or a QA Session writing `crates/`.
 
 
-## Step21 update
+## auto-merge controller update
 
-Step21 adds `.github/workflows/loop-controller.yml`, `scripts/check_auto_merge_conditions.py`, `scripts/loop_auto_merge_pr.sh`, and `scripts/loop_revert_last_merge.sh`. GitHub Actions may perform gate/merge/advance mechanics but must not call AI providers or require `OPENAI_API_KEY`.
+The auto-merge controller adds `.github/workflows/loop-controller.yml`, `scripts/check_auto_merge_conditions.py`, `scripts/loop_auto_merge_pr.sh`, and `scripts/loop_revert_last_merge.sh`. GitHub Actions may perform gate/merge/advance mechanics but must not call AI providers or require `OPENAI_API_KEY`.
 
 
 ## OPS-0005 GitHub Actions gate normalization

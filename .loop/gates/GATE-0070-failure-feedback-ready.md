@@ -78,5 +78,5 @@ taiko_cli loop ticket validate .loop/tickets/TKT-0040.md --format json
 ## Next-ticket transition
 
 - `pass`: Phase1 gameplay feature tickets beginning with `TKT-0005` may become eligible according to their dependency tables.
-- `reject`: create or update a repair ticket using the Step11 failure feedback command surface.
+- `reject`: create or update a repair ticket using the failure feedback route command surface.
 - `block`: keep Phase1 gameplay feature implementation tickets Blocked until failure feedback evidence is produced.

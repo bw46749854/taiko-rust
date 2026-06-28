@@ -1,4 +1,4 @@
-# Step23 Phase1 gameplay loop start policy.
+# Phase1 gameplay worker handoff policy.
 status = "canonical"
 policy_name = "opentaiko_phase1_gameplay_loop_start_policy"
 first_gameplay_ticket = "TKT-0005"
