@@ -16,7 +16,7 @@ A0 Compatibility Contract Loop
 
 ## A0. Compatibility Contract Loop
 
-1. Read Step1 compatibility documents.
+1. Read compatibility contract compatibility documents.
 2. Check feature classification completeness.
 3. Check `research/opentaiko/10_phase1_adoption_decisions.md` alignment.
 4. Check ticket and prompt references.

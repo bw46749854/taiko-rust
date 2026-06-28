@@ -92,7 +92,7 @@ It intentionally does not mark any ticket pass. It only prepares the environment
 
 ## First dynamic run
 
-After environment setup, run the Step15 preflight exactly:
+After environment setup, run the Rust preflight preflight exactly:
 
 ```bash
 scripts/run_rust_preflight.sh --scope current-package --out reports/preflight/latest

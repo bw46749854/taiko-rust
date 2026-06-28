@@ -1,5 +1,5 @@
 # docs/coverage
 
-Step3でcoverage matrixを保存する。
+coverage designでcoverage matrixを保存する。
 
-Step1ではCompatibility Contractのみを整備したため、このディレクトリにはplaceholderだけを置く。
+compatibility contractではCompatibility Contractのみを整備したため、このディレクトリにはplaceholderだけを置く。

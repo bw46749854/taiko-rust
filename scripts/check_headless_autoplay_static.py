@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Static validation for the Step9 Headless Autoplay MVP.
+"""Static validation for the headless autoplay command surface.
 
 This script verifies that the package contains the headless-autoplay command
 surface and contract. It does not replace cargo checks or running taiko_cli in a
@@ -93,7 +93,7 @@ def main() -> int:
 
     for rel in REQUIRED_FILES:
         if not (ROOT / rel).is_file():
-            fail(f"missing required Step9 file: {rel}", failures)
+            fail(f"missing required headless autoplay file: {rel}", failures)
 
     require_terms(ROOT / "crates/taiko_cli/src/lib.rs", CLI_TERMS, failures)
     require_terms(ROOT / "crates/taiko_runtime/src/lib.rs", RUNTIME_TERMS, failures)

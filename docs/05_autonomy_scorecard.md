@@ -25,9 +25,9 @@ It answers:
 
 Total: 100.
 
-## 3. Step5 baseline estimate
+## 3. timing/audio/judgement design baseline estimate
 
-| Axis ID | Weight | Step5 estimate | Reason |
+| Axis ID | Weight | timing/audio/judgement design estimate | Reason |
 |---|---:|---:|---|
 | A1 | 10 | 8 | Session topology and worktree policy exist |
 | A2 | 15 | 7 | Ticket/gate files exist, but CLI orchestration is absent |
@@ -38,18 +38,18 @@ Total: 100.
 | A7 | 10 | 2 | Failure template exists; failure-to-ticket route does not |
 | **Total** | **100** | **27** | Operationally still a document-and-fixture bootstrap package |
 
-## 4. Step6 target estimate
+## 4. autonomy scorecard target estimate
 
-| Axis ID | Weight | Step6 target | Reason |
+| Axis ID | Weight | autonomy scorecard target | Reason |
 |---|---:|---:|---|
 | A1 | 10 | 8 | Governance remains stable |
 | A2 | 15 | 9 | Scorecard, transition rules, and gate mappings become explicit |
-| A3 | 15 | 0 | Rust workspace remains Step7 scope |
-| A4 | 15 | 4 | Harness implementation remains Step8 scope |
-| A5 | 20 | 4 | Analyzer implementation remains Step10 scope |
+| A3 | 15 | 0 | Rust workspace remains Loop CLI MVP scope |
+| A4 | 15 | 4 | Harness implementation remains fixture validation scope |
+| A5 | 20 | 4 | Analyzer implementation remains timing analyzer scope |
 | A6 | 15 | 3 | Autonomy scorecard check joins bootstrap validation |
 | A7 | 10 | 4 | Failure feedback protocol becomes explicit |
-| **Total** | **100** | **32** | Step6 improves measurability, not runtime execution |
+| **Total** | **100** | **32** | autonomy scorecard improves measurability, not runtime execution |
 
 ## 5. Required evidence by ticket type
 
@@ -75,11 +75,11 @@ Every gate report must include:
 
 No ticket may claim score improvement without evidence that another session can verify.
 
-## 7. Step7-Step10 operational estimate
+## 7. loop CLI through timing analyzer operational estimate
 
 The current package includes the first executable loop substrate and timing evidence path. Rust-enabled sessions must still prove the estimate with cargo and CLI output.
 
-| Axis ID | Weight | Step10 estimate | Reason |
+| Axis ID | Weight | timing analyzer estimate | Reason |
 |---|---:|---:|---|
 | A1 | 10 | 8 | Governance remains stable |
 | A2 | 15 | 11 | Loop CLI, gate dry-run, next-ticket selection, and timing gate contracts exist |
@@ -90,7 +90,7 @@ The current package includes the first executable loop substrate and timing evid
 | A7 | 10 | 5 | Failure categories and protocol exist; automatic failure-to-ticket generation is still future work |
 | **Total** | **100** | **63** | Operational loop is now partially executable, but not yet fully self-repairing or CI-enforced |
 
-Step10 raises operational readiness by adding the first machine-readable timing self-verification surface. It does not raise Phase1 gameplay completion by itself.
+timing analyzer raises operational readiness by adding the first machine-readable timing self-verification surface. It does not raise Phase1 gameplay completion by itself.
 
 ## 8. failure feedback route operational estimate
 

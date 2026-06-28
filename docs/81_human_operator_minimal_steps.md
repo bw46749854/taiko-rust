@@ -41,7 +41,7 @@ Human intervention is minimized. The human provides local song assets and review
 - manually inspect every timing log,
 - manually calculate note timings,
 - approve implementation session output without review evidence,
-- manually create ticket branches after Step14 scripts are available,
+- manually create ticket branches after GitHub PR orchestration scripts are available,
 - manually run Rust locally when GitHub Actions or Codex Cloud provides passing `rust-preflight` evidence,
 - manually configure Rust toolchain details outside `rust-toolchain.toml`,
 - manually decide next-ticket transition when QA verdict JSON exists.

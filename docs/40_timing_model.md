@@ -1,7 +1,7 @@
 # 40_timing_model: Timingモデル
 
-作成日: 2026-06-25  
-状態: 第5回ドラフト・採用候補  
+作成日: 2026-06-25
+Status: canonical
 上流文書: `docs/30_rust_architecture_overview.md`, `docs/31_module_boundaries.md`, `docs/32_data_model.md`, `docs/33_runtime_loop.md`, `docs/34_error_handling_and_logging.md`
 
 ## 1. 目的
@@ -273,7 +273,7 @@ Codexには次の順序で実装させる。
 
 ---
 
-## Step2 Amendment: 任意分割schedulerの正式採用
+## Arbitrary subdivision scheduler policy
 
 4分、8分、12分、16分、24分、36分は個別実装しない。小節内のnote token数を任意分割として扱う。
 

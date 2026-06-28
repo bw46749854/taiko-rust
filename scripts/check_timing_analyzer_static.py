@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Static validation for the Step10 Timing Analyzer MVP.
+"""Static validation for the timing analyzer command surface.
 
 This script verifies that the package contains the timing-analyzer command
 surface and contract. It does not replace cargo checks or running taiko_cli in a
@@ -95,7 +95,7 @@ def main() -> int:
 
     for rel in REQUIRED_FILES:
         if not (ROOT / rel).is_file():
-            fail(f"missing required Step10 file: {rel}", failures)
+            fail(f"missing required timing analyzer file: {rel}", failures)
 
     require_terms(ROOT / "crates/taiko_cli/src/lib.rs", CLI_TERMS, failures)
     require_terms(ROOT / "crates/taiko_timing/src/lib.rs", TIMING_TERMS, failures)

@@ -1,7 +1,7 @@
 # 25_phase1_feature_classification: Phase1機能分類正本
 
-作成日: 2026-06-25  
-状態: Step1新規・採用候補  
+作成日: 2026-06-25
+Status: canonical
 入力: `research/opentaiko/10_phase1_adoption_decisions.md`, `docs/24_phase1_normal_play_compatibility_contract.md`
 
 ## 1. 目的
@@ -42,7 +42,7 @@
 |---|---|---|
 | Extended notes | A, B, C, D, F, G, H, I | `compatibility_warning` |
 | Display commands | SUDDEN, DIRECTION, JPOSSCROLL | `compatibility_warning` または `visual_partial_support` |
-| Complex scroll | 複素SCROLL | `compatibility_warning`、Step2採用判断待ち |
+| Complex scroll | 複素SCROLL | `compatibility_warning`、OpenTaiko research採用判断待ち |
 | Metadata extras | 通常プレイへ不要なheader | `metadata_ignored` |
 | OpenTaiko-specific extension | 通常プレイへ不要な独自拡張 | `compatibility_warning` |
 

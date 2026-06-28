@@ -1,7 +1,7 @@
 # 34_error_handling_and_logging: Error Handling / Logging定義
 
-作成日: 2026-06-25  
-状態: 第4回ドラフト・採用候補  
+作成日: 2026-06-25
+Status: canonical
 上流文書: `docs/30_rust_architecture_overview.md`, `docs/31_module_boundaries.md`, `docs/32_data_model.md`, `docs/33_runtime_loop.md`
 
 ## 1. 目的
@@ -214,7 +214,7 @@ error時は `error` eventを必ず出す。
 
 ### 7.3 analyzer対象metric
 
-第5回で閾値を確定するが、field名は次を採用する。
+Timing / Audio / Judgement検証設計で閾値を確定するが、field名は次を採用する。
 
 | metric | 意味 |
 |---|---|
@@ -361,7 +361,7 @@ target/screenshots/*.png   # 描画ありsmokeで生成できる場合
 
 ---
 
-## Step2 Amendment: compatibility report方針
+## Compatibility report policy
 
 Parser/runtimeは未知またはPhase1非中核機能をpanicにしない。次の区分でreportする。
 

@@ -63,7 +63,7 @@ taiko_cli report coverage \
 
 Final Phase1 CI requires GATE-0100 and GATE-0200 on the same commit.
 
-## 6. Step15 Rust preflight command
+## 6. Rust preflight Rust preflight command
 
 The first dynamic CI command surface is:
 
@@ -77,7 +77,7 @@ The generated report is the required runtime evidence for `TKT-0001` and `GATE-0
 `current-package` scope covers cargo checks, Loop CLI inspection, fixture validation, headless autoplay, timing analyzer, failure feedback, QA verdict, and Phase1 feature-planning commands already present in this bootstrap package.
 
 
-## 7. Step16 Codex Cloud / CI environment commands
+## 7. Codex Cloud / CI environment Codex Cloud / CI environment commands
 
 The setup and local CI-equivalent surfaces are:
 

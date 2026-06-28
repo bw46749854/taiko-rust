@@ -8,7 +8,7 @@ These scripts are lightweight bootstrap helpers. They do not replace the Rust CL
 
 | Script | Purpose |
 |---|---|
-| `check_bootstrap_consistency.sh` | Runs the Step6 bootstrap consistency gate checks. |
+| `check_bootstrap_consistency.sh` | Runs the bootstrap consistency gate checks. |
 | `check_reference_integrity.py` | Checks operational Markdown path references against committed files. |
 | `check_autonomy_scorecard.py` | Checks that the package is governed by the autonomous loop scorecard and transition rules. |
 | `validate_fixture_manifest.py` | Validates `fixtures/synthetic/phase1_synthetic_manifest.toml` against committed `.tja` fixtures. |
@@ -19,14 +19,14 @@ These scripts are lightweight bootstrap helpers. They do not replace the Rust CL
 | `loop_open_pr.sh` | Pushes a ticket branch and opens a PR through GitHub CLI. |
 | `loop_apply_qa_verdict.py` | Converts QA pass/reject/block JSON into ticket transition evidence. |
 | `loop_merge_and_advance.sh` | Merges a passing ticket PR and runs next-ticket selection. |
-| `check_github_pr_orchestration_static.py` | Validates Step14 GitHub orchestration wiring. |
+| `check_github_pr_orchestration_static.py` | Validates GitHub orchestration wiring. |
 | `check_github_actions_gate_static.py` | Validates OPS-0005 GitHub Actions gate normalization, required check names, workflow_run success guards, and controller concurrency. |
 | `run_rust_preflight.sh` | Runs cargo and `taiko_cli` dynamic preflight and emits runtime evidence. |
 | `check_runtime_evidence_files.py` | Validates Rust preflight JSON/Markdown/log evidence. |
-| `check_rust_preflight_static.py` | Validates Step15 Rust preflight wiring without requiring Rust. |
+| `check_rust_preflight_static.py` | Validates Rust preflight wiring without requiring Rust. |
 | `codex_cloud_setup.sh` | Provisions the pinned Rust toolchain and checks Codex Cloud / CI setup. |
 | `ci_local_equivalent.sh` | Runs static checks and, in runtime mode, the Rust preflight evidence path. |
-| `check_codex_cloud_env_static.py` | Validates Step16 Codex Cloud, toolchain, secret/network, and CI wiring without requiring Rust. |
+| `check_codex_cloud_env_static.py` | Validates Codex Cloud, toolchain, secret/network, and CI wiring without requiring Rust. |
 | `loop_run_once.sh` | Runs the loop run-once controller once through `taiko_cli loop run-once`. |
 | `check_loop_controller_static.py` | Validates loop run-once controller wiring without requiring Rust. |
 | `check_repair_materialization_static.py` | Validates repair materialization and retry-budget route, failure classification, and retry-budget wiring without requiring Rust. |
@@ -46,13 +46,13 @@ Scripts must not read, copy, or commit user-selected song assets. User-selected 
 
 After `taiko_cli` exists, CLI JSON output becomes the source of truth for loop status, gate verdicts, fixture validation, headless autoplay, timing analysis, QA verdicts, and failure feedback.
 
-## Step14 orchestration scripts
+## GitHub orchestration scripts
 
-The Step14 scripts are intentionally thin wrappers around Git, GitHub CLI, and machine-readable QA verdict files. They do not approve tickets. They only enforce deterministic branch/worktree/PR/merge/advance mechanics defined in `docs/84_github_pr_loop_contract.md`.
+The GitHub orchestration scripts are intentionally thin wrappers around Git, GitHub CLI, and machine-readable QA verdict files. They do not approve tickets. They only enforce deterministic branch/worktree/PR/merge/advance mechanics defined in `docs/84_github_pr_loop_contract.md`.
 
 Use `--dry-run` before allowing a Control Session to mutate GitHub state.
 
-## Step15 Rust preflight scripts
+## Rust preflight scripts
 
 `run_rust_preflight.sh` is the first non-static acceptance surface for the Rust workspace. It must run in GitHub Actions, Codex Cloud, or another Rust-enabled runner.
 
@@ -64,11 +64,11 @@ scripts/check_runtime_evidence_files.py --path reports/preflight/latest/rust_pre
 Generated reports remain under `reports/preflight/latest/` and are normally CI artifacts, not committed files.
 
 
-## Step16 Codex Cloud / CI environment scripts
+## Codex Cloud / CI environment scripts
 
 `codex_cloud_setup.sh` is the setup command to paste into the Codex Cloud environment. It installs the pinned Rust toolchain from `rust-toolchain.toml`, verifies `rustfmt` and `clippy`, and runs static environment checks.
 
-`ci_local_equivalent.sh --static-only` is the no-Rust operator check. Running `ci_local_equivalent.sh` without `--static-only` requires Rust and invokes the Step15 runtime preflight.
+`ci_local_equivalent.sh --static-only` is the no-Rust operator check. Running `ci_local_equivalent.sh` without `--static-only` requires Rust and invokes the runtime preflight.
 
 
 ## loop run-once controller scripts

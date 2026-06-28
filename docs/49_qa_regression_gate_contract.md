@@ -9,7 +9,7 @@ The QA verdict route makes QA / Regression Session verdicts machine-readable.
 
 The controlling objective is not to add another review checklist. The objective is to let a separate QA / Regression Session run deterministic commands, receive `pass`, `reject`, or `block`, and route the result back into the loop without additional human design judgement.
 
-This contract is the first QA gate that consumes the Step8 fixture validator, Step9 headless autoplay evidence, Step10 timing analyzer, and failure-feedback route route as one verdict.
+This contract is the first QA gate that consumes the fixture validator, headless autoplay evidence, timing analyzer timing analyzer, and failure-feedback route as one verdict.
 
 ## 2. Required command surface
 

@@ -1,4 +1,4 @@
-# Step Milestone History
+# Milestone History
 
 Status: historical
 
@@ -6,13 +6,13 @@ This document preserves the old milestone labels for archival context only. Runt
 
 | Historical label | Runtime-facing name |
 |---|---|
-| Step11 | failure feedback route |
-| Step12 | QA verdict route |
-| Step13 | Phase1 gameplay entry gate |
-| Step17 | loop run-once controller |
-| Step18 | session separation and role path policy |
-| Step19 | repair materialization and retry-budget route |
-| Step20 | ChatGPT-plan Codex operation |
-| Step21 | auto-merge controller |
-| Step22 | E2E smoke loop |
-| Step23 | Phase1 gameplay worker handoff |
+| failure feedback route milestone | failure feedback route |
+| QA verdict route milestone | QA verdict route |
+| Phase1 gameplay entry gate milestone | Phase1 gameplay entry gate |
+| loop run-once controller milestone | loop run-once controller |
+| session separation policy milestone | session separation and role path policy |
+| repair materialization and retry budget milestone | repair materialization and retry-budget route |
+| ChatGPT-plan Codex operation milestone | ChatGPT-plan Codex operation |
+| auto-merge controller milestone | auto-merge controller |
+| E2E smoke loop milestone | E2E smoke loop |
+| Phase1 gameplay worker handoff milestone | Phase1 gameplay worker handoff |

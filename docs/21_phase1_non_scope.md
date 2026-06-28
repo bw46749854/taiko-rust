@@ -1,7 +1,7 @@
 # 21_phase1_non_scope: Phase1非スコープ定義
 
-作成日: 2026-06-25  
-状態: Step1改訂・Compatibility Contract対応  
+作成日: 2026-06-25
+Status: canonical
 目的: CodexがPhase1中に不要機能へ広がることを防ぎ、OpenTaiko通常プレイ対応範囲と検証基盤へ収束させる。
 
 ## 1. 非スコープ定義の原則

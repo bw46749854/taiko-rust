@@ -1,13 +1,13 @@
 # 10_opentaiko_research_plan: OpenTaiko調査設計
 
-作成日: 2026-06-25  
-状態: 第2回ドラフト・採用候補
+作成日: 2026-06-25
+Status: adopted
 
 ## 1. 目的
 
 この文書は、OpenTaikoから何を調べ、何をPhase1 Rust実装の参考仕様にし、何を調査のみまたはPhase2以降へ送るかを固定する。
 
-第2回の主目的は、仕様抽出Sessionがすぐに調査を開始できる状態を作ることである。調査対象を広げすぎるとPhase1が収束しないため、OpenTaiko全体を網羅するのではなく、1人用通常プレイ、`.tja` 読み込み、タイミング、判定、スコア、ゲージ、リザルト、headless検証に必要な観点へ限定する。
+OpenTaiko調査設計の主目的は、仕様抽出Sessionがすぐに調査を開始できる状態を作ることである。調査対象を広げすぎるとPhase1が収束しないため、OpenTaiko全体を網羅するのではなく、1人用通常プレイ、`.tja` 読み込み、タイミング、判定、スコア、ゲージ、リザルト、headless検証に必要な観点へ限定する。
 
 ## 2. 調査の上位方針
 
@@ -188,7 +188,7 @@ Phase1へ直接反映する範囲は以下で固定する。
 | 対象外 | 商用ゲームの正確な複製、第三者アセット依存、Phase1目的外である |
 | 調査のみ | 境界理解には必要だが、Phase1実装に入れない |
 
-判断に迷う項目は一時的に「調査のみ」に置く。第3回のPhase1スコープ定義で最終判定する。
+判断に迷う項目は一時的に「調査のみ」に置く。Phase1スコープ定義のPhase1スコープ定義で最終判定する。
 
 ## 9. 必須の調査成果物
 
@@ -204,18 +204,18 @@ Phase1へ直接反映する範囲は以下で固定する。
 | `research/opentaiko/50_score_gauge_result.md` | スコア、コンボ、ゲージ、リザルト |
 | `research/opentaiko/60_render_runtime.md` | 描画更新、ノーツ位置、フレーム依存箇所 |
 | `research/opentaiko/70_phase_classification.md` | Phase1/2/3/対象外/調査のみの分類表 |
-| `research/opentaiko/80_unresolved_questions.md` | 第3回までに解く未解決事項 |
+| `research/opentaiko/80_unresolved_questions.md` | Phase1スコープ定義までに解く未解決事項 |
 
 ## 10. 調査完了条件
 
-第2回成果物に基づくOpenTaiko調査は、次を満たした状態で完了とする。
+OpenTaiko調査設計成果物に基づくOpenTaiko調査は、次を満たした状態で完了とする。
 
 - P0対象ファイルをすべて読んでいる。
 - `.tja` 読み込み、timing、input、judgement、score、gauge、resultに対する観測事実がある。
 - 各観測事実に出典ファイルと該当箇所がある。
 - Phase1へ反映する項目と反映しない項目が分かれている。
 - 未解決事項がQID付きで管理されている。
-- 第3回 `docs/20_phase1_scope.md` を作れるだけの入力が揃っている。
+- Phase1スコープ定義 `docs/20_phase1_scope.md` を作れるだけの入力が揃っている。
 
 ## 11. 仕様抽出Sessionへの禁止事項
 
@@ -230,4 +230,4 @@ Phase1へ直接反映する範囲は以下で固定する。
 
 ## 12. 次回への受け渡し
 
-この調査設計の次工程は、第3回「Phase1スコープ・非スコープ・受け入れ基準の定義」である。第3回では、この文書と `docs/11_opentaiko_feature_taxonomy.md`、`docs/12_opentaiko_phase1_research_questions.md` を入力として、Phase1で実装する対象を確定する。
+この調査設計の次工程は、Phase1スコープ定義「Phase1スコープ・非スコープ・受け入れ基準の定義」である。Phase1スコープ定義では、この文書と `docs/11_opentaiko_feature_taxonomy.md`、`docs/12_opentaiko_phase1_research_questions.md` を入力として、Phase1で実装する対象を確定する。

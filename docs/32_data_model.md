@@ -1,7 +1,7 @@
 # 32_data_model: Rust版Data Model定義
 
-作成日: 2026-06-25  
-状態: 第4回ドラフト・採用候補  
+作成日: 2026-06-25
+Status: canonical
 上流文書: `docs/20_phase1_scope.md`, `docs/30_rust_architecture_overview.md`, `docs/31_module_boundaries.md`
 
 ## 1. 目的
@@ -322,7 +322,7 @@ pub enum EarlyLate {
 
 ### 9.1 判定窓
 
-判定窓の初期値は第5回で固定する。第4回では、値がconfig/testから注入できる構造を固定する。
+判定窓の初期値はTiming / Audio / Judgement検証設計で固定する。Rustアーキテクチャ方針では、値がconfig/testから注入できる構造を固定する。
 
 ## 10. score / combo / gauge model
 
@@ -366,7 +366,7 @@ pub struct GaugeState {
 
 ### 10.1 scoreの固定範囲
 
-Phase1ではOpenTaikoの全スコア世代を再現しない。`SCOREINIT` と `SCOREDIFF` は読み込み、Phase1標準スコアモデルの入力にする。点数式の最終値は第5回/第6回のfixtureで固定する。
+Phase1ではOpenTaikoの全スコア世代を再現しない。`SCOREINIT` と `SCOREDIFF` は読み込み、Phase1標準スコアモデルの入力にする。点数式の最終値はTiming / Audio / Judgement検証設計/テストハーネス・回帰検証設計のfixtureで固定する。
 
 ## 11. render snapshot model
 
@@ -502,7 +502,7 @@ Data model実装は次のチケットへ分割する。
 
 ---
 
-## Step2 Amendment: OpenTaiko互換用data model追加
+## OpenTaiko compatibility data model
 
 Phase1 domain modelに次を追加する。
 

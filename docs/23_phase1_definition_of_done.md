@@ -1,7 +1,7 @@
 # 23_phase1_definition_of_done: Phase1完了定義
 
-作成日: 2026-06-25  
-状態: Step1改訂・Compatibility Contract対応  
+作成日: 2026-06-25
+Status: canonical
 目的: Phase1を「実装済み」ではなく「OpenTaiko通常プレイ対応範囲を検証済み・回帰可能・AIループで収束可能」な状態として完了判定する。
 
 ## 1. Definition of Doneの上位定義

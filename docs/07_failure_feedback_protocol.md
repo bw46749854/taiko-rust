@@ -67,7 +67,7 @@ Duplicate failures update the existing repair ticket rather than creating a new 
 
 ## 6. Required future CLI behavior
 
-Step7 and failure feedback route must make this protocol executable through commands equivalent to:
+Loop CLI MVP and failure feedback route must make this protocol executable through commands equivalent to:
 
 ```bash
 taiko_cli loop failure ingest reports/failures/*.md
@@ -91,7 +91,7 @@ taiko_cli loop ticket validate .loop/tickets/TKT-0040.md --format json
 
 Failure-to-ticket routing is no longer only a manual protocol. The loop must treat the JSON output from these commands as the evidence source for Control Session and QA / Regression Session routing.
 
-Additional Step8-Step10 command-surface categories are approved for routing:
+Additional fixture/autoplay/timing command-surface categories are approved for routing:
 
 - `fixture_manifest_error`
 - `fixture_file_missing`

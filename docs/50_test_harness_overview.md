@@ -1,6 +1,6 @@
 # Test Harness Overview
 
-Status: Step3 expanded test harness plan
+Status: adopted
 
 ## 1. Purpose
 

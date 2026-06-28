@@ -1,7 +1,7 @@
 # 20_phase1_scope: Phase1スコープ定義
 
-作成日: 2026-06-25  
-状態: Step1改訂・Compatibility Contract対応  
+作成日: 2026-06-25
+Status: canonical
 上流文書: `docs/24_phase1_normal_play_compatibility_contract.md`, `docs/25_phase1_feature_classification.md`
 
 ## 1. Phase1の固定ゴール
@@ -182,7 +182,7 @@ Phase1では、通常プレイ完走と回帰検証に必要なscore/gaugeを実
 - clear threshold以上でclearを返す。
 - result JSONにscore/gauge/clearを出す。
 
-OpenTaikoの全score世代の完全互換はStep2調査で採用判断を固定する。Phase1では、通常プレイ完走と検証の安定性を満たすscore modelを必須とする。
+OpenTaikoの全score世代の完全互換はOpenTaiko research調査で採用判断を固定する。Phase1では、通常プレイ完走と検証の安定性を満たすscore modelを必須とする。
 
 ## 9. Audio / runtimeスコープ
 
@@ -201,9 +201,9 @@ Phase1の検証は二層にする。
 
 Synthetic fixturesは仕様網羅を確認する。User-selected songsは実戦互換を確認する。曲・音源・譜面データはbundleへ含めない。ユーザーがローカルへ配置し、manifestで参照する。
 
-## 11. Step1以降の未確定項目
+## 11. compatibility contract以降の未確定項目
 
-次はStep2でOpenTaiko実装を調査して確定する。
+次はOpenTaiko researchでOpenTaiko実装を調査して確定する。
 
 - 複素SCROLLの具体的な内部表現
 - SUDDEN/DIRECTION/JPOSSCROLLのPhase1最小再現深度
