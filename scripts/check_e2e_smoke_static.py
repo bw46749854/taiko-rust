@@ -64,12 +64,12 @@ REQUIRED_TERMS = {
         "TKT-ENV-SMOKE-BLOCK",
     ],
     "README.md": [
-        "E2E smoke loop",
-        "E2E smoke loop",
+        "E2E smoke verification",
+        "Exercises pass, reject, block",
         "scripts/run_e2e_smoke_loop.sh --scenario all --dry-run",
     ],
     "AGENTS.md": [
-        "E2E smoke loop operational note",
+        "GitHub PR / auto-merge / ticket advancement",
         "E2E smoke loop",
         "Actions must not call AI providers",
     ],

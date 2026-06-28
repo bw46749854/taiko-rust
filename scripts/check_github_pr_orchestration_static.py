@@ -34,8 +34,8 @@ REQUIRED_TERMS = {
     '.github/workflows/codex-review.yml': ['Plus-plan deterministic review request', 'OPENAI_API_KEY is intentionally not used', 'prompt-file', 'codex-review-request.md'],
     'templates/session_run_metadata_template.toml': ['implementation_session_id', 'review_session_id', 'qa_session_id', 'self_approval_check'],
     'scripts/README.md': ['loop_create_worktree.sh', 'loop_open_pr.sh', 'loop_apply_qa_verdict.py', 'loop_merge_and_advance.sh'],
-    'README.md': ['Step14', 'GitHub PR Loop Orchestration'],
-    'AGENTS.md': ['Step14 operational note', 'PR cannot merge'],
+    'README.md': ['GitHub PR loop', 'ticket advance'],
+    'AGENTS.md': ['GitHub PR / auto-merge / ticket advancement', 'PR cannot merge'],
 }
 
 EXECUTABLE = [
