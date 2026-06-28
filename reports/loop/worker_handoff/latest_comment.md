@@ -1,3 +1,3 @@
-@codex detached worker request.
+Codex worker handoff preview blocked.
 
-Read `reports/loop/worker_handoff/latest.md` and implement only `TKT-0005`. Do not self-approve, mark tickets Done, pass gates, or author QA verdict files. GitHub Actions only emitted this handoff; it did not call an AI worker or require `OPENAI_API_KEY` / `CODEX_API_KEY`.
+Read `reports/loop/worker_handoff/latest.md` for the deterministic blocker. Do not implement until loop automation is armed and the selected ticket has `Status: Ready`. GitHub Actions only emitted this blocker; it did not call an AI worker or require `OPENAI_API_KEY` / `CODEX_API_KEY`.

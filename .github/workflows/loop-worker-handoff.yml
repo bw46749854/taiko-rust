@@ -24,7 +24,7 @@ jobs:
     name: loop-worker-handoff
 # No OPENAI_API_KEY or CODEX_API_KEY is required; this workflow emits handoff artifacts only.
     runs-on: ubuntu-latest
-    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ github.event_name == 'workflow_dispatch' || (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && vars.LOOP_AUTOMATION_ARMED == 'true') }}
     timeout-minutes: 10
     permissions:
       contents: read

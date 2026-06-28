@@ -90,6 +90,13 @@ def check_policy() -> None:
         fail("auto_merge_policy.toml must set workflow_run_success_guard_required = true")
     if policy.get("privileged_workflow_may_checkout_pr_head") is not False:
         fail("auto_merge_policy.toml must set privileged_workflow_may_checkout_pr_head = false")
+    loop_policy = tomllib.loads(read("operations/loop_policy.toml"))
+    if loop_policy.get("automation_armed") is not False:
+        fail("loop_policy.toml must keep automation_armed = false by default")
+    if loop_policy.get("schedule_runs_require_armed") is not True:
+        fail("scheduled loop-controller runs must require the armed switch")
+    if loop_policy.get("workflow_run_handoff_requires_armed") is not True:
+        fail("workflow_run handoff/controller runs must require the armed switch")
 
 
 def check_workflows() -> None:
@@ -116,6 +123,8 @@ def check_workflows() -> None:
             "group: loop-controller-main",
             "workflow_run:",
             "github.event.workflow_run.conclusion == 'success'",
+            "schedule:",
+            "vars.LOOP_AUTOMATION_ARMED == 'true'",
             "contents: write",
             "pull-requests: write",
             "actions: read",
@@ -136,6 +145,7 @@ def check_docs_and_scripts() -> None:
         "docs/84_github_pr_loop_contract.md": ["OPS-0005 GitHub Actions gate normalization", "loop-pr-gate / loop-pr-gate"],
         "docs/85_rust_enabled_preflight_gate.md": ["OPS-0005", "rust-preflight / rust-preflight"],
         "docs/93_github_actions_auto_merge_controller.md": ["OPS-0005", "workflow_run success guard", "privileged workflow must not checkout PR head code"],
+        "operations/loop_policy.toml": ["automation_armed = false", "schedule_runs_require_armed = true"],
         "scripts/ci_local_equivalent.sh": ["scripts/check_github_actions_gate_static.py"],
         "scripts/check_bootstrap_consistency.sh": ["scripts/check_github_actions_gate_static.py", "TKT-0005.md"],
         "README.md": ["OPS-0005", "GitHub Actions gate normalization"],
