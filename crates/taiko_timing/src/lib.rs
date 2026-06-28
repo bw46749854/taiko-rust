@@ -1,7 +1,7 @@
 //! Timing analyzer MVP for the OpenTaiko Phase1 autonomous loop.
 //!
-//! Step10 deliberately implements a deterministic analyzer over Step9 headless
-//! autoplay evidence. It does not claim OpenTaiko-compatible audio scheduling or
+//! Timing analyzer evidence contract deliberately implements a deterministic analyzer over
+//! headless autoplay evidence. It does not claim OpenTaiko-compatible audio scheduling or
 //! judgement-window precision yet. Its purpose is to make timing evidence
 //! machine-readable so QA Session can reject parser/runtime regressions and route
 //! failures back to repair tickets without manual inspection.
@@ -107,7 +107,7 @@ pub struct HeadlessTimingInput {
     pub issues: Vec<String>,
 }
 
-/// Analyzes Step9 headless evidence using deterministic zero-delta expected
+/// Analyzes headless autoplay evidence using deterministic zero-delta expected
 /// timing for perfect autoplay. Later tickets replace this with real chart-time
 /// samples and OpenTaiko-compatible threshold policy.
 pub fn analyze_headless_input(
@@ -123,7 +123,7 @@ pub fn analyze_headless_input(
 }
 
 /// Compares a timestamp golden JSON document against embedded actual timing
-/// samples. This is the TKT-0005 bridge between the Step10 aggregate analyzer
+/// samples. This is the TKT-0005 bridge between the timing analyzer aggregate report
 /// and later event-level timing logs.
 pub fn compare_timestamp_golden_json(
     golden_source: &str,
@@ -207,7 +207,7 @@ pub fn compare_timestamp_golden_json(
     Ok(report)
 }
 
-/// Parses the deterministic JSON emitted by Step9 headless autoplay into the
+/// Parses the deterministic JSON emitted by headless autoplay into the
 /// reduced timing-analyzer input model.
 pub fn parse_headless_autoplay_json(text: &str) -> Result<HeadlessTimingInput, TimingError> {
     let scope = string_field(text, "scope").unwrap_or_else(|| "unknown".to_string());

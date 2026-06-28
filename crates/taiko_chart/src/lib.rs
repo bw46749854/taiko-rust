@@ -1,6 +1,6 @@
 //! Phase1 synthetic fixture validation support.
 //!
-//! Step8 intentionally implements only the parser surface needed for autonomous
+//! Fixture validation command surface intentionally implements only the parser surface needed for autonomous
 //! fixture validation. Full OpenTaiko-compatible scheduling, branch execution,
 //! scoring, judgement, rendering, and audio behavior remain later tickets.
 
@@ -127,7 +127,7 @@ pub struct FixtureValidationReport {
     pub issues: Vec<ValidationIssue>,
 }
 
-/// Parses the synthetic manifest subset required by Step8.
+/// Parses the synthetic manifest subset required by the fixture validation command surface.
 pub fn parse_fixture_manifest(text: &str) -> Result<FixtureManifest, ChartError> {
     let mut schema_version = String::new();
     let mut declared_fixture_count = 0usize;

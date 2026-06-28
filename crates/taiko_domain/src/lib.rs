@@ -1,6 +1,6 @@
 //! Minimal taiko_domain skeleton for the OpenTaiko Phase1 autonomous loop.
 //!
-//! Gameplay implementation is intentionally out of scope for Step7. This crate
+//! Gameplay implementation is intentionally out of scope for Rust workspace skeleton. This crate
 //! exists so later tickets can add Phase1 functionality without renaming the
 //! canonical workspace layout.
 
